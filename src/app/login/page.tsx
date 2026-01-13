@@ -5,14 +5,32 @@ import Image from "next/image";
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-stretch md:flex-row flex-col">
-      {/* Left sidebar with logo - hidden on mobile */}
-      <div className="hidden lg:flex w-full lg:basis-2/5 bg-[#F4F5F7] flex-col justify-start items-center p-8">
-        <Image
-          src="/signup/logo.svg"
-          alt="Helicode Logo"
-          width={110}
-          height={24}
-        />
+      {/* Left sidebar with logo */}
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
+        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+          {/* Illustrator wrapper with requested background, rounding and padding */}
+          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+            {/* Logo positioned inside the illustrator on the left */}
+            <div className="absolute left-6 top-9 z-10">
+              <Image
+                src="/signup/logo.svg"
+                alt="Helicode Logo"
+                width={110}
+                height={24}
+              />
+            </div>
+
+            <div className="relative w-full h-full">
+              <Image
+                src="/signup/Onboarding-Illustration.svg"
+                alt="Illustrator"
+                fill
+                className="object-cover rounded-2xl"
+                priority
+              />
+            </div>
+          </div>
+        </div>
       </div>
       {/* Right content area */}
       <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
@@ -20,8 +38,14 @@ export default function LoginPage() {
         <div className="flex items-center justify-between w-full">
           <Link
             href="/signup"
-            className="text-sm text-[#000000] hover:text-[#101828] transition-colors"
+            className="text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
           >
+            <Image
+              src="/signup/back-arrow.svg"
+              alt="back-arrow"
+              width={16}
+              height={16}
+            />
             Go back
           </Link>
           <Link

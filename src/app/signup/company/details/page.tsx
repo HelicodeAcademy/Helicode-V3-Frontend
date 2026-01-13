@@ -73,21 +73,45 @@ export default function CompanyDetailsPage() {
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      {/* Left Sidebar */}
-      <div className="w-full lg:basis-2/5 bg-[#F4F5F7] flex flex-col justify-start items-center p-8">
-        <Image
-          src="/signup/logo.svg"
-          alt="Helicode Logo"
-          width={110}
-          height={24}
-        />
+      {/* Left sidebar with logo */}
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
+        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+          {/* Illustrator wrapper with requested background, rounding and padding */}
+          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+            {/* Logo positioned inside the illustrator on the left */}
+            <div className="absolute left-6 top-9 z-10">
+              <Image
+                src="/signup/logo.svg"
+                alt="Helicode Logo"
+                width={110}
+                height={24}
+              />
+            </div>
+
+            <div className="relative w-full h-full">
+              <Image
+                src="/signup/Onboarding-Illustration.svg"
+                alt="Illustrator"
+                fill
+                className="object-cover rounded-2xl"
+                priority
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Right Content */}
       <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
         {/* Header Navigation */}
         <div className="flex justify-between items-center w-full">
-          <button className="text-black font-normal text-sm hover:text-primary transition-colors">
+          <button className="text-black font-normal flex items-center text-sm hover:text-primary transition-colors">
+            <Image
+              src="/signup/back-arrow.svg"
+              alt="back-arrow"
+              width={16}
+              height={16}
+            />
             Go back
           </button>
           <Link
@@ -103,19 +127,22 @@ export default function CompanyDetailsPage() {
         <div className="w-full max-w-105.75 mx-auto flex-1 flex items-center justify-center">
           <div>
             <div className="mb-8">
-              <h1 className="mb-3 text-[2rem] font-bold text-[#212121]">
+              <h1 className="mb-3 text-[2rem] font-medium text-[#212121]">
                 Your Company details
               </h1>
-              <p className="text-sm text-[#444444]">
+              <p className="text-sm text-[#444444] leading-[145%]">
                 Please provide your Organization information accurately, it will
                 be used in all your communications on the platform.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-4 max-w-90.75"
+            >
               {/* Company Name */}
               <div>
-                <label className="mb-2 block text-sm font-bold text-[#444444]">
+                <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
                   Company <span className="text-[#FF3F3F]">*</span>
                 </label>
                 <Input
@@ -140,7 +167,7 @@ export default function CompanyDetailsPage() {
 
               {/* Team Size */}
               <div>
-                <label className="mb-2 block text-sm font-semibold text-[#444444]">
+                <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
                   Team Size <span className="text-[#FF3F3F]">*</span>
                 </label>
                 <Controller
@@ -149,7 +176,7 @@ export default function CompanyDetailsPage() {
                   rules={{ required: "Team size is required" }}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="rounded-lg border border-[#C9D1DE] bg-white w-full text-[#101828] focus:border-ring focus:ring-2 focus:ring-ring/10">
+                      <SelectTrigger className="rounded-lg border border-[#E4E7EC] bg-white w-full text-[#101828] focus:border-ring focus:ring-2 focus:ring-ring/10">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -171,7 +198,7 @@ export default function CompanyDetailsPage() {
 
               {/* Country */}
               <div>
-                <label className="mb-2 block text-sm font-semibold text-[#444444]">
+                <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
                   Country <span className="text-[#FF3F3F]">*</span>
                 </label>
                 <Controller
@@ -180,7 +207,7 @@ export default function CompanyDetailsPage() {
                   rules={{ required: "Country is required" }}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="rounded-lg border border-[#C9D1DE] bg-white w-full text-[#101828] focus:border-ring focus:ring-2 focus:ring-ring/10">
+                      <SelectTrigger className="rounded-lg border border-[#E4E7EC] bg-white w-full text-[#101828] focus:border-ring focus:ring-2 focus:ring-ring/10">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -204,7 +231,8 @@ export default function CompanyDetailsPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#1C1C1C] hover:bg-[#212121] text-white rounded-lg font-semibold text-base transition-colors disabled:opacity-50 mt-2"
+                variant={"primary"}
+                className="w-18.75 hover:bg-[#212121] text-white font-medium transition-colors disabled:opacity-50 mt-6"
               >
                 {isLoading ? "Loading..." : "Next"}
               </Button>

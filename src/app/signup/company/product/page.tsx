@@ -29,7 +29,7 @@ const PRODUCTS: Product[] = [
     id: "hr-onboarding",
     name: "HR/Onboarding",
     description: "Automate people ops with a global HR system",
-    disabled: true,
+    disabled: false,
   },
 ];
 
@@ -57,21 +57,45 @@ export default function ProductSelectionPage() {
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      {/* Left Sidebar */}
-      <div className="w-full lg:basis-2/5 bg-[#F4F5F7] flex flex-col justify-start items-center p-8">
-        <Image
-          src="/signup/logo.svg"
-          alt="Helicode Logo"
-          width={110}
-          height={24}
-        />
+      {/* Left sidebar with logo */}
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
+        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+          {/* Illustrator wrapper with requested background, rounding and padding */}
+          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+            {/* Logo positioned inside the illustrator on the left */}
+            <div className="absolute left-6 top-9 z-10">
+              <Image
+                src="/signup/logo.svg"
+                alt="Helicode Logo"
+                width={110}
+                height={24}
+              />
+            </div>
+
+            <div className="relative w-full h-full">
+              <Image
+                src="/signup/Onboarding-Illustration.svg"
+                alt="Illustrator"
+                fill
+                className="object-cover rounded-2xl"
+                priority
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Right Content */}
       <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
         {/* Header Navigation */}
         <div className="flex justify-between items-center w-full">
-          <button className="text-black font-normal text-sm hover:text-primary transition-colors">
+          <button className="text-black font-normal flex items-center text-sm hover:text-primary transition-colors">
+            <Image
+              src="/signup/back-arrow.svg"
+              alt="back-arrow"
+              width={16}
+              height={16}
+            />
             Go back
           </button>
           <Link
@@ -87,17 +111,17 @@ export default function ProductSelectionPage() {
         <div className="w-full max-w-105.75 mx-auto flex-1 flex items-center justify-center">
           <div>
             <div className="mb-8">
-              <h1 className="mb-3 text-[2rem] font-bold text-[#101828] leading-[100%]">
+              <h1 className="mb-3 text-[2rem] font-medium text-[#101828] leading-[145%]">
                 Which product are you interested in?
               </h1>
-              <p className="text-sm text-[#444444]">
+              <p className="text-sm text-[#444444] leading-[145%]">
                 Please provide your Organization information accurately, it will
                 be used in all your communications on the platform.
               </p>
             </div>
 
             {/* Products Grid */}
-            <div className="mb-8 space-y-1.5 bg-[#F4F5F7] p-1.5 rounded-2xl">
+            <div className="mb-8 space-y-6 p-1.5 rounded-2xl">
               {PRODUCTS.map((product) => (
                 <button
                   key={product.id}
@@ -105,36 +129,36 @@ export default function ProductSelectionPage() {
                     !product.disabled && setSelectedProduct(product.id)
                   }
                   disabled={product.disabled}
-                  className={`w-full rounded-lg bg-white p-6 text-left transition-all ${
+                  className={`w-full rounded-lg bg-white p-6 border text-left transition-all ${
                     product.disabled ? "opacity-30" : ""
                   }`}
                 >
                   <div className="flex items-start gap-4">
                     {/* Checkbox */}
                     <div
-                      className={`mt-1 flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all ${
+                      className={`mt-1 flex h-5 w-5 items-center justify-center rounded-full border transition-all ${
                         selectedProduct === product.id && !product.disabled
-                          ? "border-[#0052FF] bg-[#0052FF]"
-                          : "border-[#b3bfd2]"
+                          ? "border-[#0052FF] bg-[#0052FF]/10"
+                          : "border-[#E4E7EC]"
                       }`}
                     >
-                      {selectedProduct === product.id && !product.disabled && (
+                      {/* {selectedProduct === product.id && !product.disabled && (
                         <Check className="h-4 w-4 text-white" />
-                      )}
+                      )} */}
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-1">
                       <h3
-                        className={`font-medium text-2xl ${
-                          product.disabled ? "text-[#252525]" : "text-[#101828]"
+                        className={`font-medium text-lg ${
+                          product.disabled ? "text-[#252525]" : "text-[#0F112A]"
                         }`}
                       >
                         {product.name}
                       </h3>
                       <p
-                        className={`text-xs font-light ${
-                          product.disabled ? "text-[#5A5A5A]" : "text-[#444444]"
+                        className={`text-sm ${
+                          product.disabled ? "text-[#5A5A5A]" : "text-[#475367]"
                         }`}
                       >
                         {product.description}
@@ -146,19 +170,19 @@ export default function ProductSelectionPage() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 onClick={handleGetStarted}
                 variant={"primary"}
                 disabled={isLoading}
-                className="flex-1 bg-[#1C1C1C] hover:bg-[#212121] text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+                className="w-24.25 bg-[#1C1C1C] hover:bg-[#212121] text-white transition-colors disabled:opacity-50"
               >
                 {isLoading ? "Loading..." : "Get Started"}
               </Button>
               <Button
                 onClick={handleSkip}
                 variant="surface"
-                className="flex-1 border-2 text-[#101828] hover:bg-[#f4f5f7] rounded-lg py-2.5 font-medium text-sm transition-colors bg-transparent"
+                className="w-18.25 text-[#101828] hover:bg-[#f4f5f7] transition-colors bg-transparent"
               >
                 Skip
               </Button>

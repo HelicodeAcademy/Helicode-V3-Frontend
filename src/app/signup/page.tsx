@@ -22,13 +22,31 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left sidebar with logo */}
-      <div className="w-full lg:basis-2/5 bg-[#F4F5F7] flex flex-col justify-start items-center p-8">
-        <Image
-          src="/signup/logo.svg"
-          alt="Helicode Logo"
-          width={110}
-          height={24}
-        />
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
+        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+          {/* Illustrator wrapper with requested background, rounding and padding */}
+          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+            {/* Logo positioned inside the illustrator on the left */}
+            <div className="absolute left-6 top-9 z-10">
+              <Image
+                src="/signup/logo.svg"
+                alt="Helicode Logo"
+                width={110}
+                height={24}
+              />
+            </div>
+
+            <div className="relative w-full h-full">
+              <Image
+                src="/signup/Onboarding-Illustration.svg"
+                alt="Illustrator"
+                fill
+                className="object-cover rounded-2xl"
+                priority
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Right content area */}
@@ -36,7 +54,13 @@ export default function SignupPage() {
         {/* Top navigation */}
 
         <div className="flex justify-between items-center w-full">
-          <button className="text-black font-normal text-sm hover:text-primary transition-colors">
+          <button className="text-black flex font-normal text-sm hover:text-primary transition-colors">
+            <Image
+              src="/signup/back-arrow.svg"
+              alt="back-arrow"
+              width={16}
+              height={16}
+            />
             Go back
           </button>
           <Link
@@ -52,10 +76,10 @@ export default function SignupPage() {
           {/* Main content */}
           <div className="space-y-8">
             <div className="space-y-3">
-              <h2 className="text-[2rem] text-black font-bold leading-[160%]">
+              <h2 className="text-[2rem] text-black font-medium leading-[145%]">
                 How would you be using Helicode?
               </h2>
-              <p className="text-[#0F112A] text-base">
+              <p className="text-[#0F112A] text-sm">
                 You can create your company account right away if you&apos;re an
                 employer or <br /> refer your employer if you&apos;re an
                 employee.
@@ -87,13 +111,19 @@ export default function SignupPage() {
                     <h3
                       className={`font-bold text-xl ${
                         selectedType === "company"
-                          ? "text-black"
+                          ? "text-[#0F112A]"
                           : "text-[#878787]"
                       }`}
                     >
                       Company
                     </h3>
-                    <p className="text-sm text-[#868585] mt-2">
+                    <p
+                      className={`text-sm  mt-2 ${
+                        selectedType === "company"
+                          ? "text-[#475367]"
+                          : "text-[#868585]"
+                      }`}
+                    >
                       I want to manage my team or recruit new talent.
                     </p>
                   </div>
@@ -123,13 +153,19 @@ export default function SignupPage() {
                     <h3
                       className={`font-bold text-xl ${
                         selectedType === "talent"
-                          ? "text-black"
+                          ? "text-[#0F112A]"
                           : "text-[#878787]"
                       }`}
                     >
                       Talent
                     </h3>
-                    <p className={`text-sm mt-2 text-[#868585]`}>
+                    <p
+                      className={`text-sm mt-2 ${
+                        selectedType === "talent"
+                          ? "text-[#475367]"
+                          : "text-[#868585]"
+                      }`}
+                    >
                       I want to manage my team or recruit new talent.
                     </p>
                   </div>
@@ -142,7 +178,7 @@ export default function SignupPage() {
               onClick={handleContinue}
               disabled={!selectedType}
               variant={"primary"}
-              className="w-37.75 bg-[#1C1C1C] hover:bg-[#101828] text-white h-12 rounded-lg font-semibold"
+              className="w-20.25 bg-[#1C1C1C] hover:bg-[#101828] text-sm text-white rounded-lg font-medium mt-2"
             >
               Continue
             </Button>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface ForgotPasswordFormData {
   workEmail: string;
@@ -58,21 +59,31 @@ export function ForgotPasswordForm({ onStepChange }: ForgotPasswordFormProps) {
     <form onSubmit={handleSubmit(onSubmitRequest)} className="w-full">
       {/* Work Email */}
       <div className="mb-6 md:mb-8">
-        <label className="block text-sm font-bold text-[#444444] mb-2">
+        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
           Work Email <span className="text-[#FF3F3F]">*</span>
         </label>
-        <Input
-          type="email"
-          placeholder="Enter your email address"
-          {...register("workEmail", {
-            required: "Work email is required",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Please enter a valid email address",
-            },
-          })}
-          className={`${errors.workEmail ? "border-[#ff383c]" : ""}`}
-        />
+        <div className="relative">
+          <Image
+            src="/signup/mail-01.png"
+            alt="Email Icon"
+            width={18}
+            height={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          />
+
+          <Input
+            type="email"
+            placeholder="Enter your email address"
+            {...register("workEmail", {
+              required: "Work email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Please enter a valid email address",
+              },
+            })}
+            className={`pl-10 ${errors.workEmail ? "border-[#FF383C]" : ""}`}
+          />
+        </div>
         {errors.workEmail && (
           <p className="text-xs text-[#ED2525] mt-1">
             {errors.workEmail.message}
@@ -81,23 +92,26 @@ export function ForgotPasswordForm({ onStepChange }: ForgotPasswordFormProps) {
       </div>
 
       {/* Submit Button */}
-      <Button
-        type="submit"
-        variant={"primary"}
-        disabled={isLoading}
-        className="w-full hover:bg-[#101828] text-white font-medium"
-      >
-        {isLoading ? "Submitting..." : "Submit"}
-      </Button>
 
-      {/* Back to login */}
-      <Button
-        type="button"
-        variant="surface"
-        className="w-full mt-3 border-[#D9D9D9] text-[#131313] hover:bg-[#f4f5f7] bg-transparent"
-      >
-        Back to login
-      </Button>
+      <div className="flex gap-x-2.5">
+        <Button
+          type="submit"
+          variant={"primary"}
+          disabled={isLoading}
+          className="w-20.75 hover:bg-[#101828] text-white font-medium"
+        >
+          {isLoading ? "Submitting..." : "Submit"}
+        </Button>
+
+        {/* Back to login */}
+        <Button
+          type="button"
+          variant="surface"
+          className="w-26.25 border-[#D9D9D9] text-[#131313] hover:bg-[#f4f5f7] bg-transparent"
+        >
+          Back to login
+        </Button>
+      </div>
     </form>
   );
 }
@@ -130,21 +144,31 @@ function VerifyEmailForm({
     <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-105.5">
       {/* Work Email */}
       <div className="mb-6 md:mb-8">
-        <label className="block text-sm font-bold text-[#444444] mb-2">
+        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
           Work Email <span className="text-[#FF3F3F]">*</span>
         </label>
-        <Input
-          type="email"
-          placeholder="Enter your email address"
-          {...register("workEmail", {
-            required: "Work email is required",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Please enter a valid email address",
-            },
-          })}
-          className={`${errors.workEmail ? "border-[#ff383c]" : ""}`}
-        />
+        <div className="relative">
+          <Image
+            src="/signup/mail-01.png"
+            alt="Email Icon"
+            width={18}
+            height={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          />
+
+          <Input
+            type="email"
+            placeholder="Enter your email address"
+            {...register("workEmail", {
+              required: "Work email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Please enter a valid email address",
+              },
+            })}
+            className={`pl-10 ${errors.workEmail ? "border-[#FF383C]" : ""}`}
+          />
+        </div>
         {errors.workEmail && (
           <p className="text-xs text-[#ED2525] mt-1">
             {errors.workEmail.message}
@@ -157,7 +181,7 @@ function VerifyEmailForm({
         type="submit"
         disabled={isLoading}
         variant={"primary"}
-        className="w-full bg-[#212121] hover:bg-[#101828] text-white"
+        className="w-27 bg-[#212121] hover:bg-[#101828] text-white"
       >
         {isSubmitting ? "Resending..." : "Resend email"}
       </Button>
@@ -195,7 +219,7 @@ function ResetPasswordForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       {/* New Password */}
       <div className="mb-6 md:mb-8">
-        <label className="block text-sm font-medium text-[#101828] mb-2">
+        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
           New Password <span className="text-[#ff383c]">*</span>
         </label>
         <Input
@@ -219,7 +243,7 @@ function ResetPasswordForm() {
 
       {/* Confirm Password */}
       <div className="mb-8">
-        <label className="block text-sm font-medium text-[#101828] mb-2">
+        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
           New Password <span className="text-[#ff383c]">*</span>
         </label>
         <Input
@@ -240,23 +264,25 @@ function ResetPasswordForm() {
       </div>
 
       {/* Reset password Button */}
-      <Button
-        type="submit"
-        disabled={isLoading}
-        variant={"primary"}
-        className="w-full hover:bg-[#101828] text-white"
-      >
-        {isLoading ? "Resetting..." : "Reset password"}
-      </Button>
+      <div className="flex gap-x-2.5">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          variant={"primary"}
+          className="w-32 hover:bg-[#101828] text-white"
+        >
+          {isLoading ? "Resetting..." : "Reset password"}
+        </Button>
 
-      {/* Back to login */}
-      <Button
-        type="button"
-        variant="surface"
-        className="w-full mt-3 border-[#d0d5dd] text-[#101828] hover:bg-[#f4f5f7] bg-transparent"
-      >
-        Back to login
-      </Button>
+        {/* Back to login */}
+        <Button
+          type="button"
+          variant="surface"
+          className="w-27 text-[#101828] hover:bg-[#f4f5f7]"
+        >
+          Back to login
+        </Button>
+      </div>
     </form>
   );
 }

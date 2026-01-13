@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
 
 interface LoginFormData {
   workEmail: string;
@@ -35,10 +36,10 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-91">
       {/* Header Section */}
       <div className="md:mb-8 mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#101828] mb-2">
+        <h1 className="text-[2rem] md:text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
           Login to Helicode
         </h1>
-        <p className="text-[#667085] text-sm md:text-base">
+        <p className="text-[#444444] text-sm">
           Please enter your details to sign into your account
         </p>
       </div>
@@ -47,21 +48,31 @@ export function LoginForm() {
       <div className="space-y-6">
         {/* Work Email */}
         <div>
-          <label className="block text-sm font-bold text-[#444444] mb-2">
+          <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
             Work Email <span className="text-[#FF3F3F]">*</span>
           </label>
-          <Input
-            type="email"
-            placeholder="Enter your email address"
-            {...register("workEmail", {
-              required: "Work email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Please enter a valid email address",
-              },
-            })}
-            className={`${errors.workEmail ? "border-[#ff383c]" : ""}`}
-          />
+          <div className="relative">
+            <Image
+              src="/signup/mail-01.png"
+              alt="Email Icon"
+              width={18}
+              height={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            />
+
+            <Input
+              type="email"
+              placeholder="Enter your email address"
+              {...register("workEmail", {
+                required: "Work email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email address",
+                },
+              })}
+              className={`pl-10 ${errors.workEmail ? "border-[#FF383C]" : ""}`}
+            />
+          </div>
           {errors.workEmail && (
             <p className="text-xs text-[#ED2525] mt-1">
               {errors.workEmail.message}
@@ -71,7 +82,7 @@ export function LoginForm() {
 
         {/* Password with visibility toggle */}
         <div>
-          <label className="block text-sm font-bold text-[#444444] mb-2">
+          <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
             Password <span className="text-[#FF3F3F]">*</span>
           </label>
           <div className="relative">
@@ -118,22 +129,10 @@ export function LoginForm() {
         type="submit"
         disabled={isLoading}
         variant={"primary"}
-        className="w-full hover:bg-[#101828] text-white mt-8"
+        className="w-20.75 hover:bg-[#101828] text-white mt-8"
       >
         {isLoading ? "Logging in..." : "Log in"}
       </Button>
-
-      {/* Legal Text */}
-      <p className="text-xs text-[#444444] my-6 font-medium text-center">
-        By signing up, you agree to our{" "}
-        <a href="#" className="underline">
-          Terms & Conditions
-        </a>{" "}
-        and{" "}
-        <a href="#" className="underline">
-          Privacy Policy
-        </a>
-      </p>
     </form>
   );
 }
