@@ -111,11 +111,11 @@ export default function DashboardHomePage() {
         {payrollMetrics.map((metric) => (
           <div
             key={metric.label}
-            className="border border-[#D0D5DD] rounded-3xl p-6 space-y-4"
+            className="border border-[#D0D5DD] rounded-3xl p-6"
           >
             <div className="font-medium text-[#475367]">{metric.label}</div>
 
-            <div className="space-y-8">
+            <div className="space-y-4">
               <div className="text-[2.5rem] font-bold text-[#344054]">
                 {metric.value}
               </div>
@@ -173,9 +173,9 @@ export default function DashboardHomePage() {
           </Button>
         </div>
 
-        <div className="shrink-0 hidden md:block bg-[#F4F5F7] relative w-117">
+        <div className="shrink-0 hidden md:block relative w-117">
           <Image
-            src="/home/Alex.svg"
+            src="/home/bridge.svg"
             alt="Alex"
             fill
             className="object-cover"
@@ -194,7 +194,7 @@ export default function DashboardHomePage() {
             </h3>
             <Button
               variant="secondary"
-              className="rounded-full w-16 h-5.5 text-xs text-[#0052FF] bg-[#0052FF1A] hover:bg-[#E0EAFF]"
+              className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
             >
               View all
             </Button>
@@ -240,7 +240,8 @@ export default function DashboardHomePage() {
                   </TableCell>
 
                   <TableCell>
-                    <Badge className="rounded-full bg-[#C8E8D580] w-16 h-5.5 text-xs font-medium text-[#17B26A] hover:bg-[#E7F6EC]">
+                    <Badge className="rounded-full bg-[#C8E8D580] w-17.25 h-6 text-xs font-medium text-[#17B26A] hover:bg-[#E7F6EC]">
+                      <p className="h-3 w-3 rounded-full border border-[#12B76A]"></p>
                       {payment.status}
                     </Badge>
                   </TableCell>
@@ -256,7 +257,7 @@ export default function DashboardHomePage() {
 
         {/* Quick Actions Sidebar */}
         <div className="rounded-3xl border border-[#eaeaea] bg-white p-6">
-          <h3 className="text-sm font-medium text-[#101828] mb-3">
+          <h3 className="text-sm font-medium text-[#101828] mb-12">
             Quick Actions
           </h3>
           <div className="space-y-4">

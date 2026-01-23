@@ -6,10 +6,10 @@ export default function TalentSignupPage() {
   return (
     <div className="min-h-screen flex items-stretch md:flex-row flex-col">
       {/* Left Sidebar - Hidden on mobile, visible on lg and up */}
-      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
-        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
+        <div className="relative w-full h-full overflow-hidden">
           {/* Illustrator wrapper with requested background, rounding and padding */}
-          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+          <div className="relative w-full h-full">
             {/* Logo positioned inside the illustrator on the left */}
             <div className="absolute left-6 top-9 z-10">
               <Image
@@ -25,7 +25,7 @@ export default function TalentSignupPage() {
                 src="/signup/Onboarding-Illustration.svg"
                 alt="Illustrator"
                 fill
-                className="object-cover rounded-2xl"
+                className="object-cover"
                 priority
               />
             </div>
@@ -53,7 +53,7 @@ export default function TalentSignupPage() {
             className="font-medium hover:underline text-black text-sm"
           >
             Already have an account?{" "}
-            <span className="font-bold text-[#355587]">Login</span>
+            <span className="font-bold text-[#0052FF]">Login</span>
           </Link>
         </div>
 

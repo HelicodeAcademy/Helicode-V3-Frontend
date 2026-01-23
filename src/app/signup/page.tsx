@@ -22,10 +22,10 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left sidebar with logo */}
-      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
-        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
+        <div className="relative w-full h-full overflow-hidden">
           {/* Illustrator wrapper with requested background, rounding and padding */}
-          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+          <div className="relative w-full h-full">
             {/* Logo positioned inside the illustrator on the left */}
             <div className="absolute left-6 top-9 z-10">
               <Image
@@ -41,7 +41,7 @@ export default function SignupPage() {
                 src="/signup/Onboarding-Illustration.svg"
                 alt="Illustrator"
                 fill
-                className="object-cover rounded-2xl"
+                className="object-cover"
                 priority
               />
             </div>
@@ -53,22 +53,13 @@ export default function SignupPage() {
       <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
         {/* Top navigation */}
 
-        <div className="flex justify-between items-center w-full">
-          <button className="text-black flex font-normal text-sm hover:text-primary transition-colors">
-            <Image
-              src="/signup/back-arrow.svg"
-              alt="back-arrow"
-              width={16}
-              height={16}
-            />
-            Go back
-          </button>
+        <div className="w-full text-right">
           <Link
             href="/login"
             className="font-medium hover:underline text-black text-sm"
           >
             Already have an account?{" "}
-            <span className="font-bold text-[#355587]">Login</span>
+            <span className="font-bold text-[#0052FF]">Login</span>
           </Link>
         </div>
 

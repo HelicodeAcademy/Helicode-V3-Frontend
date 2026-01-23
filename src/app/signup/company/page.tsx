@@ -8,10 +8,10 @@ export default function CompanySignupPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
       {/* Left sidebar with logo */}
-      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center p-4.5">
-        <div className="relative w-full h-full rounded-b-2xl overflow-hidden">
+      <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
+        <div className="relative w-full h-full overflow-hidden">
           {/* Illustrator wrapper with requested background, rounding and padding */}
-          <div className="relative bg-[#F4F5F7] rounded-2xl p-1.5 w-full h-full">
+          <div className="relative w-full h-full">
             {/* Logo positioned inside the illustrator on the left */}
             <div className="absolute left-6 top-9 z-10">
               <Image
@@ -27,7 +27,7 @@ export default function CompanySignupPage() {
                 src="/signup/Onboarding-Illustration.svg"
                 alt="Illustrator"
                 fill
-                className="object-cover rounded-2xl"
+                className="object-cover"
                 priority
               />
             </div>

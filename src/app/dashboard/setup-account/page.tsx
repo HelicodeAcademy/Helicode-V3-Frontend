@@ -50,7 +50,7 @@ export default function SetupAccountPage() {
   const [step, setStep] = useState<SetupStep>("form1");
   const [companyData, setCompanyData] = useState<CompanyDetails | null>(null);
   const [personalData, setPersonalData] = useState<PersonalDetails | null>(
-    null
+    null,
   );
 
   const companyForm = useForm<CompanyDetails>({
@@ -61,10 +61,7 @@ export default function SetupAccountPage() {
   });
 
   const personalForm = useForm<PersonalDetails>({
-    defaultValues: {
-      nationality: "Rwandan",
-      dateOfBirth: "20 - 01 - 2000",
-    },
+    defaultValues: {},
   });
 
   useEffect(() => {
@@ -83,6 +80,10 @@ export default function SetupAccountPage() {
 
   const handleConfirm = () => {
     setStep("success");
+  };
+
+  const handleBack = () => {
+    setStep("form2");
   };
 
   const handleFinish = () => {
@@ -263,7 +264,7 @@ export default function SetupAccountPage() {
   // Form 2: Personal Details
   if (step === "form2") {
     return (
-      <div className="p-6 md:p-10 max-w-2xl mx-auto">
+      <div className="p-6 md:p-10 max-w-140 mx-auto">
         <div className="mb-8">
           <h1 className="text-[2rem] font-bold text-[#212121] mb-2">
             Finish setting up your account
@@ -417,7 +418,7 @@ export default function SetupAccountPage() {
   // Confirmation Screen
   if (step === "confirmation" && companyData) {
     return (
-      <div className="p-6 md:p-10 max-w-102.5 mx-auto">
+      <div className="p-6 md:p-10 max-w-130.75 mx-auto">
         <div className="mb-8">
           <h1 className="text-[2rem] font-bold text-[#212121] mb-2">
             Confirm account details
@@ -427,49 +428,61 @@ export default function SetupAccountPage() {
           </p>
         </div>
 
-        <div className="rounded-xl border border-[#E0E0E0] bg-[#f9fafb] p-6">
-          <h3 className="font-bold mb-4">Company Information</h3>
+        <div className="rounded-[10px] border border-[#E0E0E0] bg-[#FFFFFF] p-6">
+          <h3 className="font-bold mb-4 text-lg">Company Information</h3>
 
           <div className="space-y-0">
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Legal company name</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Legal company name
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.legalCompanyName}
               </span>
             </div>
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Country</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Country
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.country}
               </span>
             </div>
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Filling address</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Filling address
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.address || "-"}
               </span>
             </div>
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Postal code</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Postal code
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.postalCode || "-"}
               </span>
             </div>
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Phone number</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Phone number
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.countryCode}
                 {companyData.phoneNumber}
               </span>
             </div>
             <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000]">Invoice currency</span>
-              <span className="text-sm text-[#8A8A8A] font-medium">
+              <span className="text-sm text-[#000000] font-medium">
+                Invoice currency
+              </span>
+              <span className="text-sm text-[#8A8A8A]">
                 {companyData.invoiceCurrency}
               </span>
             </div>
             <div className="flex justify-between items-center py-4">
-              <span className="text-sm text-[#000000]">
+              <span className="text-sm text-[#000000] font-medium">
                 VAT or TAX ID number font-medium
               </span>
               <span className="text-sm text-[#8A8A8A]">
@@ -477,11 +490,21 @@ export default function SetupAccountPage() {
               </span>
             </div>
           </div>
+        </div>
+
+        <div className="flex gap-3 mt-10">
+          <Button
+            onClick={handleBack}
+            variant={"surface"}
+            className="w-19 rounded-lg hover:bg-[#1a1a1a]/90"
+          >
+            Go back
+          </Button>
 
           <Button
             onClick={handleConfirm}
             variant={"primary"}
-            className="w-full text-white rounded-lg hover:bg-[#1a1a1a]/90 mt-6"
+            className="w-19  rounded-lg hover:bg-[#1a1a1a]/90"
           >
             Confirm
           </Button>
@@ -494,36 +517,39 @@ export default function SetupAccountPage() {
   if (step === "success") {
     return (
       <div className="min-h-[calc(100vh-80px)] bg-[#f3f3f3] flex items-center justify-center p-6">
-        <div className="bg-white rounded-xl p-8 max-w-102.5 w-full shadow-sm">
+        <div className="bg-white rounded-xl p-2 max-w-102.5 w-full shadow-sm">
           {/* Placeholder image */}
-          <div className="h-37.75 bg-[#e0e0e0] mb-6" />
+          <div className="h-37.75 bg-[#e0e0e0] mb-6 rounded-lg" />
 
-          <h1 className="text-[2rem] font-bold text-[#000000] mb-4">
-            You&apos;re all set!
-          </h1>
-          <p className="text-[#444444] text-sm leading-relaxed mb-8">
-            Worem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-            vulputate libero et velit interdum, ac aliquet odio mattis. Class
-            aptent taciti sociosqu ad litora torquent per conubia nostra, per
-            inceptos himenaeos. Curabitur tempus urna at turpis condimentum
-            lobortis.
-          </p>
+          <div className="px-6 pb-6">
+            <h1 className="text-2xl font-bold text-[#000000] mb-4">
+              You&apos;re all set, {companyData?.legalCompanyName}!
+            </h1>
+            <p className="text-[#444444] text-sm leading-relaxed mb-10">
+              You can now start adding hires and company admins to grow your
+              team on Helicode. If you have any questions, don&apos;t hesitate
+              to drop us a line at{" "}
+              <span className="text-[#0052FF] hover:underline">
+                help@helicode.xyz.
+              </span>
+            </p>
 
-          <div className="flex gap-3">
-            <Button
-              onClick={handleFinish}
-              variant={"primary"}
-              className="flex-1 text-white hover:bg-[#1a1a1a]/90"
-            >
-              Confirm
-            </Button>
-            <Button
-              onClick={handleFinish}
-              variant={"primary"}
-              className="flex-1 text-white hover:bg-[#1a1a1a]/90"
-            >
-              Confirm
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={handleFinish}
+                variant={"surface"}
+                className="w-13"
+              >
+                Skip
+              </Button>
+              <Button
+                onClick={handleFinish}
+                variant={"primary"}
+                className="w-19"
+              >
+                Add Hire
+              </Button>
+            </div>
           </div>
         </div>
       </div>

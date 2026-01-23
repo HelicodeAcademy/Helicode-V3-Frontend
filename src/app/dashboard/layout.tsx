@@ -52,7 +52,7 @@ function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar className="bg-red-500!important w-64 border-r border-[#eaeaea] bg-white">
+    <Sidebar className="w-64 border-r border-[#eaeaea]">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-4 py-4">
           <Image
@@ -68,7 +68,11 @@ function DashboardSidebar() {
         <SidebarMenu>
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard" ||
+                  pathname.startsWith("/dashboard/setup-account")
+                : pathname.startsWith(item.href);
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -134,7 +138,7 @@ export default function DashboardLayout({
         <DashboardSidebar />
         <SidebarInset>
           {/* removed the border bottom here as it is not needed */}
-          <header className="flex h-16 items-center justify-between bg-white px-6">
+          <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
             <h1 className="text-2xl font-medium text-[#444444]">
               {pageTitle || "Dashboard"}
             </h1>
@@ -157,7 +161,7 @@ export default function DashboardLayout({
               </Button>
             </div>
           </header>
-          <main className="flex-1 bg-white">{children}</main>
+          <main className="flex-1 bg-[#F9FAFB]">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </PageTitleContext.Provider>
