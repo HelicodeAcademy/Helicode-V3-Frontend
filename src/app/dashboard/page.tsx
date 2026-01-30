@@ -111,7 +111,7 @@ export default function DashboardHomePage() {
         {payrollMetrics.map((metric) => (
           <div
             key={metric.label}
-            className="border border-[#D0D5DD] rounded-3xl p-6"
+            className="border border-[#D0D5DD] bg-white rounded-3xl p-6"
           >
             <div className="font-medium text-[#475367]">{metric.label}</div>
 

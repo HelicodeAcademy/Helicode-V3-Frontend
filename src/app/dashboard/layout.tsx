@@ -139,7 +139,7 @@ export default function DashboardLayout({
         <SidebarInset>
           {/* removed the border bottom here as it is not needed */}
           <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-            <h1 className="text-2xl font-medium text-[#444444]">
+            <h1 className="text-2xl font-bold text-[#444444]">
               {pageTitle || "Dashboard"}
             </h1>
             <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">

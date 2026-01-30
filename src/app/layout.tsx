@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +13,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+const helveticaNeue = localFont({
+  src: [
+    {
+      path: "../../public/font/Helvetica/HelveticaNeue-Light.otf",
+      weight: "400",
+      style: "normal",
+    },
+
+    {
+      path: "../../public/font/Helvetica/HelveticaNeue-Medium.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/font/Helvetica/HelveticaNeue-Bold.otf",
+      weight: "700",
+      style: "500",
+    },
+  ],
+  variable: "--font-helvetica-neue",
   display: "swap",
 });
 
@@ -31,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} font-inter antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${helveticaNeue.variable} font-sans antialiased`}
       >
         {children}
       </body>
