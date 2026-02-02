@@ -26,9 +26,12 @@ export function WalletBalanceCard({
           <p className="text-4xl font-bold text-[#1C232D]">{balance}</p>
         </div>
 
-        <div className="h-25 w-25 rounded-full border border-[#D0D5DD] flex items-center justify-center">
-          <Image src="/wallet/Icon.svg" alt="icon" width={32} height={32} />
-        </div>
+        <Image
+          src="/wallet/wallet.svg"
+          alt="icon"
+          width={136}
+          height={107.37}
+        />
       </div>
 
       {/* Action Buttons */}

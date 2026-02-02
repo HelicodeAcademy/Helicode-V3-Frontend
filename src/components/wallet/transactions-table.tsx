@@ -24,9 +24,9 @@ interface TransactionsTableProps {
 }
 
 const statusStyles = {
-  Paid: "bg-[#e6f7e6] text-[#22c55e]",
-  Failed: "bg-[#fee] text-[#ef4444]",
-  Pending: "bg-[#fff4e6] text-[#f97316]",
+  Paid: "bg-[#ECFDF3] text-[#12B76A]",
+  Failed: "bg-[#FDECEC] text-[#D32828]",
+  Pending: "bg-[#FFEFE2] text-[#EE7D1F]",
 };
 
 export function TransactionsTable({
@@ -69,18 +69,18 @@ export function TransactionsTable({
         <TableBody>
           {transactions.map((transaction) => (
             <TableRow key={transaction.id} className="hover:bg-gray-50 text-sm">
-              <TableCell className="text-[#101828] px-6 py-4">
+              <TableCell className="text-[#101828] font-medium px-6 py-4">
                 {transaction.type}
               </TableCell>
-              <TableCell className="text-[#101828]">
+              <TableCell className="text-[#101828] font-medium ">
                 {transaction.amount}
               </TableCell>
-              <TableCell className="text-[#101828]">
+              <TableCell className="text-[#101828] font-medium">
                 {transaction.date}
               </TableCell>
               <TableCell>
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[transaction.status]}`}
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[transaction.status]} font-medium`}
                 >
                   {transaction.status}
                 </span>
