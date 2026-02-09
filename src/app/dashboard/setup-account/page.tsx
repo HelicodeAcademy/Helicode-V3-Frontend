@@ -7,6 +7,14 @@ import { PageTitleContext } from "../layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -14,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 type SetupStep = "form1" | "form2" | "confirmation" | "success";
 
@@ -49,9 +58,7 @@ export default function SetupAccountPage() {
   const router = useRouter();
   const [step, setStep] = useState<SetupStep>("form1");
   const [companyData, setCompanyData] = useState<CompanyDetails | null>(null);
-  const [personalData, setPersonalData] = useState<PersonalDetails | null>(
-    null,
-  );
+  const [, setPersonalData] = useState<PersonalDetails | null>(null);
 
   const companyForm = useForm<CompanyDetails>({
     defaultValues: {
@@ -415,144 +422,149 @@ export default function SetupAccountPage() {
     );
   }
 
-  // Confirmation Screen
+  // Confirmation Screen as modal
   if (step === "confirmation" && companyData) {
     return (
-      <div className="p-6 md:p-10 max-w-130.75 mx-auto">
-        <div className="mb-8">
-          <h1 className="text-[2rem] font-bold text-[#212121] mb-2">
-            Confirm account details
-          </h1>
-          <p className="text-[#444444] text-sm leading-relaxed">
-            Check that these details, match your company&apos;s legal documents.
-          </p>
-        </div>
+      <Dialog open={true} onOpenChange={(open) => !open && setStep("form2")}>
+        <DialogContent className="max-w-130.5 p-6">
+          <DialogHeader className="">
+            <DialogTitle className="text-[1.75rem] text-[#212121]">
+              Confirm account details
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Check that these details, match your company&apos;s legal
+              documents.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="rounded-[10px] border border-[#E0E0E0] bg-[#FFFFFF] p-6">
-          <h3 className="font-bold mb-4 text-lg">Company Information</h3>
+          <hr />
 
-          <div className="space-y-0">
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Legal company name
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.legalCompanyName}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Country
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.country}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Filling address
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.address || "-"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Postal code
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.postalCode || "-"}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Phone number
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.countryCode}
-                {companyData.phoneNumber}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
-              <span className="text-sm text-[#000000] font-medium">
-                Invoice currency
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.invoiceCurrency}
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-4">
-              <span className="text-sm text-[#000000] font-medium">
-                VAT or TAX ID number font-medium
-              </span>
-              <span className="text-sm text-[#8A8A8A]">
-                {companyData.taxIdNumber || "-"}
-              </span>
+          <div className="">
+            <h3 className="font-bold mb-1 text-lg">Company Information</h3>
+
+            <div className="space-y-0">
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">
+                  Legal company name
+                </span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.legalCompanyName}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">Country</span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.country}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">
+                  Filling address
+                </span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.address || "-"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">Postal code</span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.postalCode || "-"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">Phone number</span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.countryCode}
+                  {companyData.phoneNumber}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4 border-b border-[#E0E0E0]">
+                <span className="text-sm text-[#000000B2]">
+                  Invoice currency
+                </span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.invoiceCurrency}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-4">
+                <span className="text-sm text-[#000000B2]">
+                  VAT or TAX ID number
+                </span>
+                <span className="text-sm text-[#0F112A] font-medium">
+                  {companyData.taxIdNumber || "-"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex gap-3 mt-10">
-          <Button
-            onClick={handleBack}
-            variant={"surface"}
-            className="w-19 rounded-lg hover:bg-[#1a1a1a]/90"
-          >
-            Go back
-          </Button>
-
-          <Button
-            onClick={handleConfirm}
-            variant={"primary"}
-            className="w-19  rounded-lg hover:bg-[#1a1a1a]/90"
-          >
-            Confirm
-          </Button>
-        </div>
-      </div>
+          <div className="mt-6 flex gap-3">
+            <Button
+              onClick={handleBack}
+              variant={"surface"}
+              className="rounded-lg flex-1 hover:bg-[#1a1a1a]/90"
+            >
+              Go back
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              variant={"primary"}
+              className="rounded-lg flex-1 hover:bg-[#1a1a1a]/90"
+            >
+              Confirm
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
-  // Success Screen
+  // Success Screen as modal
   if (step === "success") {
     return (
-      <div className="min-h-[calc(100vh-80px)] bg-[#f3f3f3] flex items-center justify-center p-6">
-        <div className="bg-white rounded-xl p-2 max-w-102.5 w-full shadow-sm">
-          {/* Placeholder image */}
-          <div className="h-37.75 bg-[#e0e0e0] mb-6 rounded-lg" />
+      <Dialog open={true} onOpenChange={(open) => !open && setStep("form1")}>
+        <DialogContent className="max-w-102.5! h-114 overflow-hidden p-0!">
+          <div className="rounded-xl w-full p-1.5 space-y-6">
+            <Image
+              src="/payroll/modal-illustration.png"
+              alt="illustration"
+              width={410}
+              height={220}
+            />
 
-          <div className="px-6 pb-6">
-            <h1 className="text-2xl font-bold text-[#000000] mb-4">
-              You&apos;re all set, {companyData?.legalCompanyName}!
-            </h1>
-            <p className="text-[#444444] text-sm leading-relaxed mb-10">
-              You can now start adding hires and company admins to grow your
-              team on Helicode. If you have any questions, don&apos;t hesitate
-              to drop us a line at{" "}
-              <span className="text-[#0052FF] hover:underline">
-                help@helicode.xyz.
-              </span>
-            </p>
+            <div className="px-6">
+              <h1 className="text-2xl font-bold text-[#000000] mb-2">
+                You&apos;re all set, {companyData?.legalCompanyName}!
+              </h1>
+              <p className="text-[#444444] text-sm leading-relaxed mb-10">
+                You can now start adding hires and company admins to grow your
+                team on Helicode. If you have any questions, don&apos;t hesitate
+                to drop us a line at{" "}
+                <span className="text-[#0052FF] hover:underline">
+                  help@helicode.xyz.
+                </span>
+              </p>
 
-            <div className="flex gap-3">
-              <Button
-                onClick={handleFinish}
-                variant={"surface"}
-                className="w-13"
-              >
-                Skip
-              </Button>
-              <Button
-                onClick={handleFinish}
-                variant={"primary"}
-                className="w-19"
-              >
-                Add Hire
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleFinish}
+                  variant={"surface"}
+                  className="w-13"
+                >
+                  Skip
+                </Button>
+                <Button
+                  onClick={handleFinish}
+                  variant={"primary"}
+                  className="w-19"
+                >
+                  Add Hire
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+          <DialogClose />
+        </DialogContent>
+      </Dialog>
     );
   }
 

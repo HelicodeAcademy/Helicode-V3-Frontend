@@ -105,7 +105,7 @@ export function PayrollTransactionsTable() {
       <div className="px-6 py-5 border-b border-[#E4E7EC]">
         <h3 className="text-sm font-medium text-[#101928] space-x-4">
           <span>Recent transactions</span>
-          <span className="text-xs font-medium bg-[#E9F0FF] text-[#0052FF] py-0.5 px-2 rounded-lg">
+          <span className="text-xs font-medium bg-[#E9F0FF] text-[#0052FF] py-1 px-2 rounded-lg">
             8 Members
           </span>
         </h3>

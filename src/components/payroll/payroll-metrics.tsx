@@ -1,59 +1,95 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-
-const metrics = [
-  {
-    label: "Total Payroll Processed",
-    value: "$100,200.80",
-    icon: "💳",
-  },
-  {
-    label: "Number of Payments",
-    value: "350",
-    icon: "📊",
-  },
-];
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 export function PayrollMetrics() {
-  const [activeMetric] = useState("Last 30 days");
+  const [showBalance, setShowBalance] = useState(true);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      {metrics.map((metric, idx) => (
-        <div
-          key={idx}
-          className="rounded-2xl border border-[#eaeaea] bg-white p-6 flex justify-between items-center"
-        >
-          <div>
-            <div className="flex items-start justify-between mb-8">
-              <div>
-                <p className="text-base text-[#475367] mb-4 font-medium">
-                  {metric.label}
-                </p>
-                <h3 className="text-[2.5rem] font-bold text-[#1C232D]">
-                  {metric.value}
-                </h3>
-              </div>
-            </div>
-            <button className="flex items-center gap-2 text-sm text-[#475367] font-medium hover:text-[#101828] border border-[#D0D5DD] rounded-lg px-4 py-2">
-              {activeMetric}
-              <ChevronDown className="h-4 w-4" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* First column */}
+      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2xl h-49.75">
+        <div>
+          <p className="text-sm text-[#475367] font-medium mb-2">
+            Total Payout Amount
+          </p>
+          <div className="flex items-center gap-3">
+            <h3 className="text-[2rem] font-bold text-[#1C232D]">
+              {showBalance ? "$87,420.80" : "••••••"}
+            </h3>
+            <button
+              onClick={() => setShowBalance(!showBalance)}
+              className="text-[#141B34] hover:text-[#667085] transition-colors"
+            >
+              {showBalance ? (
+                <Eye className="h-5 w-5" />
+              ) : (
+                <EyeOff className="h-5 w-5" />
+              )}
             </button>
           </div>
+        </div>
 
-          <div className="">
-            <Image
-              src="/wallet/wallet.svg"
-              alt="payroll icon"
-              width={136}
-              height={107}
-            />
+        <hr className="my-5" />
+
+        {/* Action buttons */}
+        <div>
+          <div className="flex gap-4">
+            <Link href="/dashboard/payroll/schedule">
+              <Button
+                variant="outline"
+                className="bg-[#0052FF] border-none text-white hover:bg-[#0052FF]/80 flex items-center hover:text-white"
+              >
+                <Image
+                  src="/payroll/calendar-plus-02.svg"
+                  alt="calendar"
+                  width={16}
+                  height={16}
+                />
+                Schedule Payroll
+              </Button>
+            </Link>
+            <Button className="bg-transparent border border-[#0052FF] text-[#0052FF] text-sm font-medium flex items-center hover:bg-[#f3f4f6]">
+              <Image
+                src="/payroll/arrow-narrow-up-right.svg"
+                alt="calendar"
+                width={16}
+                height={16}
+              />
+              Run Payroll
+            </Button>
           </div>
         </div>
-      ))}
+      </div>
+
+      {/* Second Column */}
+      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2x flex justify-between rounded-2xl h-49.75">
+        <div className="space-y-9">
+          <div>
+            <p className="text-sm text-[#475367] font-medium mb-2">
+              Available Balance
+            </p>
+            <p className="text-[#1C232D] text-[2rem] font-bold">$92,000.75</p>
+          </div>
+          <div>
+            <p className="text-sm text-[#475367] font-medium">
+              Next Payroll Date
+            </p>
+            <p className="text-[#1C232D] text-xl font-semibold">Feb 28, 2026</p>
+          </div>
+        </div>
+
+        <div>
+          <p className="text-sm text-[#475367] font-medium">
+            Total Team Members
+          </p>
+          <p className="text-[#1C232D] text-[2rem] font-bold">12</p>
+        </div>
+      </div>
     </div>
   );
 }
