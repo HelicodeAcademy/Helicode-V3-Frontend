@@ -15,21 +15,18 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import {
-  Home,
-  Users,
-  Briefcase,
-  Wallet,
-  DollarSign,
-  Settings,
-  Bell,
-  Info,
-  MoreVertical,
-} from "lucide-react";
+import { Wallet, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import {
+  HomeIcon,
+  HiringIcon,
+  PayrollIcon,
+  SettingsIcon,
+  TeamsIcon,
+} from "@/components/icons/icons";
 
 export const PageTitleContext = createContext<{
   title: string | null;
@@ -40,12 +37,12 @@ export const PageTitleContext = createContext<{
 });
 
 const menuItems = [
-  { icon: Home, label: "Home", href: "/dashboard" },
-  { icon: Users, label: "Team", href: "/dashboard/team" },
-  { icon: Briefcase, label: "Hiring", href: "/dashboard/hiring" },
+  { icon: HomeIcon, label: "Home", href: "/dashboard" },
+  { icon: TeamsIcon, label: "Team", href: "/dashboard/team" },
+  { icon: HiringIcon, label: "Hiring", href: "/dashboard/hiring" },
   { icon: Wallet, label: "Wallet", href: "/dashboard/wallet" },
-  { icon: DollarSign, label: "Payroll", href: "/dashboard/payroll" },
-  { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+  { icon: PayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
+  { icon: SettingsIcon, label: "Settings", href: "/dashboard/settings" },
 ];
 
 function DashboardSidebar() {
@@ -87,12 +84,18 @@ function DashboardSidebar() {
                 >
                   <Link
                     href={item.href}
-                    className={isActive ? "text-[#0052FF] gap-3.5" : "gap-3.5"}
+                    className={`flex items-center ${isActive ? "text-[#0052FF] gap-3.5" : "gap-3.5"}`}
                   >
                     <Icon
-                      className={`h-4 w-4 ${isActive ? "text-[#0052FF]" : ""}`}
+                      className={`h-5 w-5  ${isActive ? "text-[#0052FF]" : "text-[#00001187]"}`}
                     />
-                    <span className={isActive ? "text-[#0052FF]" : ""}>
+                    <span
+                      className={
+                        isActive
+                          ? "text-[#0052FF] mt-1"
+                          : "text-[#00001187] mt-1"
+                      }
+                    >
                       {item.label}
                     </span>
                   </Link>
@@ -167,3 +170,6 @@ export default function DashboardLayout({
     </PageTitleContext.Provider>
   );
 }
+
+
+
