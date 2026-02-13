@@ -34,6 +34,7 @@ export interface TeamMember {
   role: string;
   country: string;
   workerType: string;
+  salary: string;
   dateJoined: string;
   status: string;
 }
@@ -48,19 +49,22 @@ export function TeamTable({ members }: TeamTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-[#F9FAFB]">
-            <TableHead className="text-[##344054] text-xs font-medium py-4 px-6">
+            <TableHead className="text-[##344054] text-xs font-medium py-4 px-6 uppercase">
               Name
             </TableHead>
-            <TableHead className="text-[##344054] text-xs font-medium py-4">
+            <TableHead className="text-[##344054] text-xs font-medium py-4 uppercase">
               Country
             </TableHead>
-            <TableHead className="text-[##344054] text-xs font-medium py-4">
+            <TableHead className="text-[##344054] text-xs font-medium py-4 uppercase">
               Worker type
             </TableHead>
-            <TableHead className="text-[##344054] text-xs font-medium py-4">
+            <TableHead className="text-[##344054] text-xs font-medium py-4 uppercase">
+              Salary
+            </TableHead>
+            <TableHead className="text-[##344054] text-xs font-medium py-4 uppercase">
               Date joined
             </TableHead>
-            <TableHead className="text-[##344054] text-xs font-medium py-4">
+            <TableHead className="text-[##344054] text-xs font-medium py-4 uppercase">
               Status
             </TableHead>
             <TableHead className="w-10" />
@@ -87,6 +91,9 @@ export function TeamTable({ members }: TeamTableProps) {
               </TableCell>
               <TableCell className="py-4 text-[#101928] text-sm font-medium">
                 {member.workerType}
+              </TableCell>
+              <TableCell className="py-4 text-[#101928] text-sm font-medium">
+                {member.salary}
               </TableCell>
               <TableCell className="py-4 text-[#101928] text-sm font-medium">
                 {member.dateJoined}

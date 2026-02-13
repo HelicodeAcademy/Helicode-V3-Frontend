@@ -15,6 +15,7 @@ export interface Transaction {
   type: "Deposit" | "Withdraw";
   amount: string;
   date: string;
+  method: "Fiat" | "Stablecoin";
   status: "Paid" | "Failed" | "Pending";
 }
 
@@ -61,6 +62,9 @@ export function TransactionsTable({
               Date
             </TableHead>
             <TableHead className="text-[#344054] font-medium text-xs">
+              Method
+            </TableHead>
+            <TableHead className="text-[#344054] font-medium text-xs">
               Status
             </TableHead>
             <TableHead className="w-10"></TableHead>
@@ -77,6 +81,9 @@ export function TransactionsTable({
               </TableCell>
               <TableCell className="text-[#101828] font-medium">
                 {transaction.date}
+              </TableCell>
+              <TableCell className="text-[#101828] font-medium">
+                {transaction.method}
               </TableCell>
               <TableCell>
                 <span

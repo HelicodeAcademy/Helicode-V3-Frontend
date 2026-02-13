@@ -18,56 +18,64 @@ const mockTransactions: Transaction[] = [
     id: "1",
     type: "Deposit",
     amount: "$10,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Fiat",
     status: "Paid",
   },
   {
     id: "2",
     type: "Deposit",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Stablecoin",
     status: "Failed",
   },
   {
     id: "3",
     type: "Withdraw",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Fiat",
     status: "Pending",
   },
   {
     id: "4",
     type: "Deposit",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Stablecoin",
     status: "Paid",
   },
   {
     id: "5",
     type: "Withdraw",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Stablecoin",
     status: "Paid",
   },
   {
     id: "6",
     type: "Deposit",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Stablecoin",
     status: "Paid",
   },
   {
     id: "7",
     type: "Deposit",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Fiat",
     status: "Pending",
   },
   {
     id: "8",
     type: "Withdraw",
     amount: "$12,000",
-    date: "15th October, 2025",
+    date: "19 May 07:23 AM",
+    method: "Fiat",
     status: "Failed",
   },
 ];
@@ -113,7 +121,7 @@ export default function WalletPage() {
     <div className="space-y-6 px-6 md:px-12 mt-6">
       {/* Balance Card and Actions */}
       <WalletBalanceCard
-        balance="$100,200.80"
+        balance="$87,420.80"
         onFundWallet={handleFundWallet}
         onWithdraw={handleWithdraw}
       />
