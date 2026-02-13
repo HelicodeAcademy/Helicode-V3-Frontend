@@ -16,7 +16,7 @@ export function WorkerTypeSelection({
   return (
     <div className="flex items-center justify-center min-h-full">
       <div className="max-w-112.5 w-full">
-        <h1 className="text-2xl md:text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
+        <h1 className="text-2xl md:text-[2rem] font-medium text-[#212121] mb-2 leading-[125%]">
           Who would you like to add to your team?
         </h1>
         <p className="text-[#444444] text-sm mb-8">

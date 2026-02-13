@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import Image from "next/image";
+import { Button } from "../ui/button";
 
 interface FundCryptoModalProps {
   open: boolean;
@@ -30,8 +31,8 @@ export function FundCryptoModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-113.25">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-113.25 gap-0">
+        <DialogHeader className="gap-0">
           <DialogTitle className="text-2xl font-medium">
             Fund with Crypto
           </DialogTitle>
@@ -40,43 +41,80 @@ export function FundCryptoModal({
           </p>
         </DialogHeader>
 
-        <hr className="bg-[#E4E7EC]" />
-
-        <div className="mt-6 flex flex-col items-center">
-          <p className="text-xl font-bold mb-6">Your CELO address</p>
-
-          {/* QR Code Placeholder */}
-          <div className="mb-6">
+        <div className="mt-6">
+          <div className="text-[#0052FF] text-xs font-medium bg-[#EFF4FF] p-2 rounded-sm flex items-center gap-2">
             <Image
-              src="/wallet/barcode.png"
-              alt="barcode.png"
-              width={274}
-              height={274}
+              src="/wallet/information-circle.svg"
+              alt="informational circle"
+              width={"16"}
+              height={"16"}
             />
+            <span>
+              Use onchain details provided below to receive USDC on BASE. Only
+              send USDC on Base Network to the Wallet Address
+            </span>
           </div>
 
           {/* Wallet Address */}
-          <button
-            onClick={handleCopy}
-            className="flex items-center bg-[#EDEDED] gap-2 px-4 py-2 border border-[#eaeaea] rounded-full hover:bg-gray-50 transition-colors"
-          >
-            <Image
-              src="/wallet/copy-01.svg"
-              alt="copy"
-              width={16}
-              height={16}
-              className="w-4 h-4"
-            />
-            <span className="text-sm text-[#101828] font-medium">
-              {copied ? "Copied!" : walletAddress}
-            </span>
-          </button>
+          <div className="flex justify-between mt-6">
+            <div className="space-y-2">
+              <p className="text-sm">Token</p>
+              <div className="font-medium flex items-center gap-1">
+                <Image
+                  src="/wallet/usdc.png"
+                  alt="usdc"
+                  width={20}
+                  height={20}
+                />
+                <span className="translate-y-px">USDC</span>
+              </div>
+            </div>
 
-          <p className="text-sm text-center mt-4">
-            Use this address to deposit
-            <br />
-            USDC on Celo
-          </p>
+            <div className="space-y-2">
+              <p className="text-sm">Network</p>
+              <div className="font-medium flex items-center gap-1">
+                <Image
+                  src="/wallet/base.png"
+                  alt="base"
+                  width={20}
+                  height={20}
+                  className="block"
+                />
+
+                <div className="translate-y-px">BASE</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Wallet Address Info */}
+          <div className="mt-6">
+            <h3 className="text-sm mb-2">Wallet Address</h3>
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-2 transition-colors"
+            >
+              <span className="text-sm text-black font-medium">
+                {copied ? "Copied!" : walletAddress}
+              </span>
+
+              <Image
+                src="/wallet/copy-01.svg"
+                alt="copy"
+                width={16}
+                height={16}
+                className="w-4 h-4"
+              />
+            </button>
+
+            <Button
+              variant="primary"
+              size="sm"
+              className="mt-6"
+              onClick={handleCopy}
+            >
+              {copied ? "Copied!" : "Copy Address"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

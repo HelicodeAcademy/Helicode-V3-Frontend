@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface WalletFundedModalProps {
   open: boolean;
@@ -22,14 +23,23 @@ export function WalletFundedModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-102.5 p-0 overflow-hidden">
+      <DialogContent
+        className="sm:max-w-102.5 p-2 overflow-hidden gap-0"
+        showCloseButton={false}
+      >
         <DialogTitle className="sr-only">Wallet Funded</DialogTitle>
-        {/* Placeholder Image Area */}
-        <div className="h-48 bg-[#f0f0f0]" />
+        <Image
+          src="/payroll/modal-illustration.png"
+          alt="illusrtation"
+          width={394}
+          height={220}
+        />
 
         {/* Content */}
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-2">Payroll Wallet Funded</h2>
+        <div className="py-6 px-4">
+          <h2 className="text-2xl font-bold leading-none mb-2">
+            Payroll Wallet Funded
+          </h2>
           <p className="text-sm text-[#667085]">
             You can now start paying your remote teams
           </p>

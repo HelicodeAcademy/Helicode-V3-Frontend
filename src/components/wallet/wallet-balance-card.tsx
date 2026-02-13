@@ -53,7 +53,7 @@ export function WalletBalanceCard({
               width={16}
               height={16}
             />
-            Fund wallet
+            <span className="translate-y-px">Fund wallet</span>
           </Button>
           <Button
             onClick={onWithdraw}
@@ -65,7 +65,7 @@ export function WalletBalanceCard({
               width={16}
               height={16}
             />
-            Withdraw funds
+            <span className="translate-y-px">Withdraw funds</span>
           </Button>
         </div>
       </div>

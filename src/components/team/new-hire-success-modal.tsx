@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface NewHireSuccessModalProps {
   open: boolean;
@@ -18,13 +19,19 @@ export function NewHireSuccessModal({
 }: NewHireSuccessModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md text-center space-y-0! p-0" showCloseButton ={false}>
+      <DialogContent className="sm:max-w-md gap-0 p-2" showCloseButton={false}>
         <DialogTitle className="sr-only">New Hire Added</DialogTitle>
-        <div className="w-full h-52.5 bg-[#e0e0e0] rounded-lg flex items-center justify-center"></div>
+        <Image
+          src="/payroll/modal-illustration.png"
+          alt="illusrtation"
+          width={394}
+          height={220}
+          className="w-full"
+        />
 
-        <div className="px-6 pt-4 pb-6">
-          <h2 className="text-2xl font-medium text-[#000000] mb-4">
-            New hire as been added
+        <div className="px-4 pt-6 pb-6">
+          <h2 className="text-2xl font-bold text-[#000000] mb-4">
+            New hire has been added
           </h2>
           <p className="text-sm text-[#444444] mb-10">
             You can now start adding hires and company admins to grow your team
@@ -38,13 +45,13 @@ export function NewHireSuccessModal({
             </a>
           </p>
           <div className="flex gap-3">
-            <Button variant="surface" onClick={onAddAnother} className="flex-1">
+            <Button variant="surface" onClick={onAddAnother} className="">
               Add Another Contrator
             </Button>
             <Button
               onClick={onInviteNow}
               variant="primary"
-              className="flex-1 hover:bg-[#101828]/90"
+              className="hover:bg-[#101828]/90"
             >
               Invite now
             </Button>

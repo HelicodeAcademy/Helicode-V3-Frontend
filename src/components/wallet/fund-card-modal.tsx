@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CreditCard, Landmark, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -128,7 +128,7 @@ export function FundCardModal({
               disabled={!amount || !selectedMethod}
               className="flex-1 text-white hover:bg-[#212121]/90"
             >
-              Buy
+              Fund
             </Button>
           </div>
         </div>
