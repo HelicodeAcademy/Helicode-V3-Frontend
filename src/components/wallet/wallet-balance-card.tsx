@@ -46,7 +46,10 @@ export function WalletBalanceCard({
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <Button onClick={onFundWallet} className="bg-[#0052FF]">
+          <Button
+            onClick={onFundWallet}
+            className="bg-[#0052FF] transition-colors hover:bg-[#0041c4] flex items-center"
+          >
             <Image
               src="/wallet/arrow-narrow-up-right.svg"
               alt="icon"
@@ -57,7 +60,7 @@ export function WalletBalanceCard({
           </Button>
           <Button
             onClick={onWithdraw}
-            className="bg-white border border-[#0052FF] text-[#0052FF] flex items-center"
+            className="bg-white border border-[#0052FF] text-[#0052FF] flex items-center hover:bg-[#f0f4ff] transition-colors"
           >
             <Image
               src="/wallet/arrow-narrow-up-right-blue.svg"

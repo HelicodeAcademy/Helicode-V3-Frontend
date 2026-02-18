@@ -122,7 +122,7 @@ export default function DashboardHomePage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="border-[#d1d5db] h-8! text-sm rounded-[32px] font-medium">
+                <SelectTrigger className="border-[#d1d5db] h-8! text-sm rounded-lg font-medium">
                   <SelectValue className="" />
                 </SelectTrigger>
                 <SelectContent>
