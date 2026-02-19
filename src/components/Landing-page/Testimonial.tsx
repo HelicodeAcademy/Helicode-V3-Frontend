@@ -91,7 +91,7 @@ export default function Testimonial() {
             className="w-full border-b border-[#ECECEC] bg-white py-8.5md:py-17 py-12 md:py-16 lg:py-24"
             style={{
                 backgroundImage:
-                    'radial-gradient(rgba(0, 0, 0, 0.2) 0.5px, transparent 1.5px)',
+                    'radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 1.5px)',
                 backgroundSize: '16px 16px',
             }}
         >
@@ -152,8 +152,8 @@ export default function Testimonial() {
                                                     <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[#697282] font-normal text-sm">Co-founder & CEO</p>
-                                                    <h5 className="font-medium text-black text-lg">Ayodeji Emmanuelll</h5>
+                                                    <p className="text-[#697282] font-normal text-sm">{testimonial.role}</p>
+                                                    <h5 className="font-medium text-black text-lg">{testimonial.name}</h5>
                                                 </div>
 
                                                 <div className="space-y-4">

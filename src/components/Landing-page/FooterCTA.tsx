@@ -71,7 +71,7 @@ export default function FooterCTA() {
                                     </div>
 
                                     <Button className='w-fit bg-white text-[#598FFF] font-medium text-sm py-2 px-3.5'>
-                                        Get started
+                                        Join waitlist
                                     </Button>
                                 </div>
                                 <div className="relative shrink-0 size-24lg:size-32 bg-amber300">
