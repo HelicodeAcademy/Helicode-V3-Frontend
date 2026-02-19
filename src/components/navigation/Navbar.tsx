@@ -37,15 +37,15 @@ export default function Navbar() {
                         </div>
                         <div className="hidden lg:flex items-center h-full gap-3">
                             <Button
+                                className="cursorpointer text-[#363636] bg-[#E9E9E9]hover:bg-[#E9E9E9]/90 bg-transparent hover:bg-transparent rounded-[6px]"
+                            >
+                                Book a Demo
+                            </Button>
+                            <Button
                                 variant="primary"
                                 className="py-2 px-3 text-white hover:bg-[#101828]/70 rounded-[6px]"
                             >
-                                Get started
-                            </Button>
-                            <Button
-                                className="text-[#363636] bg-[#E9E9E9] hover:bg-[#E9E9E9]/90 rounded-[6px]"
-                            >
-                                Book a Demo
+                                Join waitlist
                             </Button>
                         </div>
 

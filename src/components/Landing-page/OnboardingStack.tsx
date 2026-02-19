@@ -261,7 +261,7 @@ import {
     motion,
     AnimatePresence,
     useAnimationControls,
-} from "framer-motion"
+} from "motion/react"
 
 import {
     useEffect,

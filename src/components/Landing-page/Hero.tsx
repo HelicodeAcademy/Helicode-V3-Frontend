@@ -8,7 +8,7 @@ export default function Hero() {
             className="w-full border-b bg-white py-24 md:py-34     flexitems-centerjustify-center"
             style={{
                 backgroundImage:
-                    'radial-gradient(rgba(0, 0, 0, 0.2) 0.5px, transparent 1.5px)',
+                    'radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 1.5px)',
                 backgroundSize: '16px 16px',
             }}
         >
@@ -28,7 +28,7 @@ export default function Hero() {
                             variant="primary"
                             className="py-2 px-3 text-white hover:bg-[#101828]/70 rounded-[6px]"
                         >
-                            Get started
+                            Join waitlist
                         </Button>
                         <Button
                             className="text-[#363636] bg-[#E9E9E9] hover:bg-[#E9E9E9]/90 rounded-[6px]"

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React from 'react'
 
 export default function SupporterLogos() {
@@ -17,7 +18,8 @@ export default function SupporterLogos() {
                 <div className='flex h-full grow flex-wrap gap-4 lg:flex-row lg:gap-0 lg:divide-x'>
                     <div className='flex shrink-0 grow items-center justify-center h-16 min-w-28 lg:h-32 lg:min-w-40'>
                         <div className='relative h-16 w-32 lg:w-36'>
-                            {/* <img src="/logos/logo-1.png" alt="Supporter Logo 1" className="absolute inset-0 h-full w-full text-transparent object-contain select-none " /> */}
+                            {/* <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} /> */}
+                            {/* <img src="/landingpage/Lisk-logo.png" alt="Supporter Logo 1" className="absolute inset-0 h-full w-full text-transparent object-contain select-none " /> */}
                         </div>
                     </div>
                     <div className='flex shrink-0 grow items-center justify-center h-16 min-w-28 lg:h-32 lg:min-w-40'>

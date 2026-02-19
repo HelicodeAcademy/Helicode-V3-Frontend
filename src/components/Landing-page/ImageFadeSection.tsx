@@ -10,7 +10,7 @@ export default function ImageFadeSection() {
                     <div className="h-96 aspect16/10 w-full overflow-hidden rounded-xl md:h-125">
                         <img
                             // src="https://via.placeholder.com/1600x900/1E293B/white?text=Dashboard+Screenshot"
-                            src="/landingpage/dashboard-preview.png"
+                            src="/landingpage/dashboard-preview2x.png"
                             alt="Dashboard Preview"
                             className="h-full w-full object-cover object-top"
                         />
