@@ -9,6 +9,7 @@ interface NewHireSuccessModalProps {
   onOpenChange: (open: boolean) => void;
   onAddAnother: () => void;
   onInviteNow: () => void;
+  modalType?: "contractor" | "employee";
 }
 
 export function NewHireSuccessModal({
@@ -16,6 +17,7 @@ export function NewHireSuccessModal({
   onOpenChange,
   onAddAnother,
   onInviteNow,
+  modalType
 }: NewHireSuccessModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,7 +48,7 @@ export function NewHireSuccessModal({
           </p>
           <div className="flex gap-3">
             <Button variant="surface" onClick={onAddAnother} className="">
-              Add Another Contrator
+              Add Another {modalType === "employee" ? "Employee" : "Contractor"}
             </Button>
             <Button
               onClick={onInviteNow}

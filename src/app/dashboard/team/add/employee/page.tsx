@@ -3,11 +3,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageTitleContext } from "../../../layout";
-import { ContractorDetailsForm } from "@/components/team/contractor-details-form";
-import { ContractForm } from "@/components/team/contract-form";
 import { NewHireSuccessModal } from "@/components/team/new-hire-success-modal";
+import { EmployeeDetailsForm } from "@/components/team/employee/employee-details-form";
+import { EmployeeContractForm } from "@/components/team/employee/employee-form";
 
-export default function AddContractorPage() {
+export default function AddEmployeePage() {
   const { setTitle } = useContext(PageTitleContext);
   const router = useRouter();
   const [step, setStep] = useState<"details" | "contract">("details");
@@ -38,15 +38,17 @@ export default function AddContractorPage() {
   return (
     <>
       {step === "details" && (
-        <ContractorDetailsForm onNext={handleNextToContract} />
+        <EmployeeDetailsForm onNext={handleNextToContract} />
       )}
-      {step === "contract" && <ContractForm onSubmit={handleCreateHire} />}
+      {step === "contract" && (
+        <EmployeeContractForm onSubmit={handleCreateHire} />
+      )}
       <NewHireSuccessModal
         open={showSuccessModal}
         onOpenChange={setShowSuccessModal}
         onAddAnother={handleAddAnother}
         onInviteNow={handleInviteNow}
-        modalType="contractor"
+        modalType="employee"
       />
     </>
   );
