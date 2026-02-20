@@ -18,8 +18,8 @@ export default function Hero() {
                         <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black leadingtight">
                             Global hiring and payroll built on stablecoins.
                         </h1>
-                        <p className="max-w-xl mx-auto text-lg sm:text-xl md:text-2xl text-[#717171] font-medium">
-                            Ambitious teams use our system to automate hiring, payroll, compliance, and IT processes in one place.
+                        <p className="max-w-xlmx-auto text-lg  text-[#717171] font-normal">
+                            The all-in-one infrastructure for global hiring, payroll, compliance, and workforce operations.
                         </p>
                     </div>
 

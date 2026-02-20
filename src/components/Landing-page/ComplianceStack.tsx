@@ -11,7 +11,11 @@ export default function ComplianceStack() {
             <div className="absolute top-0 md:left-5 z-0 bg-white min-w-57 sm:min-w-78 p-3 md:p-4 space-y-6 rounded-lg border border-[#E6E8EC] shadow-[0_4px_10px_-5px_rgba(0,0,0,0.10)]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-14 h-12 rounded-md bg-[conic-gradient(from_180deg,#0052FF,#C3D6FF)]" />
+                        {/* <div className="w-14 h-12 rounded-md bg-[conic-gradient(from_180deg,#0052FF,#C3D6FF)]" /> */}
+
+                        {/* <div className="w-14 h-14 rounded-full bg-[conic-gradient(from_180deg,#0052FF,#C3D6FF)] animate-spin" /> */}
+
+                        <div className="w-14 h-12 rounded-md overflow-hidden [--angle:0deg] bg-[conic-gradient(from_var(--angle),#0052FF,#C3D6FF)] animate-(--animate-radar) animate[radarAngle_4s_linear_infinite]" />
 
                         <div>
                             <h5 className="text-xs font-medium text-black">Stacks Inc.</h5>
@@ -37,7 +41,8 @@ export default function ComplianceStack() {
             <div className="absolute top-[50%] left-[30%] md:top-[40%] md:left-[30%] z-10 bg-white min-w-57 sm:min-w-78 p-3 md:p-4 space-y-6 rounded-lg border border-[#E6E8EC] shadow-[0_4px_10px_-5px_rgba(0,0,0,0.10)]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-14 h-12 rounded-md bg-[conic-gradient(from_180deg,#0052FF,#C3D6FF)]" />
+                        {/* <div className="w-14 h-12 rounded-md bg-[conic-gradient(from_180deg,#0052FF,#C3D6FF)]" /> */}
+                        <div className="w-14 h-12 rounded-md overflow-hidden [--angle:0deg] bg-[conic-gradient(from_var(--angle),#0052FF,#C3D6FF)] animate-(--animate-radar) animate[radarAngle_4s_linear_infinite]" />
 
                         <div>
                             <h5 className="text-xs font-medium text-black">Acken Inc.</h5>

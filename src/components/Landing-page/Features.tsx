@@ -18,8 +18,8 @@ export default function Features() {
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <div className="flex flex-col gap-12">
 
-                    <div className='flexgap-4flex-colmd:flex-rowmd:items-end max-w-2xl'>
-                        <h2 className='font-bold text-3xl sm:text-5xl lg:text-6xl leadingtight'>Your all-in-one Global People Platform</h2>
+                    <div className='flexgap-4flex-colmd:flex-rowmd:items-end max-w-xl'>
+                        <h2 className='font-bold text-3xl sm:text5xl sm:text-[44px] leading-tight'>Your all-in-one Global People Platform</h2>
                     </div>
 
                     <div className="space-y-6 w-full">

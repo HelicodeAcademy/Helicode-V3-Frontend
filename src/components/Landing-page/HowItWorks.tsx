@@ -9,10 +9,10 @@ export default function HowItWorks() {
         <section className='border-b border-[#ECECEC] py-8.5md:py-17 py-12 md:py-16 lg:py-24'>
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <div className="flex flex-col gap-12">
-                    <div className='flexgap-4flex-colmd:flex-rowmd:items-end max-w-2xl'>
+                    <div className='flexgap-4flex-colmd:flex-rowmd:items-end max-w-xl'>
                         <div className='flex flex-col gap-1'>
-                            <p className='font-medium text-xl text-[#697282]'>Get started with three simple steps</p>
-                            <h2 className='font-bold text-3xl sm:text-5xl lg:text-[52px]'>How It Works</h2>
+                            <p className='font-normal text-base text-[#697282]'>Get started with three simple steps</p>
+                            <h2 className='font-bold text-3xl sm:text-[44px]'>How It Works</h2>
                         </div>
                     </div>
                     <div className='w-full grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
