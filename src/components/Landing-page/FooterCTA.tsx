@@ -66,11 +66,11 @@ export default function FooterCTA() {
                             <div className="flex gap-10 lg:gap-5 flex-col-reverse md:flex-rowmd:items-start text-white p-6 sm:p6 lg:flex-row lg:items-center lg:justify-evenly lg:p-10">
                                 <div className="flex grow flex-col gap-10 max-w-139">
                                     <div className='space-y-3'>
-                                        <h2 className="font-bold text-balancewhitespace-pre-line text-3xl sm:text-[40px]">Start hiring and paying without borders.</h2>
+                                        <h2 className="font-semibold text-balancewhitespace-pre-line text-3xl sm:text-[40px]">Start hiring and paying without borders.</h2>
                                         <p className='text-base font-normal'>Run compliant payroll in minutes, not days.</p>
                                     </div>
 
-                                    <Button className='w-fit bg-white text-[#598FFF] font-medium text-sm py-2 px-3.5'>
+                                    <Button className='w-fit bg-white text-[#0F112A] rounded-sm font-medium text-sm py-2 px-3.5'>
                                         Join waitlist
                                     </Button>
                                 </div>

@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -52,11 +58,18 @@
   );
 
   /* Strong primary gradient */
-  --gradient-primary: linear-gradient(
-    181.43deg,
-    #363636 1.21%,
-    #1c1c1c 58.57%
-  );
+  --gradient-primary: linear-gradient(181.43deg, #363636 1.21%, #1c1c1c 58.57%);
+
+  --animate-radar: radar-angle 4s linear infinite;
+
+  @keyframes radar-angle {
+    from {
+      --angle: 0deg;
+    }
+    to {
+      --angle: 360deg;
+    }
+  }
 }
 
 :root {
@@ -84,7 +97,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #FFFFFF;
+  --sidebar: #ffffff;
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);

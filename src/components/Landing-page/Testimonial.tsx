@@ -7,22 +7,25 @@ import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
     {
-        name: "Ayodeji Emmanuel",
+        name: "Seun Akinbode",
         role: "Co-founder & CEO",
         accent: "#0052FF",
         bg: "#EFF4FF",
+        description: "Helicode has been one of the most impacting products for building our team.\nThey have a deep and exciting talent network.",
     },
     {
-        name: "Ayodeji Emmanuel",
+        name: "Seun Akinbode",
         role: "Co-founder & CEO",
         accent: "#FF6900",
         bg: "#FFF0E6",
+        description: "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
     },
     {
-        name: "Ayodeji Emmanuel",
+        name: "Seun Akinbode",
         role: "Co-founder & CEO",
         accent: "#FF349E",
         bg: "#FFEEF7",
+        description: "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
     },
 ];
 
@@ -95,12 +98,12 @@ export default function Testimonial() {
                 backgroundSize: '16px 16px',
             }}
         >
-            <div className="max-w-7xl mx-auto px-4 md:px-8 bg-red300">
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <div className="flex flex-col gap-12">
                     {/* Heading */}
-                    <div className='max-w-2xl flex gap-4 flex-col lg:flex-row lg:items-end'>
+                    <div className='max-w-xl flex gap-4 flex-col lg:flex-row lg:items-end'>
                         <div className="flex grow flex-col gap-3">
-                            <h2 className='font-bold text-3xl sm:text-5xl lg:text-[52px]'>
+                            <h2 className='font-bold text-3xl sm:text-[44px]'>
                                 Trusted by the world&apos;s largest companies
                             </h2>
                         </div>
@@ -132,14 +135,13 @@ export default function Testimonial() {
                     <div className="relative w-full  -mx-4md:-mx-8">
                         <div ref={scrollRef} className="overflow-x-auto overscroll-x-contain scroll-smooth snap-x snap-mandatory">
                             <div
-                                // className="flex mx-auto max-w-7xl flex-nowrap flex1 gap-2 md:gap-4 bg-amber-100"
-                                className="flex gap-4   px-4md:px-8"
+                                className="flex gap-4  items-stretch  px-4md:px-8"
                             >
                                 {/* className="min-w-0 shrink-0 grow-0 snap-start flex basis-[92%] sm:basis-[64%] md:basis-[48%] lg:basis-[32%] pl-4 md:pl-8 xl:pl-0" */}
-                                {testimonials.map((testimonial, i) => (
-                                    <div key={i} data-card className="shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]">
+                                {testimonials.map((testimonial, idx) => (
+                                    <div key={idx} data-card className="shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]   hfull self-stretch flex">
                                         <div
-                                            className="relative flex h-104lg:h-112 w-full overflowclip overflow-hidden rounded-tr-4xl pb-3 pl-3"
+                                            className="relative flex h-104lg:h-112 w-full   h-full overflowclip overflow-hidden rounded-tr-4xl pb-3 pl-3"
                                             style={{
                                                 "--border-bg": testimonial.accent,
                                                 backgroundColor: testimonial.bg,
@@ -147,106 +149,27 @@ export default function Testimonial() {
                                         >
                                             <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-b-[3px] border-(--border-bg) border-l-[#0052FF]border-[#0052FF]" style={{ borderBottomLeftRadius: "2px" }}></div>
 
-                                            <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6">
+                                            <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6   w-full h-full">
                                                 <div className="size12">
-                                                    <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} />
+                                                    {/* <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} /> */}
+                                                    <Image src="/landingpage/tnkr.svg" alt="tnkr-logo" width={81} height={28} />
                                                 </div>
                                                 <div>
                                                     <p className="text-[#697282] font-normal text-sm">{testimonial.role}</p>
                                                     <h5 className="font-medium text-black text-lg">{testimonial.name}</h5>
                                                 </div>
 
-                                                <div className="space-y-4">
-                                                    <p className="font-medium">
-                                                        Vorem ipsum dolor sit amet, consectetur adipiscing
-                                                        elit. Nunc vulputate libero et velit interdum.
-                                                    </p>
-                                                    <p className="font-medium">
-                                                        Class aptent taciti sociosqu ad litora torquent per
-                                                        conubia nostra, per inceptos himenaeos.
-                                                    </p>
+                                                <div className="mtauto space-y-4">
+                                                    {testimonial.description.split("\n").map((line, i) => (
+                                                        <p key={`${idx}-${i}`} className="font-medium">
+                                                            {line}
+                                                        </p>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
-
-
-
-
-
-
-                                {/* <div className="shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]">
-                                    <div
-                                        className="relative flex h-104 w-full overflow-clip rounded-tr-4xl pb-3 pl-3 lg:h-112 bg-[#EFF4FF]"
-                                    // style={{
-                                    //     "--accent": testimonial.accent,
-                                    //     backgroundColor: testimonial.bg,
-                                    // }}
-                                    >
-                                        <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-b-[3px] border-[color:var(--accent)] border-l-[#0052FF]border-[#0052FF]" style={{ borderBottomLeftRadius: "2px" }}></div>
-
-                                        <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6">
-                                            <div>Logo here</div>
-                                            <div>
-                                                <p className="text-[#697282] font-normal text-sm">Co-founder & CEO</p>
-                                                <h5 className="font-medium text-black text-lg">Ayodeji Emmanuel</h5>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                <p className="font-medium">
-                                                    Vorem ipsum dolor sit amet, consectetur adipiscing
-                                                    elit. Nunc vulputate libero et velit interdum.
-                                                </p>
-                                                <p className="font-medium">
-                                                    Class aptent taciti sociosqu ad litora torquent per
-                                                    conubia nostra, per inceptos himenaeos.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
-
-
-                                {/* <div className="min-w-0 shrink-0 grow-0 snap-start flex basis-[92%] sm:basis-[64%] md:basis-[48%] lg:basis-[32%] pl-4 md:pl-8 xl:pl-0">
-                                    <div className="relative flex h-104 w-full overflow-clip rounded-tr-4xl pb-3 pl-3 lg:h-112 bg-[#FFF0E6]">
-                                        <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-l-[#FF6900] border-b-[3px] border-[#FF6900]" style={{ borderBottomLeftRadius: "2px" }}></div>
-
-                                        <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6">
-                                            <div>Logo here</div>
-                                            <div>
-                                                <p className="text-[#697282] font-normal text-sm">Co-founder & CEO</p>
-                                                <h5 className="font-medium text-black text-lg">Ayodeji Emmanuel</h5>
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.</p>
-                                                <br />
-                                                <p className="font-medium">Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div className="min-w-0 shrink-0 grow-0 snap-start flex basis-[92%] sm:basis-[64%] md:basis-[48%] lg:basis-[32%] pl-4 md:pl-8 xl:pl-0">
-                                    <div className="relative flex h-104 w-full overflow-clip rounded-tr-4xl pb-3 pl-3 lg:h-112 bg-[#FFEEF7]">
-                                        <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-l-[#FF349E] border-b-[3px] border-[#FF349E]" style={{ borderBottomLeftRadius: "2px" }}></div>
-
-                                        <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6">
-                                            <div>Logo here</div>
-                                            <div>
-                                                <p className="text-[#697282] font-normal text-sm">Co-founder & CEO</p>
-                                                <h5 className="font-medium text-black text-lg">Ayodeji Emmanuel</h5>
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.</p>
-                                                <br />
-                                                <p className="font-medium">Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> */}
-
                             </div>
                         </div>
 

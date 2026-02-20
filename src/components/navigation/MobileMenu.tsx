@@ -76,12 +76,15 @@ export default function MobileMenu({ open, onClose }: Props) {
                                 )}
                             </AnimatePresence>
 
-                            <Link href="/about" onClick={onClose}>
+                            <Link href="/" onClick={onClose}>
                                 About
                             </Link>
 
-                            <Link href="/blog" onClick={onClose}>
+                            <Link href="/" onClick={onClose}>
                                 Hire Talent
+                            </Link>
+                            <Link href="/" onClick={onClose}>
+                                Learn
                             </Link>
 
                             <Link
