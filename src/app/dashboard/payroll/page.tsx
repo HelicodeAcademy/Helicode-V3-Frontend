@@ -3,7 +3,8 @@
 import { useContext, useEffect } from "react";
 import { PageTitleContext } from "../layout";
 import { PayrollMetrics } from "@/components/payroll/payroll-metrics";
-import { PayrollTransactionsTable } from "@/components/payroll/payroll-transactions-table";
+// import { PayrollTransactionsTable } from "@/components/payroll/payroll-transactions-table";
+import { ScheduledPayrolls } from "@/components/payroll/scheduled-payrolls";
 
 export default function PayrollPage() {
   const { setTitle } = useContext(PageTitleContext);
@@ -15,7 +16,10 @@ export default function PayrollPage() {
   return (
     <div className="space-y-6 py-4 px-8">
       <PayrollMetrics />
-      <PayrollTransactionsTable />
+
+      {/* <PayrollTransactionsTable /> */}
+
+      <ScheduledPayrolls />
     </div>
   );
 }
