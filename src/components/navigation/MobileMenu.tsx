@@ -46,7 +46,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                                 onClick={() => setProductOpen((prev) => !prev)}
                                 className="flex items-center justify-between font-medium"
                             >
-                                Product
+                                Products
                                 {/* <motion.span
                                     animate={{ rotate: productOpen ? 180 : 0 }}
                                 >
@@ -76,7 +76,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                                 )}
                             </AnimatePresence>
 
-                            <Link href="/" onClick={onClose}>
+                            <Link href="/about" onClick={onClose}>
                                 About
                             </Link>
 
@@ -84,7 +84,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                                 Hire Talent
                             </Link>
                             <Link href="/" onClick={onClose}>
-                                Learn
+                                Train Talent
                             </Link>
 
                             <Link

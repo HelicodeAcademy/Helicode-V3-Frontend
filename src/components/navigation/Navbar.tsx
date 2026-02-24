@@ -27,15 +27,15 @@ export default function Navbar() {
                         <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
                             <ProductMegaMenu />
 
-                            <Link href="/" className="px2 text-black/70 font-medium hover:text-black transition-colors">
+                            <Link href="/about" className="px2 text-black/70 font-normal hover:text-black transition-colors">
                                 About
                             </Link>
 
-                            <Link href="/" className="px2 text-black/70 font-medium hover:text-black transition-colors">
+                            <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
                                 Hire Talent
                             </Link>
-                            <Link href="/" className="px2 text-black/70 font-medium hover:text-black transition-colors">
-                                Learn
+                            <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
+                                Train Talent
                             </Link>
                         </div>
                         <div className="hidden lg:flex items-center h-full gap-3">

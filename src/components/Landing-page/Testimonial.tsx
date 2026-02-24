@@ -11,14 +11,16 @@ const testimonials = [
         role: "Co-founder & CEO",
         accent: "#0052FF",
         bg: "#EFF4FF",
-        description: "Helicode has been one of the most impacting products for building our team.\nThey have a deep and exciting talent network.",
+        description: "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
+        valid: false,
     },
     {
         name: "Seun Akinbode",
         role: "Co-founder & CEO",
         accent: "#FF6900",
         bg: "#FFF0E6",
-        description: "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
+        description: "Helicode has been one of the most impacting products for building our team.\nThey have a deep and exciting talent network.",
+        valid: true,
     },
     {
         name: "Seun Akinbode",
@@ -26,6 +28,7 @@ const testimonials = [
         accent: "#FF349E",
         bg: "#FFEEF7",
         description: "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
+        valid: false,
     },
 ];
 
@@ -101,10 +104,10 @@ export default function Testimonial() {
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <div className="flex flex-col gap-12">
                     {/* Heading */}
-                    <div className='max-w-xl flex gap-4 flex-col lg:flex-row lg:items-end'>
+                    <div className='max-w-lg flex gap-4 flex-col lg:flex-row lg:items-end'>
                         <div className="flex grow flex-col gap-3">
-                            <h2 className='font-bold text-3xl sm:text-[44px]'>
-                                Trusted by the world&apos;s largest companies
+                            <h2 className='font-bold text-3xl sm:text-[44px] leading-tight'>
+                                Trusted by leading global teams
                             </h2>
                         </div>
 
@@ -138,38 +141,43 @@ export default function Testimonial() {
                                 className="flex gap-4  items-stretch  px-4md:px-8"
                             >
                                 {/* className="min-w-0 shrink-0 grow-0 snap-start flex basis-[92%] sm:basis-[64%] md:basis-[48%] lg:basis-[32%] pl-4 md:pl-8 xl:pl-0" */}
-                                {testimonials.map((testimonial, idx) => (
-                                    <div key={idx} data-card className="shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]   hfull self-stretch flex">
-                                        <div
-                                            className="relative flex h-104lg:h-112 w-full   h-full overflowclip overflow-hidden rounded-tr-4xl pb-3 pl-3"
-                                            style={{
-                                                "--border-bg": testimonial.accent,
-                                                backgroundColor: testimonial.bg,
-                                            } as React.CSSProperties}
-                                        >
-                                            <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-b-[3px] border-(--border-bg) border-l-[#0052FF]border-[#0052FF]" style={{ borderBottomLeftRadius: "2px" }}></div>
+                                {testimonials.map((testimonial, idx) => {
+                                    // const isBlurred = idx === 1; // middle card
+                                    const isBlurred = !testimonial.valid;
 
-                                            <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6   w-full h-full">
-                                                <div className="size12">
-                                                    {/* <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} /> */}
-                                                    <Image src="/landingpage/tnkr.svg" alt="tnkr-logo" width={81} height={28} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[#697282] font-normal text-sm">{testimonial.role}</p>
-                                                    <h5 className="font-medium text-black text-lg">{testimonial.name}</h5>
-                                                </div>
+                                    return (
+                                        <div key={idx} data-card className={`shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]   hfull self-stretch flex ${isBlurred ? "blur-sm opacity70" : ""}`}>
+                                            <div
+                                                className="relative flex h-104lg:h-112 w-full   h-full overflowclip overflow-hidden rounded-tr-4xl pb-3 pl-3"
+                                                style={{
+                                                    "--border-bg": testimonial.accent,
+                                                    backgroundColor: testimonial.bg,
+                                                } as React.CSSProperties}
+                                            >
+                                                <div className="absolute bottom-0 left-0 w-3 h-3 border-l-[3px] border-b-[3px] border-(--border-bg) border-l-[#0052FF]border-[#0052FF]" style={{ borderBottomLeftRadius: "2px" }}></div>
 
-                                                <div className="mtauto space-y-4">
-                                                    {testimonial.description.split("\n").map((line, i) => (
-                                                        <p key={`${idx}-${i}`} className="font-medium">
-                                                            {line}
-                                                        </p>
-                                                    ))}
+                                                <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6   w-full h-full">
+                                                    <div className="size12">
+                                                        {/* <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} /> */}
+                                                        <Image src="/landingpage/tnkr.svg" alt="tnkr-logo" width={81} height={28} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[#697282] font-normal text-sm">{testimonial.role}</p>
+                                                        <h5 className="font-medium text-black text-lg">{testimonial.name}</h5>
+                                                    </div>
+
+                                                    <div className="mtauto space-y-4">
+                                                        {testimonial.description.split("\n").map((line, i) => (
+                                                            <p key={`${idx}-${i}`} className="font-medium">
+                                                                {line}
+                                                            </p>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
                         </div>
 
