@@ -233,7 +233,7 @@ export default function HowItWorks() {
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-bold text-xl sm:text-2xl md:text-3xl">Fund</h4>
-                                <p className="text-[#A0A0A0]">Hire talent through Helicode or bring your own team</p>
+                                <p className="text-[#A0A0A0]">Fund payroll via stablecoins or fiat</p>
                             </div>
                         </div>
 
@@ -389,7 +389,7 @@ export default function HowItWorks() {
 
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-bold text-xl sm:text-2xl md:text-3xl">Pay</h4>
-                                <p className="text-[#A0A0A0]">Hire talent through Helicode or bring your own team</p>
+                                <p className="text-[#A0A0A0]">Pay your team instantly and track everything in one place</p>
                             </div>
                         </div>
                     </div>

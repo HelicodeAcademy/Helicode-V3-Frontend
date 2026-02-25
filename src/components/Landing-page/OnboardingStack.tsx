@@ -269,25 +269,32 @@ import {
 } from "react"
 
 
+import image1 from "../../../public/landingpage/Feat-img1.png"
+import image2 from "../../../public/landingpage/Feat-img2.png"
+import image3 from "../../../public/landingpage/Feat-img3.png"
+import Image, { StaticImageData } from "next/image";
+
+
+// /Users/ilerioluwa/Downloads/Feat-img1.png
 const LOAD_TIME = 4200
 
 const USERS = [
     {
-        name: "John Doe",
+        name: "Julia Sendra",
         role: "Backend Developer",
-        image: "https://i.pravatar.cc/100?img=11",
+        image: image2,
         date: "Onboarded on Monday, August 2025",
     },
     {
-        name: "Jane Smith",
+        name: "Henry Doe",
         role: "Frontend Developer",
-        image: "https://i.pravatar.cc/100?img=32",
+        image: image1,
         date: "Onboarded on Tuesday, August 2025",
     },
     {
-        name: "Mike Johnson",
+        name: "Lucas Tony",
         role: "DevOps Engineer",
-        image: "https://i.pravatar.cc/100?img=51",
+        image: image3,
         date: "Onboarded on Wednesday, August 2025",
     },
 ]
@@ -361,7 +368,8 @@ function Card({
 }: any) {
     // const scale = active ? 1 : 0.92
     const scale = active ? 1 : 0.85
-    const y = position === 0 ? -70 : position === 1 ? 0 : 70
+    // const y = position === 0 ? -70 : position === 1 ? 0 : 70
+    const y = position === 0 ? -68 : position === 1 ? 0 : 68
 
     const blur = active ? 0 : 4
     const opacity = active ? 1 : 0.7
@@ -386,8 +394,13 @@ function Card({
             {/* HEADER */}
             <div className="flex justify-between items-center">
                 <div className="flex gap-3 items-center">
-                    <img
+                    {/* <img
                         src={user.image}
+                        className="w-12h-12 w-10 h-10 rounded-full"
+                    /> */}
+                    <Image
+                        src={user.image}
+                        alt="img"
                         className="w-12h-12 w-10 h-10 rounded-full"
                     />
 
