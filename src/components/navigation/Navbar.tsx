@@ -18,26 +18,29 @@ export default function Navbar() {
             <header className="sticky top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xs select-none">
                 <div className="max-w-7xl mx-auto">
                     <div className="relative flex items-center justify-between h-17 px-4 md:px-8">
-                        <div className="shrink-0">
-                            <Link href="/">
-                                <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
-                            </Link>
+                        <div className="flex items-center gap-10">
+                            <div className="shrink-0">
+                                <Link href="/">
+                                    <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
+                                </Link>
+                            </div>
+
+                            <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
+                                <ProductMegaMenu />
+
+                                <Link href="/about" className="px2 text-black/70 font-normal hover:text-black transition-colors">
+                                    About
+                                </Link>
+
+                                <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
+                                    Hire Talent
+                                </Link>
+                                <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
+                                    Train Talent
+                                </Link>
+                            </div>
                         </div>
 
-                        <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
-                            <ProductMegaMenu />
-
-                            <Link href="/about" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                About
-                            </Link>
-
-                            <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                Hire Talent
-                            </Link>
-                            <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                Train Talent
-                            </Link>
-                        </div>
                         <div className="hidden lg:flex items-center h-full gap-3">
                             <Button
                                 className="cursorpointer text-[#363636] bg-[#E9E9E9]hover:bg-[#E9E9E9]/90 bg-transparent hover:bg-transparent rounded-[6px]"

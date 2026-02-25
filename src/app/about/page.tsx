@@ -33,7 +33,7 @@ export default function AboutPage() {
                             <h1 className="text-xl md:text-3xl font-medium">Why We Believe in Stablecoins</h1>
                             <p className="text-xl">
                                 Stablecoins are the most powerful upgrade to global money movement in decades.
-                                For the first time, value can move across borders as fast as information — without banks, delays, or excessive fees.
+                                For the first time, value can move across borders as fast as information without banks, delays, or excessive fees.
                                 Stablecoins eliminate unnecessary intermediaries and create a neutral, programmable layer for global payments.
                             </p>
                         </div>
