@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react";
 import { PageTitleContext } from "./layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -12,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -36,7 +37,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross",
   },
   {
     name: "Vandross Idiake",
@@ -44,7 +45,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross1",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross1",
   },
   {
     name: "Vandross Idiake",
@@ -52,7 +53,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross2",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross2",
   },
   {
     name: "Vandross Idiake",
@@ -60,7 +61,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross3",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross3",
   },
   {
     name: "Vandross Idiake",
@@ -68,7 +69,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross4",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross4",
   },
   {
     name: "Vandross Idiake",
@@ -76,7 +77,7 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross5",
+    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross5",
   },
 ];
 
@@ -100,6 +101,7 @@ const quickActions = [
 ];
 
 export default function DashboardHomePage() {
+  const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState("usd");
@@ -219,7 +221,10 @@ export default function DashboardHomePage() {
         {/* Second row */}
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Button className="bg-[#0052FF] rounded-lg text-white font-medium">
+          <Button
+            className="bg-[#0052FF] rounded-lg text-white font-medium"
+            onClick={() => router.push("/dashboard/team/add")}
+          >
             <Image
               src="/home/plus-sign.svg"
               alt="contract"
@@ -235,7 +240,7 @@ export default function DashboardHomePage() {
               width={16}
               height={16}
             />
-            Run Payroll
+            Pay everyone
           </Button>
         </div>
       </div>
@@ -305,43 +310,52 @@ export default function DashboardHomePage() {
             </TableHeader>
 
             <TableBody>
-              {recentPayments.map((payment, idx) => (
-                <TableRow
-                  key={idx}
-                  className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
-                >
-                  <TableCell className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage
-                          src={payment.avatar || "/placeholder.svg"}
-                        />
-                        <AvatarFallback>VI</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium text-[#101828]">
-                          {payment.name}
-                        </p>
-                        <p className="text-xs text-[#475367]">{payment.role}</p>
+              {recentPayments.map((payment, idx) => {
+                const initials = payment.name
+                  .trim()
+                  .split(/\s+/)
+                  .map((word) => word[0].toUpperCase())
+                  .join("");
+
+                return (
+                  <TableRow
+                    key={idx}
+                    className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+                  >
+                    <TableCell className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
+                          <AvatarFallback className="bg-[#FFED94]">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium text-[#101828]">
+                            {payment.name}
+                          </p>
+                          <p className="text-xs text-[#475367]">
+                            {payment.role}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell className="px-6 text-sm font-bold text-[#101928]">
-                    {payment.amount}
-                  </TableCell>
+                    <TableCell className="px-6 text-sm font-bold text-[#101928]">
+                      {payment.amount}
+                    </TableCell>
 
-                  <TableCell className="px-6 text-sm text-[#101928]">
-                    {payment.date}
-                  </TableCell>
+                    <TableCell className="px-6 text-sm text-[#101928]">
+                      {payment.date}
+                    </TableCell>
 
-                  <TableCell className="">
-                    <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border-[#CAEFDC] font-medium">
-                      {payment.status}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell className="">
+                      <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border border-[#CAEFDC] font-medium">
+                        {payment.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

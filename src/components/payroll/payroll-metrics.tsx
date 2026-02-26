@@ -60,7 +60,7 @@ export function PayrollMetrics() {
                 width={16}
                 height={16}
               />
-              Run Payroll
+              Pay Everyone
             </Button>
           </div>
         </div>
