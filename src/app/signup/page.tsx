@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CircleUserRound } from "lucide-react";
 import Image from "next/image";
 
 type UserType = "company" | "talent" | null;
@@ -96,7 +95,12 @@ export default function SignupPage() {
                         : "border-[#ECECEC] text-[#ECECEC]"
                     }`}
                   >
-                    <CircleUserRound size={40} />
+                    <Image
+                      src="/signup/company.svg"
+                      alt="company icon"
+                      width={40}
+                      height={40}
+                    />
                   </div>
                   <div className="text-left mt-4">
                     <h3
@@ -115,7 +119,7 @@ export default function SignupPage() {
                           : "text-[#868585]"
                       }`}
                     >
-                      I want to manage my team or recruit new talent.
+                      Hire, pay, and manage your global team, all in one place.
                     </p>
                   </div>
                 </div>
@@ -138,7 +142,12 @@ export default function SignupPage() {
                         : "border-slate-300 text-slate-400"
                     }`}
                   >
-                    <CircleUserRound size={40} />
+                    <Image
+                      src="/signup/talent.svg"
+                      alt="company icon"
+                      width={40}
+                      height={40}
+                    />
                   </div>
                   <div className="text-left mt-4">
                     <h3
@@ -157,7 +166,7 @@ export default function SignupPage() {
                           : "text-[#868585]"
                       }`}
                     >
-                      I want to manage my team or recruit new talent.
+                      Work globally. Get paid easily. Stay compliant.
                     </p>
                   </div>
                 </div>

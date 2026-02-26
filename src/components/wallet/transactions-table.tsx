@@ -25,9 +25,9 @@ interface TransactionsTableProps {
 }
 
 const statusStyles = {
-  Paid: "bg-[#ECFDF3] text-[#12B76A]",
-  Failed: "bg-[#FDECEC] text-[#D32828]",
-  Pending: "bg-[#FFEFE2] text-[#EE7D1F]",
+  Paid: "bg-[#ECFDF3] text-[#12B76A] border border-[#CAEFDC]",
+  Failed: "bg-[#FDECEC] text-[#D32828] border boder-[#F0D0D0]",
+  Pending: "bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB]",
 };
 
 export function TransactionsTable({

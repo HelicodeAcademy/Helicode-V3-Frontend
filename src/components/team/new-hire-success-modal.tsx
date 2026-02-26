@@ -17,7 +17,7 @@ export function NewHireSuccessModal({
   onOpenChange,
   onAddAnother,
   onInviteNow,
-  modalType
+  modalType,
 }: NewHireSuccessModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -29,6 +29,7 @@ export function NewHireSuccessModal({
           width={394}
           height={220}
           className="w-full"
+          priority
         />
 
         <div className="px-4 pt-6 pb-6">

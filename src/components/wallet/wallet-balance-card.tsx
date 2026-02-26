@@ -20,7 +20,7 @@ export function WalletBalanceCard({
   return (
     <div className="space-y-6">
       {/* Balance Card */}
-      <div className="bg-white border border-[#D0D5DD] rounded-2xl p-6 max-w-134">
+      <div className="bg-white border border-[#F2F2F2] rounded-xl p-6 max-w-134">
         <div>
           <p className="text-[#475367] font-medium mb-2">
             Total Wallet Balance
@@ -42,7 +42,7 @@ export function WalletBalanceCard({
           </div>
         </div>
 
-        <hr className="my-6" />
+        <hr className="my-6 bg-[#E4E7EC]" />
 
         {/* Action Buttons */}
         <div className="flex gap-4">
