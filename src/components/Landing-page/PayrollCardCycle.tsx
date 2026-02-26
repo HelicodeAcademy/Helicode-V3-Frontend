@@ -5,12 +5,14 @@ import { useEffect, useState } from "react";
 import CeloLogo from "../../../public/landingpage/Celo.png"
 import StellarLogo from "../../../public/landingpage/stellar.png"
 import SolanaLogo from "../../../public/landingpage/Solana-Logo.png"
+import image1 from "../../../public/landingpage/Payroll-img1.png"
+import image2 from "../../../public/landingpage/Payroll-img2.png"
 import Image, { StaticImageData } from "next/image";
 
 type PayrollRow = {
     id: number;
     name: string;
-    avatar: string;
+    avatar: StaticImageData;
     currency: string;
     currencyIcon: string;
     // networkIcon: string;
@@ -33,7 +35,7 @@ const cards: CardType[] = [
             {
                 id: 1,
                 name: "John D.",
-                avatar: "https://i.pravatar.cc/100?img=11",
+                avatar: image1,
                 currency: "USDT",
                 currencyIcon: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=024",
                 // networkIcon: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=024",
@@ -44,7 +46,7 @@ const cards: CardType[] = [
             {
                 id: 2,
                 name: "Jane S.",
-                avatar: "https://i.pravatar.cc/100?img=32",
+                avatar: image2,
                 currency: "USDC",
                 currencyIcon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=024",
                 networkIcon: StellarLogo,
@@ -60,7 +62,7 @@ const cards: CardType[] = [
             {
                 id: 3,
                 name: "Mike J.",
-                avatar: "https://i.pravatar.cc/100?img=51",
+                avatar: image1,
                 currency: "USDT",
                 currencyIcon: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=024",
                 networkIcon: StellarLogo,
@@ -70,7 +72,7 @@ const cards: CardType[] = [
             {
                 id: 4,
                 name: "Alice B.",
-                avatar: "https://i.pravatar.cc/100?img=12",
+                avatar: image2,
                 currency: "USDC",
                 currencyIcon: "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=024",
                 networkIcon: SolanaLogo,
@@ -209,7 +211,7 @@ export default function PayrollCardCycle() {
                                 >
                                     {/* Name */}
                                     <div className="flex items-center gap-2">
-                                        <img
+                                        <Image
                                             src={row.avatar}
                                             alt={row.name}
                                             className="w-6 h-6 rounded-full"

@@ -85,8 +85,8 @@ export default function ProductMegaMenu() {
             onMouseLeave={() => setOpen(false)}
         >
             {/* Trigger */}
-            <button className="px2 font-medium text-black/70 hover:text-black w-full h-full">
-                Product
+            <button className="px2 font-normal text-black/70 hover:text-black w-full h-full">
+                Products
             </button>
 
 

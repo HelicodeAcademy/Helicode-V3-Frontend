@@ -37,7 +37,7 @@ export default function Features() {
                                         Onboarding
                                     </h3>
 
-                                    <p className="text-[#697282] font-medium text-base">
+                                    <p className="text-[#697282] font-normal text-base">
                                         Onboard new hires in minutes. Manage contracts, documents, roles, and employee records from one dashboard.
                                     </p>
                                 </div>
@@ -55,9 +55,11 @@ export default function Features() {
                                                 {/* Image */}
 
                                                 <div className="relative">
-                                                    <div className="relative w-10 h-10 bg-[#E2D8FB] rounded-full"></div>
+                                                    <div className="relative w-10 h-10 bg-[#E2D8FB] rounded-full">
+                                                        <Image src="/landingpage/img01.png" alt="Botswana-Flag" width={18} height={18} className="h-full w-full" />
+                                                    </div>
                                                     <div className="absolute bottom-0 -right-1 border border-white h-4 w-4 rounded-full">
-                                                        <Image src="/landingpage/Singapore.svg" alt="Botswana-Flag" width={16} height={16} className="h-full w-full" />
+                                                        <Image src="/landingpage/canada.svg" alt="Botswana-Flag" width={18} height={18} className="h-full w-full" />
                                                     </div>
                                                 </div>
 
@@ -231,7 +233,7 @@ export default function Features() {
 
                                 <div className="space-y-2.5">
                                     <h3 className="font-bold text-lg md:text-2xl">Recruitment</h3>
-                                    <p className="text-[#697282] font-medium text-base">
+                                    <p className="text-[#697282] font-normal text-base">
                                         Hire full-time employees or contractors across Africa with locally compliant contracts without setting up entities.
                                     </p>
                                 </div>
@@ -254,7 +256,7 @@ export default function Features() {
                                         Stablecoin Payroll
                                     </h3>
 
-                                    <p className="text-[#697282] font-medium text-base">
+                                    <p className="text-[#697282] font-normal text-base">
                                         Run payroll using stablecoins or fiat. Pay teams instantly, avoid FX delays, and reduce cross-border costs.
                                     </p>
                                 </div>
@@ -273,7 +275,7 @@ export default function Features() {
                                         Compliance
                                     </h3>
 
-                                    <p className="text-[#697282] font-medium text-base">
+                                    <p className="text-[#697282] font-normal text-base">
                                         We handle local labor laws, tax requirements, and regulatory complexity, so you don&apos;t have to.
                                     </p>
                                 </div>
@@ -333,31 +335,4 @@ export default function Features() {
         Card 4
     </div>
 
-</div> */}
-
-// rough work
-{/* <div
-    className="relative flex flex-col rounded-lg   h-105w-full  bg-white border border-[#E6E8EC] p-5 md:p-8 flex-1 space-y-8 transition-all duration-200 ease-in-out"
->
-    h-58.75 w-10.25
-    <div className="relative flex-1 flex items-center justify-center overflow-hidden">
-        <OnboardingStack />
-    </div>
-    <div className="relative flex flex-col h-58.75 w-full max-w-[382px] sm:w-[584px] sm:max-w-[584px] md:w-[382px]">
-        <div className="relative flex-1 flex h-fullw-fullflex-col items-center justify-center overflow-hidden ">
-            <OnboardingStack />
-        </div>
-    </div>
-
-    <div className="">
-
-        <OnboardingStack />
-    </div>
-
-    <div className="space-y-2.5">
-        <h3 className="font-bold text-lg md:text-2xl">Onboarding</h3>
-        <p className="text-[#697282] font-medium text-base">
-            Onboard new hires in minutes. Manage contracts, documents, roles, and employee records from one dashboard.
-        </p>
-    </div>
 </div> */}

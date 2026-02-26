@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import React from 'react';
 import { motion } from 'motion/react';
+import WalletIllustration from './WalletIllustration';
+import WalletCardIllustration from './WalletCardIllustration';
 
 export default function HowItWorks() {
     return (
@@ -25,7 +27,7 @@ export default function HowItWorks() {
                                         <div className='flex w-55 items-center gap-2.5 rounded-lg border border-[#E6E8EC] bg-white p-2.5 shadow-[0_0_10px_2px_rgba(0,0,0,0.05)]'>
 
                                             <div className="relative h-10 w-11.5 bg-[#FDBEDF] rounded-lg">
-                                                {/* <Image src="/landingpage/HIW-img1.png" alt='' width={46} height={41} className='absolute h-full w-full inset-0' quality={100} /> */}
+                                                <Image src="/landingpage/HIW-img1.png" alt='img01' width={46} height={41} className='absoluteinset-0 h-full w-full ' quality={100} />
                                             </div>
 
                                             {/* Text */}
@@ -140,7 +142,7 @@ export default function HowItWorks() {
 
                                         <div className='flex w-55 items-center gap-2.5 rounded-lg border-[0.5px] border-[#0052FF] bg-white p-2.5 outline-5 outline-[#E7EFFF] shadow-[0_0_10px_2px_rgba(0,0,0,0.05)]'>
                                             <div className="relative h-10 w-11.5 bg-[#FFD4B7] rounded-lg">
-                                                {/* <Image src="/" alt='' className='absolute h-full w-full inset-0' /> */}
+                                                <Image src="/landingpage/HIW-img2.png" alt='img02' width={46} height={41} className='absoluteinset-0 h-full w-full' quality={100} />
                                             </div>
 
                                             {/* Text */}
@@ -202,7 +204,7 @@ export default function HowItWorks() {
                                         <div className='flex w-55 items-center gap-2.5 rounded-lg border border-[#E6E8EC] bg-white p-2.5 shadow-[0_0_10px_2px_rgba(0,0,0,0.05)]'>
 
                                             <div className="relative h-10 w-11.5 bg-[#FFD2CF] rounded-lg">
-                                                {/* <Image src="/" alt='' className='absolute h-full w-full inset-0' /> */}
+                                                <Image src="/landingpage/HIW-img3.png" alt='img03' width={46} height={41} className='absoluteinset-0 h-full w-full' quality={100} />
                                             </div>
 
                                             {/* Text */}
@@ -223,13 +225,15 @@ export default function HowItWorks() {
 
                         <div className='flex-1 space-y-6'>
                             <div className="h-92.5">
-                                <div className="border border-[#0052FF] bg-[#0052FF] flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-3xl px-4">
-                                    <Image src="/landingpage/HIW-illus.svg" alt="HIW-illustration" width={306} height={230} loading="eager" />
+                                <div className="border border-[#E6E8EC] bg[#0052FF] flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-3xl px-4">
+                                    {/* <Image src="/landingpage/HIW-illus.svg" alt="HIW-illustration" width={306} height={230} loading="eager" /> */}
+                                    <WalletIllustration />
+                                    {/* <WalletCardIllustration /> */}
                                 </div>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-bold text-xl sm:text-2xl md:text-3xl">Fund</h4>
-                                <p className="text-[#A0A0A0]">Hire talent through Helicode or bring your own team</p>
+                                <p className="text-[#A0A0A0]">Fund payroll via stablecoins or fiat</p>
                             </div>
                         </div>
 
@@ -319,7 +323,9 @@ export default function HowItWorks() {
                                                 {/* Image */}
 
                                                 <div className="relative">
-                                                    <div className="relative w-10 h-10 bg-[#E2D8FB] rounded-full"></div>
+                                                    <div className="relative w-10 h-10 bg-[#E2D8FB] rounded-full">
+                                                        <Image src="/landingpage/HIW-img4.png" alt='img04' width={46} height={41} className='absoluteinset-0 h-full w-full' quality={100} />
+                                                    </div>
                                                     <div className="absolute bottom-0 -right-1 border border-white h-4 w-4 rounded-full">
                                                         <Image src="/landingpage/Singapore.svg" alt="Botswana-Flag" width={16} height={16} className="h-full w-full" />
                                                     </div>
@@ -349,7 +355,9 @@ export default function HowItWorks() {
                                             <div className="flex items-center gap-2.5">
                                                 {/* Image */}
                                                 <div className="relative">
-                                                    <div className="relative w-10 h-10 bg-[#B9CFFF] rounded-full"></div>
+                                                    <div className="relative w-10 h-10 bg-[#B9CFFF] rounded-full">
+                                                        <Image src="/landingpage/HIW-img5.png" alt='img05' width={46} height={41} className='absoluteinset-0 h-full w-full' quality={100} />
+                                                    </div>
                                                     <div className="absolute bottom-0 -right-1 border border-white h-4 w-4 rounded-full">
                                                         <Image src="/landingpage/Botswana.svg" alt="Botswana-Flag" width={16} height={16} className="h-full w-full" />
                                                     </div>
@@ -381,7 +389,7 @@ export default function HowItWorks() {
 
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-bold text-xl sm:text-2xl md:text-3xl">Pay</h4>
-                                <p className="text-[#A0A0A0]">Hire talent through Helicode or bring your own team</p>
+                                <p className="text-[#A0A0A0]">Pay your team instantly and track everything in one place</p>
                             </div>
                         </div>
                     </div>

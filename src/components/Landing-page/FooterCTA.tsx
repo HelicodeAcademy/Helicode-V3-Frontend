@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 export default function FooterCTA() {
     return (
-        <section className='w-full flex lg;px-4 py-12 pb-0 md:py-16 md:pb-0'>
+        <section className='w-full flex lg:px-4 py-12 pb-0 md:py-16 md:pb-0'>
             <div className='mx-auto w-full max-w-7xl px-4 md:px-8'>
                 <div
                     className='grid w-full rounded-2xl bg-[#0052FF] grid-cols-[24px_auto_24px] lg:grid-cols-[52px_auto_52px]'
