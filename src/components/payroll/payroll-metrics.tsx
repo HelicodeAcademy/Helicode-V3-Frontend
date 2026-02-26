@@ -5,9 +5,22 @@ import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { PayrollOverviewModal } from "./payroll-overview-modal";
+import { PaymentSuccessModal } from "./payment-success-modal";
 
 export function PayrollMetrics() {
   const [showBalance, setShowBalance] = useState(true);
+  const [overViewOpen, setOverviewOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const handlePayEveryone = () => {
+    setOverviewOpen(true);
+  };
+
+  const handlePayNow = () => {
+    setOverviewOpen(false);
+    setSuccessOpen(true);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -53,7 +66,10 @@ export function PayrollMetrics() {
                 Schedule Payroll
               </Button>
             </Link>
-            <Button className="bg-transparent border border-[#0052FF] text-[#0052FF] text-sm font-medium flex items-center hover:bg-[#f3f4f6]">
+            <Button
+              onClick={handlePayEveryone}
+              className="bg-transparent border border-[#0052FF] text-[#0052FF] text-sm font-medium flex items-center hover:bg-[#f3f4f6]"
+            >
               <Image
                 src="/payroll/arrow-narrow-up-right.svg"
                 alt="calendar"
@@ -90,6 +106,15 @@ export function PayrollMetrics() {
           <p className="text-[#1C232D] text-[2rem] font-bold">12</p>
         </div>
       </div>
+
+      <PayrollOverviewModal
+        open={overViewOpen}
+        onOpenChange={setOverviewOpen}
+        onPayNow={handlePayNow}
+      />
+
+      {/* Payment Success Modal */}
+      <PaymentSuccessModal open={successOpen} onOpenChange={setSuccessOpen} />
     </div>
   );
 }
