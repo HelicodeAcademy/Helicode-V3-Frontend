@@ -7,6 +7,7 @@ import AnimatedLogo from "./AnimatedLogo";
 import ProductMegaMenu from "./ProductMegaMenu";
 import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
+import { WaitlistButton } from "../waitlist/WaitlistModal";
 
 
 
@@ -18,13 +19,13 @@ export default function Navbar() {
             <header className="sticky top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xs select-none">
                 <div className="max-w-7xl mx-auto">
                     <div className="relative flex items-center justify-between h-17 px-4 md:px-8">
-                        <div className="flex items-center gap-10">
-                            <div className="shrink-0">
-                                <Link href="/">
-                                    <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
-                                </Link>
-                            </div>
+                        <div className="shrink-0">
+                            <Link href="/">
+                                <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
+                            </Link>
+                        </div>
 
+                        <div className="flex items-center gap-6 h-full">
                             <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
                                 <ProductMegaMenu />
 
@@ -39,20 +40,23 @@ export default function Navbar() {
                                     Train Talent
                                 </Link>
                             </div>
-                        </div>
 
-                        <div className="hidden lg:flex items-center h-full gap-3">
-                            <Button
-                                className="cursorpointer text-[#363636] bg-[#E9E9E9]hover:bg-[#E9E9E9]/90 bg-transparent hover:bg-transparent rounded-[6px]"
-                            >
-                                Book a Demo
-                            </Button>
-                            <Button
-                                variant="primary"
-                                className="py-2 px-3 text-white hover:bg-[#101828]/70 rounded-[6px]"
-                            >
-                                Join waitlist
-                            </Button>
+                            <div className="hidden lg:block h-6 w-px bg-[#e5e7eb]" />
+
+                            <div className="hidden lg:flex items-center h-full gap-4">
+                                <Button asChild variant="ghost" size="lg" className="px-0 hover:bg-transparent">
+                                    <Link href="https://calendly.com/fiyinodebunmi/30min">
+                                        Book a Demo
+                                    </Link>
+                                </Button>
+
+                                <WaitlistButton
+                                    variant="primary"
+                                    scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
+                                >
+                                    Join Waitlist
+                                </WaitlistButton>
+                            </div>
                         </div>
 
                         <div className="lg:hidden">

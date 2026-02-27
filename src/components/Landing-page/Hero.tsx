@@ -1,5 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
+import { WaitlistButton } from "../waitlist/WaitlistModal";
+import Link from "next/link";
 
 export default function Hero() {
     return (
@@ -24,16 +26,17 @@ export default function Hero() {
                     </div>
 
                     <div className="flex gap-3">
-                        <Button
+                        <WaitlistButton
                             variant="primary"
-                            className="py-2 px-3 text-white hover:bg-[#101828]/70 rounded-[6px]"
+                            scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
                         >
-                            Join waitlist
-                        </Button>
-                        <Button
-                            className="text-[#363636] bg-[#E9E9E9] hover:bg-[#E9E9E9]/90 rounded-[6px]"
-                        >
-                            Book a Demo
+                            Join Waitlist
+                        </WaitlistButton>
+
+                        <Button asChild variant="surface" size="default">
+                            <Link href="https://calendly.com/fiyinodebunmi/30min">
+                                Book a Demo
+                            </Link>
                         </Button>
                     </div>
                 </div>

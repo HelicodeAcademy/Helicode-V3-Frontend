@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import Image from 'next/image'
+import { WaitlistButton } from '../waitlist/WaitlistModal'
 
 export default function FooterCTA() {
     return (
@@ -70,9 +71,13 @@ export default function FooterCTA() {
                                         <p className='text-base font-normal'>Run compliant payroll in minutes, not days.</p>
                                     </div>
 
-                                    <Button className='w-fit bg-white text-[#0F112A] rounded-sm font-medium text-sm py-2 px-3.5'>
-                                        Join waitlist
-                                    </Button>
+                                    <WaitlistButton
+                                        variant="ghost"
+                                        className="w-fit bg-white text-[#0F112A] rounded-sm"
+                                        scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
+                                    >
+                                        Join Waitlist
+                                    </WaitlistButton>
                                 </div>
                                 <div className="relative shrink-0 size-24lg:size-32 bg-amber300">
                                     <Image src="/landingpage/CTA-illus.svg" alt='CTA-Illustration' width={400} height={270} loading="eager" className='h-full w-full' />
