@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { COUNTRIES, TEAM_SIZES, PAYROLL_VOLUMES, type Option } from "@/lib/waitlist-constants";
+import Image from "next/image";
 
 // ─── Validation schema (mirrors server-side)
 
@@ -103,12 +104,15 @@ function SuccessView({
     onClose: () => void;
 }) {
     return (
-        <div className="flex flex-col items-center justify-center gap-4 py-8 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-green-50">
+        <div className="flex flex-col items-center justify-center gap-4 py-8 textcenter wfull">
+            {/* <div className="flex size-14 items-center justify-center rounded-full bg-green-50">
                 <CheckCircle2 className="size-7 text-green-500" />
-            </div>
+            </div> */}
+
+            <Image src="/landingpage/confirm-illus.svg" alt="" width={400} height={220} className="w-full" />
+
             <div className="space-y-1">
-                <h3 className="text-base font-semibold text-[#0F112A]">
+                <h3 className="textbase text-xl md:text-2xl font-semibold text-[#0F112A]">
                     {alreadyExists ? "You're already on the list!" : "You're on the list!"}
                 </h3>
                 {/* Thanks for your interest. We'll reach out as soon as we have a spot for you.  */}
@@ -119,13 +123,47 @@ function SuccessView({
                 </p>
             </div>
             <Button
-                variant="outline"
-                size="sm"
+                variant="secondary"
+                size="lg"
                 onClick={onClose}
-                className="mt-2 border-[#E4E7EC] text-[#344054]"
+                className="mt-2 mr-auto border-[#E4E7EC] text-[#344054]"
             >
                 Close
             </Button>
+        </div>
+    );
+
+    return (
+        <div className="flex flex-col items-center text-center px-6 py-10">
+
+            {/* Illustration */}
+            <div className="mb-6">
+                <Image
+                    src="/landingpage/confirm-illus.svg"
+                    alt="Success illustration"
+                    width={400}
+                    height={220}
+                    priority
+                />
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl font-semibold text-gray-900 mb-3">
+                You're on the list 🎉
+            </h2>
+
+            {/* Description */}
+            <p className="text-gray-600 mb-8 max-w-sm">
+                Thanks for joining our waitlist. We’ll notify you as soon as we launch.
+            </p>
+
+            {/* Close Button */}
+            <button
+                onClick={onClose}
+                className="w-full rounded-xl bg-green-600 hover:bg-green-700 transition-colors text-white font-medium py-3 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+            >
+                Close
+            </button>
         </div>
     );
 }
@@ -135,14 +173,13 @@ function SuccessView({
 interface WaitlistModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    /** URL for the "Schedule a Call" button. Defaults to Calendly placeholder. */
     scheduleCallUrl?: string;
 }
 
 export function WaitlistModal({
     open,
     onOpenChange,
-    scheduleCallUrl = "https://calendly.com/your-link", // ← replace with your actual link
+    scheduleCallUrl = "https://calendly.com/fiyinodebunmi/30min",
 }: WaitlistModalProps) {
     const [status, setStatus] = React.useState<
         "idle" | "submitting" | "success" | "error"
@@ -259,7 +296,7 @@ export function WaitlistModal({
                         className="absolute right-4 top-4 z-10 rounded-md p-1 text-[#98A2B3] transition-colors hover:text-[#0F112A] disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         aria-label="Close"
                     >
-                        <X className="size-4" />
+                        <X className="size-5" />
                     </DialogPrimitive.Close>
 
                     <div className="p-6">
