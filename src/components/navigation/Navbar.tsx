@@ -9,8 +9,6 @@ import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
 import { WaitlistButton } from "../waitlist/WaitlistModal";
 
-
-
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -64,17 +62,30 @@ export default function Navbar() {
                                 onClick={() => setMobileOpen(!mobileOpen)}
                                 className="p-2 rounded-md text-gray-700 hover:text-black focus:outline-none"
                             >
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                                <svg
+                                    className="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d={
+                                            mobileOpen
+                                                ? "M6 18L18 6M6 6l12 12"
+                                                : "M4 6h16M4 12h16M4 18h16"
+                                        }
+                                    />
                                 </svg>
                             </button>
                         </div>
                     </div>
-
                 </div>
             </header>
             {/* Mobile Drawer */}
             <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
         </>
-    )
+    );
 }

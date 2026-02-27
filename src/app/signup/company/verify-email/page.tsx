@@ -87,7 +87,7 @@ export default function VerifyEmailPage() {
             <Button
               onClick={handleResendEmail}
               variant={"primary"}
-              className="w-27 bg-[#1C1C1C] hover:bg-[#212121] text-white rounded-lg transition-colors"
+              className="w-27 text-white rounded-lg transition-colors"
             >
               Resend email
             </Button>
