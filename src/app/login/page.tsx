@@ -49,11 +49,11 @@ export default function LoginPage() {
             Go back
           </Link>
           <Link
-            href="/login"
+            href="/signup"
             className="font-medium hover:underline text-black text-sm"
           >
-            Already have an account?{" "}
-            <span className="font-bold text-[#355587]">Login</span>
+            Don&apos;t have an account?{" "}
+            <span className="font-bold text-[#355587]">Sign up</span>
           </Link>
         </div>
 

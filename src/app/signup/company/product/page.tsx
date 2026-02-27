@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
 import Image from "next/image";
 
 interface Product {
@@ -23,7 +22,7 @@ const PRODUCTS: Product[] = [
   {
     id: "payroll",
     name: "Payroll",
-    description: "Pay employees globally with Stablecoin",
+    description: "Pay employees globally with stablecoin",
   },
   {
     id: "hr-onboarding",
@@ -115,8 +114,7 @@ export default function ProductSelectionPage() {
                 Which product are you interested in?
               </h1>
               <p className="text-sm text-[#444444] leading-[145%]">
-                Please provide your Organization information accurately, it will
-                be used in all your communications on the platform.
+                Choose what you want to use first.
               </p>
             </div>
 

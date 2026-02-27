@@ -70,7 +70,7 @@ export function TeamTable({ members }: TeamTableProps) {
             <TableHead className="w-10" />
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="bg-white">
           {members.map((member) => (
             <TableRow key={member.id} className="border-b border-[#eaeaea]">
               <TableCell className="py-4.5! px-6!">
@@ -99,8 +99,7 @@ export function TeamTable({ members }: TeamTableProps) {
                 {member.dateJoined}
               </TableCell>
               <TableCell className="py-4">
-                <span className="flex justify-center items-center gap-1.5 bg-[#ECFDF3] h-6 w-17.25 text-xs text-[#12b76a] rounded-4xl">
-                  <span className="h-2.5 w-2.5 rounded-full border border-[#12B76A]" />
+                <span className="border border-[#CAEFDC] bg-[#ECFDF3] px-2 py-1 text-xs text-[#12b76a] rounded-4xl">
                   {member.status}
                 </span>
               </TableCell>
