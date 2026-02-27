@@ -39,12 +39,12 @@ export default function Navbar() {
                 >
                   Hire Talent
                 </Link>
-                <Link
-                  href="/"
+                <a
+                  href="https://learn.helicode.xyz/"
                   className="px2 text-black/70 font-normal hover:text-black transition-colors"
                 >
                   Train Talent
-                </Link>
+                </a>
               </div>
             </div>
 
