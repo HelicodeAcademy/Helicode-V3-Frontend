@@ -24,8 +24,8 @@ export default function SupporterLogos() {
                         </div>
                     </div>
                     <div className='flex shrink-0 grow items-center justify-center h-16 min-w-28 lg:h-32 lg:min-w-40'>
-                        <div className='relative h-16 w-32 lg:w-36'>
-                            <Image src="/landingpage/lisk.png" alt="Lisk-logo" width={98} height={34} className="absolute inset-0 h-full w-full text-transparent object-contain select-none " />
+                        <div className='relative h-full w-24 lg:w-28 lg:w36'>
+                            <Image src="/landingpage/Lisk.png" alt="Lisk-logo" width={86} height={30} className="absolute inset-0 h-full w-full text-transparent object-contain select-none " />
                             {/* <img src="/logos/logo-1.png" alt="Supporter Logo 1" className="absolute inset-0 h-full w-full text-transparent object-contain select-none " /> */}
                         </div>
                     </div>
