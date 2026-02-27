@@ -10,82 +10,96 @@ import MobileMenu from "./MobileMenu";
 import { WaitlistButton } from "../waitlist/WaitlistModal";
 
 export default function Navbar() {
-    const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-    return (
-        <>
-            <header className="sticky top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xs select-none">
-                <div className="max-w-7xl mx-auto">
-                    <div className="relative flex items-center justify-between h-17 px-4 md:px-8">
-                        <div className="shrink-0">
-                            <Link href="/">
-                                <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
-                            </Link>
-                        </div>
+  return (
+    <>
+      <header className="sticky top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xs select-none">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative flex items-center justify-between h-17 px-4 md:px-8">
+            <div className="shrink-0">
+              <Link href="/">
+                <AnimatedLogo className="h6wauto text-[#434343] hover:text-black transition-colors" />
+              </Link>
+            </div>
 
-                        <div className="flex items-center gap-6 h-full">
-                            <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
-                                <ProductMegaMenu />
+            <div className="flex items-center gap-6 h-full">
+              <div className="hidden lg:flex items-center gap-8 wfull h-full justifycenter">
+                <ProductMegaMenu />
 
-                                <Link href="/about" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                    About
-                                </Link>
+                <Link
+                  href="/about"
+                  className="px2 text-black/70 font-normal hover:text-black transition-colors"
+                >
+                  About
+                </Link>
 
-                                <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                    Hire Talent
-                                </Link>
-                                <Link href="/" className="px2 text-black/70 font-normal hover:text-black transition-colors">
-                                    Train Talent
-                                </Link>
-                            </div>
+                <Link
+                  href="/"
+                  className="px2 text-black/70 font-normal hover:text-black transition-colors"
+                >
+                  Hire Talent
+                </Link>
+                <a
+                  href="https://learn.helicode.xyz/"
+                  className="px2 text-black/70 font-normal hover:text-black transition-colors"
+                >
+                  Train Talent
+                </a>
+              </div>
 
-                            <div className="hidden lg:block h-6 w-px bg-[#e5e7eb]" />
+              <div className="hidden lg:block h-6 w-px bg-[#e5e7eb]" />
 
-                            <div className="hidden lg:flex items-center h-full gap-4">
-                                <Button asChild variant="ghost" size="lg" className="px-0 hover:bg-transparent">
-                                    <Link href="https://calendly.com/fiyinodebunmi/30min">
-                                        Book a Demo
-                                    </Link>
-                                </Button>
+              <div className="hidden lg:flex items-center h-full gap-4">
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="lg"
+                  className="px-0 hover:bg-transparent"
+                >
+                  <Link href="https://calendly.com/fiyinodebunmi/30min">
+                    Book a Demo
+                  </Link>
+                </Button>
 
-                                <WaitlistButton
-                                    variant="primary"
-                                    scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
-                                >
-                                    Join Waitlist
-                                </WaitlistButton>
-                            </div>
-                        </div>
+                <WaitlistButton
+                  variant="primary"
+                  scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
+                >
+                  Join Waitlist
+                </WaitlistButton>
+              </div>
+            </div>
 
-                        <div className="lg:hidden">
-                            <button
-                                onClick={() => setMobileOpen(!mobileOpen)}
-                                className="p-2 rounded-md text-gray-700 hover:text-black focus:outline-none"
-                            >
-                                <svg
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d={
-                                            mobileOpen
-                                                ? "M6 18L18 6M6 6l12 12"
-                                                : "M4 6h16M4 12h16M4 18h16"
-                                        }
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            {/* Mobile Drawer */}
-            <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
-        </>
-    );
+            <div className="lg:hidden">
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="p-2 rounded-md text-gray-700 hover:text-black focus:outline-none"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      mobileOpen
+                        ? "M6 18L18 6M6 6l12 12"
+                        : "M4 6h16M4 12h16M4 18h16"
+                    }
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      {/* Mobile Drawer */}
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />
+    </>
+  );
 }
