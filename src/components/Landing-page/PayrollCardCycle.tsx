@@ -195,7 +195,7 @@ export default function PayrollCardCycle() {
                         {/* Payroll Table */}
                         <div className="space-y-3">
                             {/* Header */}
-                            <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr] text-xs font-semibold text-[#969696] capitalize">
+                            <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr] lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] text-xs font-semibold text-[#969696] capitalize">
                                 <span>Name</span>
                                 <span>Currency</span>
                                 <span>Network</span>
@@ -207,16 +207,16 @@ export default function PayrollCardCycle() {
                             {card.rows.map((row) => (
                                 <div
                                     key={row.id}
-                                    className="grid grid-cols-[1.5fr_1fr_1fr_1fr_1fr] items-center"
+                                    className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr] lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] items-center"
                                 >
                                     {/* Name */}
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 lg:gap-2">
                                         <Image
                                             src={row.avatar}
                                             alt={row.name}
-                                            className="w-6 h-6 rounded-full"
+                                            className="w-4 h-4 lg:w-6 lg:h-6 rounded-full"
                                         />
-                                        <span className="text-sm font-medium">{row.name}</span>
+                                        <span className="text-xs lg:text-sm font-medium">{row.name}</span>
                                     </div>
 
                                     {/* Currency */}
@@ -224,9 +224,9 @@ export default function PayrollCardCycle() {
                                         <img
                                             src={row.currencyIcon}
                                             alt={row.currency}
-                                            className="w-5 h-5"
+                                            className="w-4 h-4 lg:w-5 lg:h-5"
                                         />
-                                        <span className="text-sm font-medium text-[#A3A8B2]">{row.currency}</span>
+                                        <span className="text-xs lg:text-sm font-medium text-[#A3A8B2]">{row.currency}</span>
                                     </div>
 
                                     {/* Network */}
@@ -234,14 +234,14 @@ export default function PayrollCardCycle() {
                                         <Image
                                             src={row.networkIcon}
                                             alt="Network"
-                                            width={50}
+                                            width={40}
                                             height={15}
                                         // className="w-5 h-5"
                                         />
                                     </div>
 
                                     {/* Salary */}
-                                    <span className="text-sm font-medium">{row.salary}</span>
+                                    <span className="text-xs lg:text-sm font-medium">{row.salary}</span>
 
                                     {/* Status */}
                                     {/* <span className="text-green-300 font-semibold text-sm">
