@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { Wallet, MoreVertical } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ import {
   PayrollIcon,
   SettingsIcon,
   TeamsIcon,
+  TransactionsIcon,
+  WalletIcon,
 } from "@/components/icons/icons";
 
 export const PageTitleContext = createContext<{
@@ -39,8 +41,13 @@ export const PageTitleContext = createContext<{
 const menuItems = [
   { icon: HomeIcon, label: "Home", href: "/dashboard" },
   { icon: TeamsIcon, label: "Team", href: "/dashboard/team" },
+  {
+    icon: TransactionsIcon,
+    label: "Transactions",
+    href: "/dashboard/transactions",
+  },
   { icon: HiringIcon, label: "Hiring", href: "/dashboard/hiring" },
-  { icon: Wallet, label: "Wallet", href: "/dashboard/wallet" },
+  { icon: WalletIcon, label: "Wallet", href: "/dashboard/wallet" },
   { icon: PayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
   { icon: SettingsIcon, label: "Settings", href: "/dashboard/settings" },
 ];
@@ -170,6 +177,3 @@ export default function DashboardLayout({
     </PageTitleContext.Provider>
   );
 }
-
-
-
