@@ -12,19 +12,19 @@ const products = [
     {
         title: 'Onboarding',
         description: 'We make it easy for companies to onboard talent globally from contracts to compliance.',
-        href: '/product-one',
+        href: '#',
         icon: Image1,
     },
     {
         title: 'Recruitment',
         description: 'We help companies find and hire top African talent quickly, with vetted candidates.',
-        href: '/product-two',
+        href: '#',
         icon: Image2,
     },
     {
         title: 'Payroll',
         description: 'Pay your team instantly in stablecoins with low fees, no borders, and zero delays.',
-        href: '/product-three',
+        href: '#',
         icon: Image3,
     },
 ];

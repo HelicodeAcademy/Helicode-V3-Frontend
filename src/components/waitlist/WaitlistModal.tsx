@@ -104,66 +104,34 @@ function SuccessView({
     onClose: () => void;
 }) {
     return (
-        <div className="flex flex-col items-center justify-center gap-4 py-8 textcenter wfull">
+        <div className="flex flex-col items-centerjustify-center gap-4 p-4 py8 textcenter wfull">
             {/* <div className="flex size-14 items-center justify-center rounded-full bg-green-50">
                 <CheckCircle2 className="size-7 text-green-500" />
             </div> */}
 
-            <Image src="/landingpage/confirm-illus.svg" alt="" width={400} height={220} className="w-full" />
+            <Image src="/landingpage/confirm-illus.svg" alt="" width={400} height={220} className="w-full h-auto rounded-sm" />
 
-            <div className="space-y-1">
-                <h3 className="textbase text-xl md:text-2xl font-semibold text-[#0F112A]">
-                    {alreadyExists ? "You're already on the list!" : "You're on the list!"}
-                </h3>
-                {/* Thanks for your interest. We'll reach out as soon as we have a spot for you.  */}
-                <p className="text-sm text-[#667185]">
-                    {alreadyExists
-                        ? "We already have your details. We'll reach out as soon as we have a spot for you."
-                        : "Our team will review your request and reach out shortly to schedule your early access onboarding."}
-                </p>
+            <div className="space-y-10 px6">
+                <div className="space-y-2">
+                    <h3 className="text-xl md:text-2xl font-semibold text-[#0F112A]">
+                        {alreadyExists ? "You're already on the list!" : "You're on the list!"}
+                    </h3>
+                    {/* Thanks for your interest. We'll reach out as soon as we have a spot for you.  */}
+                    <p className="text-sm text-[#667185] leading-relaxed">
+                        {alreadyExists
+                            ? "We already have your details. We'll reach out as soon as we have a spot for you."
+                            : "Our team will review your request and reach out shortly to schedule your early access onboarding."}
+                    </p>
+                </div>
+                <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={onClose}
+                    className="mt-2mr-auto w-full sm:w-auto self-start border-[#E4E7EC] text-[#344054]"
+                >
+                    Done
+                </Button>
             </div>
-            <Button
-                variant="secondary"
-                size="lg"
-                onClick={onClose}
-                className="mt-2 mr-auto border-[#E4E7EC] text-[#344054]"
-            >
-                Close
-            </Button>
-        </div>
-    );
-
-    return (
-        <div className="flex flex-col items-center text-center px-6 py-10">
-
-            {/* Illustration */}
-            <div className="mb-6">
-                <Image
-                    src="/landingpage/confirm-illus.svg"
-                    alt="Success illustration"
-                    width={400}
-                    height={220}
-                    priority
-                />
-            </div>
-
-            {/* Title */}
-            <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-                You're on the list 🎉
-            </h2>
-
-            {/* Description */}
-            <p className="text-gray-600 mb-8 max-w-sm">
-                Thanks for joining our waitlist. We’ll notify you as soon as we launch.
-            </p>
-
-            {/* Close Button */}
-            <button
-                onClick={onClose}
-                className="w-full rounded-xl bg-green-600 hover:bg-green-700 transition-colors text-white font-medium py-3 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-            >
-                Close
-            </button>
         </div>
     );
 }
@@ -291,22 +259,22 @@ export function WaitlistModal({
                     aria-describedby="waitlist-description"
                 >
                     {/* Close button */}
-                    <DialogPrimitive.Close
+                    {/* <DialogPrimitive.Close
                         disabled={isSubmitting}
                         className="absolute right-4 top-4 z-10 rounded-md p-1 text-[#98A2B3] transition-colors hover:text-[#0F112A] disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         aria-label="Close"
                     >
                         <X className="size-5" />
-                    </DialogPrimitive.Close>
+                    </DialogPrimitive.Close> */}
 
-                    <div className="p-6">
+                    <div className="p6">
                         {status === "success" && successData ? (
                             <SuccessView
                                 alreadyExists={successData.alreadyExists}
                                 onClose={() => handleOpenChange(false)}
                             />
                         ) : (
-                            <>
+                            <div className="p-6">
                                 {/* Header */}
                                 <div className="mb-6 space-y-2">
                                     <DialogPrimitive.Title className="text-xl md:text-3xl font-bold text-[#0F112A]">
@@ -547,7 +515,7 @@ export function WaitlistModal({
                                         </Button>
                                     </div>
                                 </form>
-                            </>
+                            </div>
                         )}
                     </div>
                 </DialogPrimitive.Content>
