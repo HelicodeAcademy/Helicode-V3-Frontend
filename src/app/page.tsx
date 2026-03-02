@@ -1,5 +1,5 @@
 import Navbar from "@/components/navigation/Navbar";
-import SignupPage from "./signup/page";
+// import SignupPage from "./signup/page";
 import Hero from "@/components/Landing-page/Hero";
 import SupporterLogos from "@/components/Landing-page/SupporterLogos";
 import ImageFadeSection from "@/components/Landing-page/ImageFadeSection";
