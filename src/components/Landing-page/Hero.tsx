@@ -29,13 +29,13 @@ export default function Hero() {
                     <div className="flex gap-3">
                         <WaitlistButton
                             variant="primary"
-                            scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
+                            scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
                         >
                             Join Waitlist
                         </WaitlistButton>
 
                         <Button asChild variant="surface" size="default">
-                            <Link href="https://calendly.com/fiyinodebunmi/30min">
+                            <Link href="https://calendly.com/fiyin-helicode/30min">
                                 Book a Demo
                             </Link>
                         </Button>
