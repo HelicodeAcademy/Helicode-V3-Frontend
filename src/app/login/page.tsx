@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LoginForm } from "@/components/login/login-form";
+import { LoginForm } from "@/components/auth/login/login-form";
 import Image from "next/image";
+import { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
   return (
@@ -62,6 +63,8 @@ export default function LoginPage() {
           <LoginForm />
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }

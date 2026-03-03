@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { CompanySignupForm } from "@/components/signup/company-signup-form";
+import { CompanySignupForm } from "@/components/auth/signup/company-signup-form";
 import Image from "next/image";
+import { Toaster } from "react-hot-toast";
 
 export default function CompanySignupPage() {
   return (
@@ -65,6 +66,7 @@ export default function CompanySignupPage() {
           <CompanySignupForm />
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }

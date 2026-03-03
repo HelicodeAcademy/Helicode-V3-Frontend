@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TalentSignupForm } from "@/components/signup/talent-signup-form";
+import { TalentSignupForm } from "@/components/auth/signup/talent-signup-form";
 import Image from "next/image";
 
 export default function TalentSignupPage() {

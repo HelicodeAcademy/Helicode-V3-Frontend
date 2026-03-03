@@ -7,31 +7,54 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { useAuthStore } from "@/store/auth-store";
+import { signin } from "@/lib/auth-service";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
 interface LoginFormData {
-  workEmail: string;
+  email: string;
   password: string;
 }
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { setLoginData, setIsLoading } = useAuthStore();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
     mode: "onBlur",
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-    // Placeholder for future authentication logic
-    router.push("/dashboard");
-    // Future: integrate with auth service
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+
+      // Call the signin API
+      const loginResponse = await signin(data.email, data.password);
+
+      // Store tokens and user data in store
+      setLoginData(loginResponse);
+
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage);
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,19 +88,19 @@ export function LoginForm() {
             <Input
               type="email"
               placeholder="Enter your email address"
-              {...register("workEmail", {
+              {...register("email", {
                 required: "Work email is required",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Please enter a valid email address",
                 },
               })}
-              className={`pl-10 ${errors.workEmail ? "border-[#FF383C]" : ""}`}
+              className={`pl-10 ${errors.email ? "border-[#FF383C]" : ""}`}
             />
           </div>
-          {errors.workEmail && (
+          {errors.email && (
             <p className="text-xs text-[#ED2525] mt-1">
-              {errors.workEmail.message}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -129,11 +152,17 @@ export function LoginForm() {
       {/* Submit Button */}
       <Button
         type="submit"
-        disabled={isLoading}
+        disabled={isSubmitting}
         variant={"primary"}
         className="w-20.75 hover:bg-[#101828] text-white mt-8"
       >
-        {isLoading ? "Logging in..." : "Log in"}
+        {isSubmitting ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </span>
+        ) : (
+          "Log in"
+        )}
       </Button>
     </form>
   );

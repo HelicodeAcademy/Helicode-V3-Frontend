@@ -1,0 +1,171 @@
+import { create } from "zustand";
+
+// Types for auth flow
+export interface SignupData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  companyName: string;
+  teamSize: number;
+  country: string;
+  product?: string;
+}
+
+export interface SignupResponse {
+  userId: string;
+  companyId: string;
+  message: string;
+}
+
+export interface VerifyEmailResponse {
+  id: string;
+  companyId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  fullName: string | null;
+  country: string | null;
+  dob: string | null;
+  proofOfAddress: string | null;
+  status: string;
+  phone: string | null;
+  idDocument: string | null;
+}
+
+// Login response types
+export interface LoginUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: LoginUser;
+  companyId: string;
+}
+
+export interface PasswordRecoveryData {
+  userId: string;
+  token: string;
+  email: string;
+  newPassword: string;
+}
+
+interface AuthStore {
+  // Signup form data
+  signupData: Partial<SignupData>;
+  setSignupData: (data: Partial<SignupData>) => void;
+  resetSignupData: () => void;
+
+  // Current step in signup flow
+  currentStep: "company" | "details" | "product" | "verify";
+  setCurrentStep: (step: AuthStore["currentStep"]) => void;
+
+  // Api response data
+  userId: string | null;
+  setUserId: (id: string) => void;
+
+  companyId: string | null;
+  setCompanyId: (id: string) => void;
+
+  // Loading and error states
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+
+  error: string | null;
+  setError: (error: string | null) => void;
+
+  // Verified user data
+  verifiedUser: VerifyEmailResponse | null;
+  setVerifiedUser: (response: VerifyEmailResponse) => void;
+
+  // Login state
+  accessToken: string | null;
+  refreshToken: string | null;
+  user: LoginUser | null;
+  setLoginData: (data: LoginResponse) => void;
+  clearLoginData: () => void;
+  isAuthenticated: boolean;
+
+  // Password recovery state
+  recoveryData: Partial<PasswordRecoveryData>;
+  setRecoveryData: (data: Partial<PasswordRecoveryData>) => void;
+  resetRecoveryData: () => void;
+
+  // Reset the entire auth flow
+  resetAuth: () => void;
+}
+
+export const useAuthStore = create<AuthStore>((set, get) => ({
+  signupData: {},
+  setSignupData: (data) =>
+    set((state) => ({ signupData: { ...state.signupData, ...data } })),
+  resetSignupData: () => set({ signupData: {} }),
+
+  currentStep: "company",
+  setCurrentStep: (step) => set({ currentStep: step }),
+
+  userId: null,
+  setUserId: (id) => set({ userId: id }),
+
+  companyId: null,
+  setCompanyId: (id) => set({ companyId: id }),
+
+  isLoading: false,
+  setIsLoading: (loading) => set({ isLoading: loading }),
+
+  error: null,
+  setError: (error) => set({ error }),
+
+  verifiedUser: null,
+  setVerifiedUser: (response) => set({ verifiedUser: response }),
+
+  // Login state
+  accessToken: null,
+  refreshToken: null,
+  user: null,
+  setLoginData: (data) =>
+    set({
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      user: data.user,
+      companyId: data.companyId,
+    }),
+  clearLoginData: () =>
+    set({
+      accessToken: null,
+      refreshToken: null,
+      user: null,
+      companyId: null,
+    }),
+
+  // Getter for isAuthenticated
+  get isAuthenticated() {
+    return get().accessToken !== null;
+  },
+  // Password recovery state
+  recoveryData: {},
+  setRecoveryData: (data) =>
+    set((state) => ({ recoveryData: { ...state.recoveryData, ...data } })),
+  resetRecoveryData: () => set({ recoveryData: {} }),
+
+  resetAuth: () =>
+    set({
+      signupData: {},
+      currentStep: "company",
+      userId: null,
+      companyId: null,
+      isLoading: false,
+      error: null,
+      verifiedUser: null,
+      accessToken: null,
+      refreshToken: null,
+      user: null,
+      recoveryData: {},
+    }),
+}));

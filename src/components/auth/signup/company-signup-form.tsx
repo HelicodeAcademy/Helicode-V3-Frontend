@@ -1,55 +1,64 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useAuthStore } from "@/store/auth-store";
+
+// This is the first step of signup
+// Collects first name, last name, work email and password from the user
+// Validates the inputs and moves to company details step
 
 interface CompanySignupFormData {
   firstName: string;
   lastName: string;
-  workEmail: string;
+  email: string;
   password: string;
 }
 
 export function CompanySignupForm() {
+  const router = useRouter();
+  const { signupData, setSignupData, setCurrentStep } = useAuthStore();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
 
   const {
     register,
     handleSubmit,
-    watch,
+
     formState: { errors },
   } = useForm<CompanySignupFormData>({
+    defaultValues: {
+      firstName: signupData.firstName || "",
+      lastName: signupData.lastName || "",
+      email: signupData.email || "",
+      password: signupData.password || "",
+    },
     mode: "onBlur",
   });
 
-  const password = watch("password");
+  // const password = watch("password");
 
-  const validatePassword = (value: string) => {
-    if (value && value.length < 10) {
-      setPasswordError("Password required to be at least 10 characters long");
-      return false;
-    }
-    setPasswordError("");
-    return true;
-  };
+  // const validatePassword = (value: string) => {
+  //   if (value && value.length < 10) {
+  //     setPasswordError("Password required to be at least 10 characters long");
+  //     return false;
+  //   }
+  //   setPasswordError("");
+  //   return true;
+  // };
 
   const onSubmit = async (data: CompanySignupFormData) => {
-    if (!validatePassword(data.password)) {
-      return;
-    }
+    // Save from data to store
+    setSignupData(data);
 
-    setIsLoading(true);
-    // Placeholder for future Zustand store integration
-    console.log("Form data:", data);
-    // Future: dispatch to Zustand store
-    setIsLoading(false);
+    // Move to next step in the signup flow
+    setCurrentStep("details");
+    router.push("/signup/company/details");
   };
 
   return (
@@ -125,20 +134,20 @@ export function CompanySignupForm() {
             <Input
               type="email"
               placeholder="Enter your email address"
-              {...register("workEmail", {
+              {...register("email", {
                 required: "Work email is required",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "Please enter a valid email address",
                 },
               })}
-              className={`pl-10 ${errors.workEmail ? "border-[#FF383C]" : ""}`}
+              className={`pl-10 ${errors.email ? "border-[#FF383C]" : ""}`}
             />
           </div>
 
-          {errors.workEmail && (
+          {errors.email && (
             <p className="text-xs text-[#ED2525] mt-1">
-              {errors.workEmail.message}
+              {errors.email.message}
             </p>
           )}
         </div>
@@ -155,12 +164,11 @@ export function CompanySignupForm() {
               {...register("password", {
                 required: "Password is required",
               })}
-              onBlur={() => validatePassword(password)}
-              className={`pr-10 ${passwordError ? "border-[#FF383C]" : ""}`}
+              // onBlur={() => validatePassword(password)}
+              // className={`pr-10 ${passwordError ? "border-[#FF383C]" : ""}`}
             />
             <button
-              type="button" 
-              
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085] hover:text-[#101828] transition-colors"
               aria-label="Toggle password visibility"
@@ -172,9 +180,9 @@ export function CompanySignupForm() {
               )}
             </button>
           </div>
-          {passwordError && (
+          {/* {passwordError && (
             <p className="text-xs text-[#ED2525] mt-1">{passwordError}</p>
-          )}
+          )} */}
           {errors.password && (
             <p className="text-xs text-[#ED2525] mt-1">
               {errors.password.message}
@@ -221,16 +229,14 @@ export function CompanySignupForm() {
 
       {/* Submit Button */}
 
-      <Link href="/signup/company/verify-email">
-        <Button
-          type="submit"
-          variant={"primary"}
-          disabled={isLoading}
-          className="w-37.75 hover:bg-[#101828] text-white font-medium mt-2"
-        >
-          {isLoading ? "Creating your account..." : "Create your account"}
-        </Button>
-      </Link>
+      <Button
+        type="submit"
+        variant={"primary"}
+        // disabled={isLoading}
+        className="mt-2"
+      >
+        Next
+      </Button>
     </form>
   );
 }

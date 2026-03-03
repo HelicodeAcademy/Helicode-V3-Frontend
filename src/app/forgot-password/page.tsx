@@ -1,40 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { ForgotPasswordForm } from "@/components/forgot-password/forgot-password-form";
-import { useState } from "react";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password/forgot-password-form";
+// import { useState } from "react";
 import Image from "next/image";
-import { Lock, Mail } from "lucide-react";
+// import { Mail, Lock } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<"request" | "verify" | "reset">("request");
+  // const [step, setStep] = useState<"request" | "verify" | "reset">("request");
 
-  const getHeaderContent = () => {
-    switch (step) {
-      case "verify":
-        return {
-          icon: Mail,
-          title: "Check your inbox and confirm your email address",
-          description:
-            "A verification email has been sent to your inbox. Please verify your email to continue.",
-        };
-      case "reset":
-        return {
-          icon: Lock,
-          title: "Forgot Password",
-          description: "Choose a new password for your account",
-        };
-      default:
-        return {
-          icon: Lock,
-          title: "Forgot Password",
-          description:
-            "Please enter your email address for resetting your password.",
-        };
-    }
-  };
+  // const getHeaderContent = () => {
+  //   switch (step) {
+  //     case "verify":
+  //       return {
+  //         icon: Mail,
+  //         title: "Check your inbox and confirm your email address",
+  //         description:
+  //           "A verification email has been sent to your inbox. Please verify your email to continue.",
+  //       };
+  //     case "reset":
+  //       return {
+  //         icon: Lock,
+  //         title: "Forgot Password",
+  //         description: "Choose a new password for your account",
+  //       };
+  //     default:
+  //       return {
+  //         icon: Lock,
+  //         title: "Forgot Password",
+  //         description: "",
+  //       };
+  //   }
+  // };
 
-  const headerContent = getHeaderContent();
   // const Icon = headerContent.icon;
   return (
     <div className="min-h-screen flex items-stretch md:flex-row flex-col">
@@ -95,37 +94,25 @@ export default function ForgotPasswordPage() {
           <div className="w-full max-w-105.5">
             {/* Icon */}
             <div className="flex mb-2">
-              {step === "verify" ? (
-                <Image
-                  src="/signup/sms.svg"
-                  alt="lock"
-                  width={32}
-                  height={32}
-                />
-              ) : (
-                <Image
-                  src="/signup/lock.svg"
-                  alt="lock"
-                  width={32}
-                  height={32}
-                />
-              )}
+              <Image src="/signup/lock.svg" alt="lock" width={32} height={32} />
             </div>
 
             <div className="mb-8">
               <h1 className="text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
-                {headerContent.title}
+                Forget Password
               </h1>
               <p className="text-[#444444] text-sm">
-                {headerContent.description}
+                Please enter your email address for resetting your password.
               </p>
             </div>
 
             {/* Form */}
-            <ForgotPasswordForm onStepChange={setStep} />
+            <ForgotPasswordForm />
           </div>
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }
