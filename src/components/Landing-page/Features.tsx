@@ -82,7 +82,7 @@ export default function Features() {
                                             </div>
                                         </div>
 
-                                        <svg width="1" height="26" viewBox="0 0 1 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        {/* <svg width="1" height="26" viewBox="0 0 1 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <line
                                                 x1="0.5"
                                                 y1="0"
@@ -109,14 +109,42 @@ export default function Features() {
                                                         repeatCount="indefinite"
                                                     />
 
-                                                    {/* <stop offset="0" stopColor="#E6E8EC" />
-                                                    <stop offset="0.5" stopColor="#0052FF" />
-                                                    <stop offset="1" stopColor="#E6E8EC" /> */}
+
                                                     <stop offset="0.3" stopColor="#E6E8EC" />
                                                     <stop offset="0.5" stopColor="#0052FF" />
                                                     <stop offset="0.7" stopColor="#E6E8EC" />
                                                 </linearGradient>
                                             </defs>
+                                        </svg> */}
+
+                                        <svg
+                                            width="2"
+                                            height="26"
+                                            viewBox="0 0 2 26"
+                                            fill="none"
+                                        >
+                                            {/* Base faint line */}
+                                            <line
+                                                x1="1"
+                                                y1="0"
+                                                x2="1"
+                                                y2="26"
+                                                stroke="#E6E8EC"
+                                                strokeOpacity="0.5"
+                                                strokeWidth="1"
+                                            />
+
+                                            {/* Animated highlight */}
+                                            <line
+                                                x1="1"
+                                                y1="0"
+                                                x2="1"
+                                                y2="26"
+                                                stroke="#0052FF"
+                                                strokeWidth="1.5"
+                                                strokeDasharray="8 20"
+                                                className="vertical-flow"
+                                            />
                                         </svg>
 
 

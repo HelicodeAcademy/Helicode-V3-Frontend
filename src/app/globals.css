@@ -70,6 +70,15 @@
       --angle: 360deg;
     }
   }
+
+  @keyframes flowVertical {
+    from {
+      stroke-dashoffset: 40;
+    }
+    to {
+      stroke-dashoffset: -40;
+    }
+  }
 }
 
 :root {
@@ -148,4 +157,9 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.vertical-flow {
+  stroke-dashoffset: 40;
+  animation: flowVertical 4s linear infinite;
 }

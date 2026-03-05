@@ -57,14 +57,14 @@ export default function Navbar() {
                   size="lg"
                   className="px-0 hover:bg-transparent"
                 >
-                  <Link href="https://calendly.com/fiyinodebunmi/30min">
+                  <Link href="https://calendly.com/fiyin-helicode/30min">
                     Book a Demo
                   </Link>
                 </Button>
 
                 <WaitlistButton
                   variant="primary"
-                  scheduleCallUrl="https://calendly.com/fiyinodebunmi/30min"
+                  scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
                 >
                   Join Waitlist
                 </WaitlistButton>
