@@ -1,6 +1,8 @@
 import { useAuthStore } from "@/store/auth-store";
 import { refreshAccessToken } from "./auth-service";
 
+const PUBLIC_ENDPOINTS = ["/auth/signin", "/auth/signup", "/auth/refresh"];
+
 // API client configuration
 const BASE_URL = "https://helicode-backend.onrender.com";
 
@@ -69,16 +71,24 @@ export async function apiCall<T>(
 
   const data = await response.json();
   // Intercepts 401s and attempt a refresh, then retry the original request once
-  if (response.status === 401 && retry) {
-    try {
-      await attemptTokenRefresh();
-      return apiCall<T>(endpoint, options, false); // retry once with new token
-    } catch {
-      // refresh failed, redirect to login
-      useAuthStore.getState().clearLoginData();
-      window.location.href = "/login";
-      throw new Error("Session expired. Please log in again.");
+  if (response.status === 401) {
+    const isPublicEndpoint = PUBLIC_ENDPOINTS.some((e) =>
+      endpoint.startsWith(e),
+    );
+
+    if (!isPublicEndpoint && retry) {
+      try {
+        await attemptTokenRefresh();
+        return apiCall<T>(endpoint, options, false); // retry once with new token
+      } catch {
+        // refresh failed, redirect to login
+        useAuthStore.getState().clearLoginData();
+        window.location.href = "/login";
+        throw new Error("Session expired. Please log in again.");
+      }
     }
+    // For public endpoints, throw the backend's actual error message
+    throw new Error(data.message || "Unauthorized");
   }
 
   // Handles succesful and error responses uniformly

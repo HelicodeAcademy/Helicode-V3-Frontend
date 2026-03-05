@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { LogOut, MoreVertical } from "lucide-react";
 import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import {
@@ -119,7 +119,6 @@ function DashboardSidebar() {
       <SidebarFooter>
         <div className="flex items-center gap-3 rounded-lg p-2 border-t border-[#E4E7EC]">
           <Avatar className="h-10 w-10 rounded-full">
-            <AvatarImage src="/sidebar/equator.png" />
             <AvatarFallback>
               {user?.firstName?.charAt(0)}
               {user?.lastName?.charAt(0)}
