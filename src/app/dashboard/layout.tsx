@@ -3,6 +3,8 @@
 import type React from "react";
 import Image from "next/image";
 import { createContext, useState } from "react";
+import { ProtectedRoute } from "@/components/auth/access/protected-route";
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   SidebarProvider,
@@ -15,7 +17,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { MoreVertical } from "lucide-react";
+import { LogOut, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -54,6 +56,7 @@ const menuItems = [
 
 function DashboardSidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   return (
     <Sidebar className="w-64 border-r border-[#eaeaea]">
@@ -117,18 +120,25 @@ function DashboardSidebar() {
         <div className="flex items-center gap-3 rounded-lg p-2 border-t border-[#E4E7EC]">
           <Avatar className="h-10 w-10 rounded-full">
             <AvatarImage src="/sidebar/equator.png" />
-            <AvatarFallback>AG</AvatarFallback>
+            <AvatarFallback>
+              {user?.firstName?.charAt(0)}
+              {user?.lastName?.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-lg font-medium text-[#000000] truncate">
-              Aaron Goh
+              {user?.firstName} {user?.lastName}
             </p>
-            <p className="text-sm text-[#B5B5B5] truncate">Equator</p>
+            <p className="text-sm text-[#B5B5B5] truncate">{user?.email}</p>
           </div>
           <Button variant="ghost" size="icon-sm">
             <MoreVertical className="h-4 w-4" />
           </Button>
         </div>
+
+        <Button variant="ghost" size="icon-sm" onClick={logout} title="Logout">
+          <LogOut className="h-4 w-4" />
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
@@ -141,39 +151,41 @@ export default function DashboardLayout({
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
   return (
-    <PageTitleContext.Provider
-      value={{ title: pageTitle, setTitle: setPageTitle }}
-    >
-      <SidebarProvider>
-        <DashboardSidebar />
-        <SidebarInset>
-          {/* removed the border bottom here as it is not needed */}
-          <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-            <h1 className="text-2xl font-bold text-[#444444]">
-              {pageTitle || "Dashboard"}
-            </h1>
-            <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/notification.svg"
-                  alt="Notification"
-                  width={20}
-                  height={20}
-                />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/nrk_help.svg"
-                  alt="Help"
-                  width={20}
-                  height={20}
-                />
-              </Button>
-            </div>
-          </header>
-          <main className="flex-1 bg-[#F9FAFB]">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </PageTitleContext.Provider>
+    <ProtectedRoute>
+      <PageTitleContext.Provider
+        value={{ title: pageTitle, setTitle: setPageTitle }}
+      >
+        <SidebarProvider>
+          <DashboardSidebar />
+          <SidebarInset>
+            {/* removed the border bottom here as it is not needed */}
+            <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
+              <h1 className="text-2xl font-bold text-[#444444]">
+                {pageTitle || "Dashboard"}
+              </h1>
+              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/notification.svg"
+                    alt="Notification"
+                    width={20}
+                    height={20}
+                  />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/nrk_help.svg"
+                    alt="Help"
+                    width={20}
+                    height={20}
+                  />
+                </Button>
+              </div>
+            </header>
+            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+      </PageTitleContext.Provider>
+    </ProtectedRoute>
   );
 }

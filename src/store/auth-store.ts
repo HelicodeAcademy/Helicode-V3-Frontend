@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 // Types for auth flow
 export interface SignupData {
@@ -101,71 +102,86 @@ interface AuthStore {
   resetAuth: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set, get) => ({
-  signupData: {},
-  setSignupData: (data) =>
-    set((state) => ({ signupData: { ...state.signupData, ...data } })),
-  resetSignupData: () => set({ signupData: {} }),
-
-  currentStep: "company",
-  setCurrentStep: (step) => set({ currentStep: step }),
-
-  userId: null,
-  setUserId: (id) => set({ userId: id }),
-
-  companyId: null,
-  setCompanyId: (id) => set({ companyId: id }),
-
-  isLoading: false,
-  setIsLoading: (loading) => set({ isLoading: loading }),
-
-  error: null,
-  setError: (error) => set({ error }),
-
-  verifiedUser: null,
-  setVerifiedUser: (response) => set({ verifiedUser: response }),
-
-  // Login state
-  accessToken: null,
-  refreshToken: null,
-  user: null,
-  setLoginData: (data) =>
-    set({
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      user: data.user,
-      companyId: data.companyId,
-    }),
-  clearLoginData: () =>
-    set({
-      accessToken: null,
-      refreshToken: null,
-      user: null,
-      companyId: null,
-    }),
-
-  // Getter for isAuthenticated
-  get isAuthenticated() {
-    return get().accessToken !== null;
-  },
-  // Password recovery state
-  recoveryData: {},
-  setRecoveryData: (data) =>
-    set((state) => ({ recoveryData: { ...state.recoveryData, ...data } })),
-  resetRecoveryData: () => set({ recoveryData: {} }),
-
-  resetAuth: () =>
-    set({
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
       signupData: {},
+      setSignupData: (data) =>
+        set((state) => ({ signupData: { ...state.signupData, ...data } })),
+      resetSignupData: () => set({ signupData: {} }),
+
       currentStep: "company",
+      setCurrentStep: (step) => set({ currentStep: step }),
+
       userId: null,
+      setUserId: (id) => set({ userId: id }),
+
       companyId: null,
+      setCompanyId: (id) => set({ companyId: id }),
+
       isLoading: false,
+      setIsLoading: (loading) => set({ isLoading: loading }),
+
       error: null,
+      setError: (error) => set({ error }),
+
       verifiedUser: null,
+      setVerifiedUser: (response) => set({ verifiedUser: response }),
+
+      // Login state
       accessToken: null,
       refreshToken: null,
       user: null,
+      setLoginData: (data) =>
+        set({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          user: data.user,
+          companyId: data.companyId,
+          isAuthenticated: true,
+        }),
+      clearLoginData: () =>
+        set({
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+          companyId: null,
+          isAuthenticated: false,
+        }),
+      isAuthenticated: false,
+
+      // Password recovery state
       recoveryData: {},
+      setRecoveryData: (data) =>
+        set((state) => ({ recoveryData: { ...state.recoveryData, ...data } })),
+      resetRecoveryData: () => set({ recoveryData: {} }),
+
+      resetAuth: () =>
+        set({
+          signupData: {},
+          currentStep: "company",
+          userId: null,
+          companyId: null,
+          isLoading: false,
+          error: null,
+          verifiedUser: null,
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+          recoveryData: {},
+        }),
     }),
-}));
+
+    {
+      name: "auth-store",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        user: state.user,
+        companyId: state.companyId,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
+);

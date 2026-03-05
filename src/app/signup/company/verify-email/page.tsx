@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { VerifyEmailForm } from "@/components/auth/signup/verify-email-form";
 import { useAuthStore } from "@/store/auth-store";
+import { Toaster } from "react-hot-toast";
 
 export default function VerifyEmailPage() {
   const { setCurrentStep } = useAuthStore();
@@ -73,6 +74,8 @@ export default function VerifyEmailPage() {
           <VerifyEmailForm />
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }
