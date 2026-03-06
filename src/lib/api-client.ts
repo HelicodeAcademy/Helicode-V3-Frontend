@@ -21,18 +21,21 @@ async function attemptTokenRefresh(): Promise<void> {
   if (refreshPromise) return refreshPromise;
 
   refreshPromise = (async () => {
-    const { refreshToken, setLoginData, clearLoginData, user } =
+    const { refreshToken, setLoginData, clearLoginData, user, companyId } =
       useAuthStore.getState();
 
     if (!refreshToken) throw new Error("No refresh token found");
 
     try {
       const response = await refreshAccessToken(refreshToken);
+      console.log(
+        "I am being called to refresh the token 30 mins before expiry",
+      );
       setLoginData({
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
         user: user!,
-        companyId: user?.id || "",
+        companyId: companyId || "",
       });
     } catch {
       clearLoginData();

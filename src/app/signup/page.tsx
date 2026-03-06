@@ -32,6 +32,7 @@ export default function SignupPage() {
                 alt="Helicode Logo"
                 width={110}
                 height={24}
+                style={{ width: "auto", height: "auto" }}
               />
             </div>
 

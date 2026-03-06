@@ -177,6 +177,7 @@ export default function DashboardLayout({
                     alt="Help"
                     width={20}
                     height={20}
+                    style={{ width: "auto", height: "auto" }}
                   />
                 </Button>
               </div>

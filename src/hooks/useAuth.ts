@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { isTokenExpired, getTokenTimeRemaining } from "@/lib/auth-utils";
@@ -12,6 +12,9 @@ import toast from "react-hot-toast";
 // Clear session on logout
 // Redrecting based on auth status
 
+const REFRESH_THRESHOLD_SECONDS = 5 * 60; // 5 minutes
+const CHECK_INTERVAL_MS = 60_000; // 1 minute
+
 export function useAuth() {
   const router = useRouter();
   const {
@@ -21,20 +24,36 @@ export function useAuth() {
     setLoginData,
     clearLoginData,
     isAuthenticated,
+    companyId,
   } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // I am using useRef to tract refresh state to avoid stale closures in the interval
+  const isRefreshingRef = useRef(false);
+
+  // Using refs for tokens so the interval always sees the latest values
+  const accessTokenRef = useRef(accessToken);
+  const refreshTokenRef = useRef(refreshToken);
+
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
+
+  useEffect(() => {
+    refreshTokenRef.current = refreshToken;
+  }, [refreshToken]);
 
   // Attempt to refresh the access token using the refresh token
   // SHould be called before the access token is about to expire
 
-  const refreshTokenIfNeeded = async () => {
-    if (!refreshToken || isRefreshing) return;
+  const refreshTokenIfNeeded = useCallback(async () => {
+    const currentRefreshToken = refreshTokenRef.current;
+
+    if (!currentRefreshToken || isRefreshingRef.current) return;
 
     try {
-      setIsRefreshing(true);
+      isRefreshingRef.current = true;
 
-      const response = await refreshAccessToken(refreshToken);
+      const response = await refreshAccessToken(currentRefreshToken);
       console.log("Token refreshed", response);
 
       // update store with new tokens
@@ -42,7 +61,7 @@ export function useAuth() {
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
         user: user!,
-        companyId: user?.id || "",
+        companyId: companyId || "",
       });
     } catch (error) {
       console.error("Token refreshed failed", error);
@@ -52,9 +71,44 @@ export function useAuth() {
       router.push("/login");
       toast.error("Session expired. Please login again.");
     } finally {
-      setIsRefreshing(false);
+      isRefreshingRef.current = false;
     }
-  };
+  }, [clearLoginData, companyId, router, setLoginData, user]);
+
+  useEffect(() => {
+    // Do not do anything if there is no access token
+    if (!accessToken) return;
+
+    const checkAndRefresh = () => {
+      const currentToken = accessTokenRef.current;
+      if (!currentToken) return;
+
+      if (isTokenExpired(currentToken)) {
+        refreshTokenIfNeeded();
+        return;
+      }
+      // Get time remaining until token expiration
+      const timeRemaining = getTokenTimeRemaining(currentToken);
+
+      if (timeRemaining > 0 && timeRemaining < REFRESH_THRESHOLD_SECONDS) {
+        // Token is about to expire, refresh it
+        refreshTokenIfNeeded();
+      }
+    };
+
+    // Run an initial check, but defer it slightly to ensure the store
+    // has fully settled after login before inspecting the token.
+
+    const initialCheckTimer = setTimeout(checkAndRefresh, 500);
+
+    // check at regular interval
+    const interval = setInterval(checkAndRefresh, CHECK_INTERVAL_MS);
+
+    return () => {
+      clearTimeout(initialCheckTimer);
+      clearInterval(interval);
+    };
+  }, [accessToken, refreshTokenIfNeeded]);
 
   const logout = () => {
     clearLoginData();
@@ -62,47 +116,9 @@ export function useAuth() {
     toast.success("Logout successful!");
   };
 
-  useEffect(() => {
-    setIsLoading(false);
-
-    if (!accessToken) return;
-    // Check if toke is expired
-    if (isTokenExpired(accessToken)) {
-      refreshTokenIfNeeded();
-      return;
-    }
-
-    // Get time remaining until token expiration
-    const timeRemaining = getTokenTimeRemaining(accessToken);
-
-    // Refresh token 5 mins before expirtation)
-    const refreshThreshold = 5 * 60;
-
-    if (timeRemaining > 0 && timeRemaining < refreshThreshold) {
-      // Token is about to expire, refresh it
-      refreshTokenIfNeeded();
-      return;
-    }
-
-    // Set up interval to check token periodically
-    // Check every minute for token refresh needs
-    const interval = setInterval(() => {
-      if (isTokenExpired(accessToken)) {
-        refreshTokenIfNeeded();
-      } else {
-        const remaining = getTokenTimeRemaining(accessToken);
-        if (remaining > 0 && remaining < refreshThreshold) {
-          refreshTokenIfNeeded();
-        }
-      }
-    }, 60000); // Check every minute
-
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, refreshToken]);
   return {
     isAuthenticated,
-    isLoading,
+    isLoading: false,
     user,
     logout,
     refreshTokenIfNeeded,
