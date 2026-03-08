@@ -63,3 +63,41 @@ export const PAYROLL_VOLUMES: Option[] = [
   { value: "5m-20m", label: "$5M – $20M" },
   { value: "20m+", label: "$20M+" },
 ];
+
+// ─── Hire Talent constants
+
+export const ROLE_TYPES: Option[] = [
+  { value: "full-time", label: "Full-time" },
+  { value: "part-time", label: "Part-time" },
+  { value: "contract", label: "Contract" },
+  { value: "internship", label: "Internship" },
+];
+
+export const SENIORITY_LEVELS: Option[] = [
+  { value: "intern", label: "Intern" },
+  { value: "junior", label: "Junior" },
+  { value: "mid", label: "Mid-level" },
+  { value: "senior", label: "Senior" },
+  { value: "lead", label: "Lead" },
+  { value: "manager", label: "Manager" },
+  { value: "director", label: "Director" },
+  { value: "vp", label: "VP / Head of" },
+  { value: "c-suite", label: "C-Suite / Executive" },
+];
+
+export const WORK_ARRANGEMENTS: Option[] = [
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "onsite", label: "On-site" },
+];
+
+export const SALARY_RANGES: Option[] = [
+  { value: "under-1k", label: "Under $1,000 / mo" },
+  { value: "1k-2k", label: "$1,000 – $2,000 / mo" },
+  { value: "2k-4k", label: "$2,000 – $4,000 / mo" },
+  { value: "4k-7k", label: "$4,000 – $7,000 / mo" },
+  { value: "7k-12k", label: "$7,000 – $12,000 / mo" },
+  { value: "12k-20k", label: "$12,000 – $20,000 / mo" },
+  { value: "20k+", label: "$20,000+ / mo" },
+  { value: "flexible", label: "Flexible / Open to discuss" },
+];
