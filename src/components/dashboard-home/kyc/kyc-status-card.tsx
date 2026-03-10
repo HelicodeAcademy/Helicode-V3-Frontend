@@ -97,7 +97,7 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
             Finish setting up your account
           </p>
           <p className="text-xs text-[#696969] mt-1">
-            To unlock all the benefits of Remote&apos;s HR platform, complete
+            To unlock all the benefits of Helicode&apos;s HR platform, complete
             your company details.
           </p>
 
