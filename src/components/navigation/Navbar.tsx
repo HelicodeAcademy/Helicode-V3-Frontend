@@ -8,6 +8,7 @@ import ProductMegaMenu from "./ProductMegaMenu";
 import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
 import { WaitlistButton } from "../waitlist/WaitlistModal";
+import { HireTalentButton } from "../Landing-page/HireTalentModal";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,12 +35,17 @@ export default function Navbar() {
                   About
                 </Link>
 
-                <Link
+                {/* <Link
                   href="/"
                   className="px2 text-black/70 font-normal hover:text-black transition-colors"
                 >
                   Hire Talent
-                </Link>
+                </Link> */}
+
+                <HireTalentButton variant="ghost" className="p-0 hover:bg-transparent cursor-pointer text-base text-black/70 font-normal hover:text-black" scheduleCallUrl="https://calendly.com/fiyin-helicode/30min">
+                  Hire Talent
+                </HireTalentButton>
+
                 <a
                   href="https://learn.helicode.xyz/"
                   className="px2 text-black/70 font-normal hover:text-black transition-colors"
