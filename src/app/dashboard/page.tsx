@@ -16,7 +16,6 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
 import {
   Select,
   SelectContent,
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
 
 const payrollMetrics = [
   { label: "Total Payroll Processed", value: "$500,000.40" },
@@ -81,24 +81,24 @@ const recentPayments = [
   },
 ];
 
-const quickActions = [
-  {
-    title: "Finish setting up your account",
-    description:
-      "To unlock all the benefits of Remoto's HR platform, complete your company details.",
-    icon: "/home/profile-circle.svg",
-  },
-  {
-    title: "Add a new admin",
-    description: "Invite a co-worker to help manage your team on Helicode.",
-    icon: "/home/profile-circle.svg",
-  },
-  {
-    title: "Get started with Recruit",
-    description: "Hire Africa’s best talent",
-    icon: "/home/profile-circle.svg",
-  },
-];
+// const quickActions = [
+//   {
+//     title: "Finish setting up your account",
+//     description:
+//       "To unlock all the benefits of Remoto's HR platform, complete your company details.",
+//     icon: "/home/profile-circle.svg",
+//   },
+//   {
+//     title: "Add a new admin",
+//     description: "Invite a co-worker to help manage your team on Helicode.",
+//     icon: "/home/profile-circle.svg",
+//   },
+//   {
+//     title: "Get started with Recruit",
+//     description: "Hire Africa’s best talent",
+//     icon: "/home/profile-circle.svg",
+//   },
+// ];
 
 export default function DashboardHomePage() {
   const router = useRouter();
@@ -106,9 +106,6 @@ export default function DashboardHomePage() {
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState("usd");
   const [activeMetric] = useState("Last 30 days");
-  const [kycStatus] = useState<
-    "Initiated" | "Pending" | "Approved" | "Rejected"
-  >("Pending");
 
   useEffect(() => {
     setTitle("Home");
@@ -366,62 +363,7 @@ export default function DashboardHomePage() {
             Quick Actions
           </h3>
           <div className="space-y-4">
-            {quickActions.map((action, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 pb-4 bg-[#F9FAFB] rounded-xl p-6"
-              >
-                <div className="shrink-0 h-10 w-10 rounded-full bg-[#dde8ff] flex items-center justify-center">
-                  <Image
-                    src={action.icon}
-                    alt={action.title}
-                    width={24}
-                    height={24}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-[#101928] text-sm">
-                    {action.title}
-                  </p>
-                  <p className="text-xs text-[#696969] mt-1">
-                    {action.description}
-                  </p>
-
-                  {idx === 0 && (
-                    <>
-                      <div className="mt-4 flex items-center gap-4">
-                        <span className="text-sm font-medium text-[#475367]">
-                          KYC Status:
-                        </span>
-                        <div
-                          className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
-                            kycStatus === "Approved"
-                              ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
-                              : kycStatus === "Pending"
-                                ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
-                                : kycStatus === "Rejected"
-                                  ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
-                                  : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
-                          }`}
-                        >
-                          {kycStatus}
-                        </div>
-                      </div>
-
-                      {kycStatus !== "Approved" &&
-                        kycStatus !== "Pending" &&
-                        kycStatus !== "Rejected" && (
-                          <Link href="/dashboard/setup-account">
-                            <Button className="mt-3 bg-[#0166f4] text-white text-xs hover:bg-[#0166f4]/90 h-8">
-                              Finish Now
-                            </Button>
-                          </Link>
-                        )}
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
+            <KYCStatusCard />
           </div>
         </div>
       </div>

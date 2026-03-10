@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
@@ -23,13 +23,13 @@ export function TalentSignupForm() {
   const {
     register,
     handleSubmit,
-    watch,
+
     formState: { errors },
   } = useForm<TalentSignupFormData>({
     mode: "onBlur",
   });
 
-  const password = watch("password");
+  const password = useWatch({ name: "password" });
 
   const validatePassword = (value: string) => {
     if (value && value.length < 10) {

@@ -21,6 +21,12 @@ import { LogOut, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { usePathname } from "next/navigation";
 import {
   HomeIcon,
@@ -130,14 +136,20 @@ function DashboardSidebar() {
             </p>
             <p className="text-sm text-[#B5B5B5] truncate">{user?.email}</p>
           </div>
-          <Button variant="ghost" size="icon-sm">
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon-sm">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={logout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-        <Button variant="ghost" size="icon-sm" onClick={logout} title="Logout">
-          <LogOut className="h-4 w-4" />
-        </Button>
       </SidebarFooter>
     </Sidebar>
   );

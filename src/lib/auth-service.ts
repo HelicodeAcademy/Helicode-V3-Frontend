@@ -4,7 +4,10 @@ import {
   SignupResponse,
   VerifyEmailResponse,
   LoginResponse,
+  useAuthStore,
 } from "../store/auth-store";
+
+const BASE_URL = "https://helicode-backend.onrender.com";
 
 // Sign up a new company user
 // Sends user details to /auth/signup endpoint and returns the API response
@@ -67,13 +70,30 @@ export async function signin(
 
 // Refresh access token using refresh token
 // This will be called when the access token is about to expire and it returns the new access token and refresh token
-export async function refreshAccessToken(
-  refreshToken: string,
-): Promise<{ accessToken: string; refreshToken: string }> {
-  const response = await post<LoginResponse>("/auth/refresh", {
-    refreshToken,
+export async function refreshAccessToken(): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> {
+  const { refreshToken, companyId } = useAuthStore.getState();
+
+  if (!refreshToken) throw new Error("No refresh token found");
+  if (!companyId) throw new Error("No company ID found");
+
+  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${refreshToken}`,
+      "x-company-id": companyId,
+    },
   });
-  return response.data;
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Token refresh failed");
+  }
+
+  return data.data;
 }
 
 //  Initiate password recovery

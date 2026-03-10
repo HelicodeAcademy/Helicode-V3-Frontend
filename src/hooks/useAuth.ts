@@ -4,8 +4,8 @@ import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { isTokenExpired, getTokenTimeRemaining } from "@/lib/auth-utils";
-import { refreshAccessToken } from "@/lib/auth-service";
 import toast from "react-hot-toast";
+import { executeTokenRefresh } from "@/lib/token-refresh";
 
 // Custom hook for authentication and token management
 // Check if user is authenticated and then token refreshes before expiration
@@ -17,18 +17,8 @@ const CHECK_INTERVAL_MS = 60_000; // 1 minute
 
 export function useAuth() {
   const router = useRouter();
-  const {
-    accessToken,
-    refreshToken,
-    user,
-    setLoginData,
-    clearLoginData,
-    isAuthenticated,
-    companyId,
-  } = useAuthStore();
-
-  // I am using useRef to tract refresh state to avoid stale closures in the interval
-  const isRefreshingRef = useRef(false);
+  const { accessToken, refreshToken, user, clearLoginData, isAuthenticated } =
+    useAuthStore();
 
   // Using refs for tokens so the interval always sees the latest values
   const accessTokenRef = useRef(accessToken);
@@ -46,34 +36,13 @@ export function useAuth() {
   // SHould be called before the access token is about to expire
 
   const refreshTokenIfNeeded = useCallback(async () => {
-    const currentRefreshToken = refreshTokenRef.current;
-
-    if (!currentRefreshToken || isRefreshingRef.current) return;
-
     try {
-      isRefreshingRef.current = true;
-
-      const response = await refreshAccessToken(currentRefreshToken);
-      console.log("Token refreshed", response);
-
-      // update store with new tokens
-      setLoginData({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        user: user!,
-        companyId: companyId || "",
-      });
-    } catch (error) {
-      console.error("Token refreshed failed", error);
-
-      // Clear login data on refresh failure as user needs to login again
-      clearLoginData();
+      await executeTokenRefresh();
+    } catch {
       router.push("/login");
       toast.error("Session expired. Please login again.");
-    } finally {
-      isRefreshingRef.current = false;
     }
-  }, [clearLoginData, companyId, router, setLoginData, user]);
+  }, [router]);
 
   useEffect(() => {
     // Do not do anything if there is no access token

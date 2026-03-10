@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/store/auth-store";
-import { refreshAccessToken } from "./auth-service";
+import { executeTokenRefresh } from "./token-refresh";
 
 const PUBLIC_ENDPOINTS = ["/auth/signin", "/auth/signup", "/auth/refresh"];
 
@@ -14,39 +14,7 @@ export interface ApiResponse<T> {
 }
 
 // Track in-flight refresh to prevent multiple simultaneous refresh calls
-let refreshPromise: Promise<void> | null = null;
-
-async function attemptTokenRefresh(): Promise<void> {
-  // If a refresh is alreeady in progress, wait for it to complete
-  if (refreshPromise) return refreshPromise;
-
-  refreshPromise = (async () => {
-    const { refreshToken, setLoginData, clearLoginData, user, companyId } =
-      useAuthStore.getState();
-
-    if (!refreshToken) throw new Error("No refresh token found");
-
-    try {
-      const response = await refreshAccessToken(refreshToken);
-      console.log(
-        "I am being called to refresh the token 30 mins before expiry",
-      );
-      setLoginData({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        user: user!,
-        companyId: companyId || "",
-      });
-    } catch {
-      clearLoginData();
-      throw new Error("Refresh failed");
-    } finally {
-      refreshPromise = null;
-    }
-  })();
-
-  return refreshPromise;
-}
+// let refreshPromise: Promise<void> | null = null;
 
 // Fetch wrapper for API calls
 export async function apiCall<T>(
@@ -55,7 +23,7 @@ export async function apiCall<T>(
   retry = true,
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
-  const { accessToken } = useAuthStore.getState();
+  const { accessToken, companyId } = useAuthStore.getState();
 
   const headers: Record<string, string> = {
     "content-type": "application/json",
@@ -66,6 +34,8 @@ export async function apiCall<T>(
   if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
+
+  if (companyId) headers["x-company-id"] = companyId;
 
   const response = await fetch(url, {
     ...options,
@@ -81,7 +51,7 @@ export async function apiCall<T>(
 
     if (!isPublicEndpoint && retry) {
       try {
-        await attemptTokenRefresh();
+        await executeTokenRefresh();
         return apiCall<T>(endpoint, options, false); // retry once with new token
       } catch {
         // refresh failed, redirect to login
@@ -117,4 +87,37 @@ export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
     method: "GET",
   });
+}
+
+
+// POST request helper for FormData (file uploads)
+
+export async function postFormData<T>(
+  endpoint: string,
+  formData: FormData,
+): Promise<ApiResponse<T>> {
+  const url = `${BASE_URL}${endpoint}`;
+  const { accessToken } = useAuthStore.getState();
+
+  const headers: Record<string, string> = {};
+
+  // Include Authorization header if token is available
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+    headers,
+  });
+
+  const data = await response.json();
+
+  // Handle both successful and error responses
+  if (!response.ok) {
+    throw new Error(data.message || `API Error: ${response.status}`);
+  }
+
+  return data as ApiResponse<T>;
 }
