@@ -102,41 +102,49 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
           </p>
 
           {/* Only shows for Pending KYC and when there is no kyc link and tosLink */}
-          <div className="mt-4 flex items-center gap-4">
-            <span className="text-sm font-medium text-[#475367]">
-              KYC Status:
-            </span>
-            <p
-              className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
-                kycStatus.kycStatus === "approved"
-                  ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
-                  : kycStatus.kycStatus === "pending"
-                    ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
-                    : kycStatus.kycStatus === "rejected"
-                      ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
-                      : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
-              }`}
-            >
-              {kycStatus.kycStatus}
-            </p>
-          </div>
+          {kycStatus.kycStatus === "pending" &&
+            !kycStatus.kycLink &&
+            !kycStatus.tosLink && (
+              <div className="mt-4 flex items-center gap-4">
+                <span className="text-sm font-medium text-[#475367]">
+                  KYC Status:
+                </span>
+                <p
+                  // className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
+                  //   kycStatus.kycStatus === "approved"
+                  //     ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
+                  //     : kycStatus.kycStatus === "pending"
+                  //       ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
+                  //       : kycStatus.kycStatus === "rejected"
+                  //         ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
+                  //         : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
+                  // }`}
+                  className="bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5] text-xs leading-none font-medium px-2 py-1 rounded-full"
+                >
+                  {kycStatus.kycStatus}
+                </p>
+              </div>
+            )}
 
           {/* KYC Status with Continue Button */}
           {/* only show when there is a kyc link */}
           {kycStatus.kycLink && (
-            <div className="mt-2 flex items-center justify-between">
-              <span
-                className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
-                  kycStatus.kycStatus === "approved"
-                    ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
-                    : kycStatus.kycStatus === "pending"
-                      ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
-                      : kycStatus.kycStatus === "rejected"
-                        ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
-                        : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
-                }`}
-              >
-                KYC: {kycStatus.kycStatus}
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-xs text-[#667085]">
+                KYC Status:{" "}
+                <span
+                  className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
+                    kycStatus.kycStatus === "approved"
+                      ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
+                      : kycStatus.kycStatus === "pending"
+                        ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
+                        : kycStatus.kycStatus === "rejected"
+                          ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
+                          : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
+                  }`}
+                >
+                  {kycStatus.kycStatus}
+                </span>
               </span>
               {kycStatus.kycStatus === "not_started" && kycStatus.kycLink && (
                 <Button
@@ -152,9 +160,23 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
 
           {/* TOS Status with Continue Button (if available) */}
           {kycStatus.tosStatus && (
-            <div className="mt-2 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between">
               <span className="text-xs text-[#667085]">
-                TOS: {kycStatus.tosStatus}
+                TOS Status:{" "}
+                <span
+                  className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
+                    kycStatus.kycStatus === "approved"
+                      ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
+                      : kycStatus.kycStatus === "pending"
+                        ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
+                        : kycStatus.kycStatus === "rejected"
+                          ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
+                          : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
+                  }`}
+                >
+                  {" "}
+                  {kycStatus.tosStatus}
+                </span>
               </span>
               {kycStatus.tosStatus === "not_started" && kycStatus.tosLink && (
                 <Button
