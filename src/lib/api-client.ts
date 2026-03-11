@@ -97,7 +97,7 @@ export async function postFormData<T>(
   formData: FormData,
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
-  const { accessToken } = useAuthStore.getState();
+  const { accessToken, companyId } = useAuthStore.getState();
 
   const headers: Record<string, string> = {};
 
@@ -105,6 +105,9 @@ export async function postFormData<T>(
   if (accessToken) {
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
+
+  if (companyId) headers["x-company-id"] = companyId;
+
 
   const response = await fetch(url, {
     method: "POST",
