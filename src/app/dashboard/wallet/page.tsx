@@ -116,7 +116,6 @@ export default function WalletPage() {
     <div className="space-y-6 px-6 md:px-12 mt-6">
       {/* Balance Card and Actions */}
       <WalletBalanceCard
-        balance="$87,420.80"
         onFundWallet={handleFundWallet}
         onWithdraw={handleWithdraw}
       />
@@ -132,11 +131,7 @@ export default function WalletPage() {
         onSelectCard={handleSelectCard}
       />
 
-      <FundCryptoModal
-        open={fundCryptoOpen}
-        onOpenChange={setFundCryptoOpen}
-        walletAddress="0x27ff9040...9e18e1219386FB7"
-      />
+      <FundCryptoModal open={fundCryptoOpen} onOpenChange={setFundCryptoOpen} />
 
       <FundCardModal open={fundCardOpen} onOpenChange={setFundCardOpen} />
 

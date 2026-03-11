@@ -59,11 +59,11 @@ interface KYCFormInputs {
   postalCode: string;
   taxNumber: string;
   websiteUrl: string;
+  invoiceCurrency: string;
   certOfIncorporation: FileList;
   proofOfAddress: FileList;
   idFront: FileList;
   idBack: FileList;
-  invoice: FileList;
 }
 
 interface KYCFormProps {
@@ -91,11 +91,11 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       postalCode: "",
       taxNumber: "",
       websiteUrl: "",
+      invoiceCurrency: "USD",
       certOfIncorporation: undefined,
       proofOfAddress: undefined,
       idFront: undefined,
       idBack: undefined,
-      invoice: undefined,
     },
   });
   const { setKYCStatus, setIsLoading, isLoading } = useKYCStore();
@@ -154,13 +154,7 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
 
   const onSubmit = (data: KYCFormInputs) => {
     // clear any previous file errors
-    clearErrors([
-      "certOfIncorporation",
-      "proofOfAddress",
-      "idFront",
-      "idBack",
-      "invoice",
-    ]);
+    clearErrors(["certOfIncorporation", "proofOfAddress", "idFront", "idBack"]);
 
     // Validate that all files are selected and set form errors if not
     let hasError = false;
@@ -190,13 +184,6 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       setError("idBack", {
         type: "manual",
         message: "ID Back is required",
-      });
-      hasError = true;
-    }
-    if (!selectedFiles.invoice) {
-      setError("invoice", {
-        type: "manual",
-        message: "Invoice is required",
       });
       hasError = true;
     }
@@ -231,6 +218,7 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       formData.append("postalCode", pendingFormData.postalCode);
       formData.append("taxNumber", pendingFormData.taxNumber);
       formData.append("websiteUrl", pendingFormData.websiteUrl);
+      formData.append("invoiceCurrency", pendingFormData.invoiceCurrency);
 
       // File fields
       if (selectedFiles.certOfIncorporation) {
@@ -248,9 +236,9 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       if (selectedFiles.idBack) {
         formData.append("idBack", selectedFiles.idBack);
       }
-      if (selectedFiles.invoice) {
-        formData.append("invoice", selectedFiles.invoice);
-      }
+      // if (selectedFiles.invoice) {
+      //   formData.append("invoice", selectedFiles.invoice);
+      // }
 
       // Submit KYC
       const result = await submitKYC(formData);
@@ -543,6 +531,38 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
           </p>
         )}
       </div>
+      <div>
+        <Label className="text-sm font-medium text-[#0F112A] mb-2.5">
+          Invoice Currency <span className="text-[#FF3F3F]">*</span>
+        </Label>
+        <Controller
+          control={control}
+          name="invoiceCurrency"
+          rules={{ required: "Invoice currency is required" }}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USD">USD - US Dollar</SelectItem>
+                <SelectItem value="EUR">EUR - Euro</SelectItem>
+                <SelectItem value="GBP">GBP - British Pound</SelectItem>
+                <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
+                <SelectItem value="KES">KES - Kenyan Shilling</SelectItem>
+                <SelectItem value="ZAR">ZAR - South African Rand</SelectItem>
+                <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
+                <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.invoiceCurrency && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors.invoiceCurrency.message}
+          </p>
+        )}
+      </div>
 
       {/* Document Uploads */}
       <div className="pt-6">
@@ -619,22 +639,6 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
               {errors.idBack.message}
             </p>
           )}
-          <FileUpload
-            label="Invoice"
-            description="PDF or DOC files"
-            accept={{
-              "application/pdf": [".pdf"],
-              "application/msword": [".doc", ".docx"],
-            }}
-            onFileSelect={(files) => handleFileSelect("invoice", files)}
-            selectedFile={selectedFiles.invoice}
-            required
-          />
-          {errors.invoice && (
-            <p className="text-xs text-[#ED2525] mt-1">
-              {errors.invoice.message}
-            </p>
-          )}{" "}
         </div>
       </div>
 

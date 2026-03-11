@@ -1,45 +1,74 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { useWalletStore } from "@/store/wallet-store";
+import { getWalletAddress } from "@/lib/wallet-service";
 
 interface WalletBalanceCardProps {
-  balance: string;
   onFundWallet: () => void;
   onWithdraw: () => void;
 }
 
 export function WalletBalanceCard({
-  balance,
   onFundWallet,
   onWithdraw,
 }: WalletBalanceCardProps) {
   const [showBalance, setShowBalance] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const { walletData, setWalletData, setError } = useWalletStore();
+
+  useEffect(() => {
+    fetchWalletData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchWalletData = async () => {
+    try {
+      setError(null);
+      const data = await getWalletAddress();
+      setWalletData(data);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch wallet balance";
+      setError(errorMessage);
+      console.error("Wallet fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const balance = walletData?.balance ?? 0;
+
   return (
     <div className="space-y-6">
       {/* Balance Card */}
       <div className="bg-white border border-[#F2F2F2] rounded-xl p-6 max-w-134">
         <div>
-          <p className="text-[#475367] font-medium mb-2">
+          <p className="text-[#475367] font-medium mb-4">
             Total Wallet Balance
           </p>
-          <div className="flex items-center gap-3">
-            <h3 className="text-[2rem] font-bold text-[#1C232D] leading-0">
-              {showBalance ? balance : "••••••"}
-            </h3>
-            <button
-              onClick={() => setShowBalance(!showBalance)}
-              className="text-[#141B34] hover:text-[#667085] transition-colors"
-            >
-              {showBalance ? (
-                <Eye className="h-5 w-5" />
-              ) : (
-                <EyeOff className="h-5 w-5" />
-              )}
-            </button>
-          </div>
+          {isLoading ? (
+            <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <h3 className="text-[2rem] font-bold text-[#1C232D] leading-0">
+                {showBalance ? `${balance.toFixed(2)}` : "••••••"}
+              </h3>
+              <button
+                onClick={() => setShowBalance(!showBalance)}
+                className="text-[#141B34] hover:text-[#667085] transition-colors"
+              >
+                {showBalance ? (
+                  <Eye className="h-5 w-5" />
+                ) : (
+                  <EyeOff className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         <hr className="my-6 bg-[#E4E7EC]" />

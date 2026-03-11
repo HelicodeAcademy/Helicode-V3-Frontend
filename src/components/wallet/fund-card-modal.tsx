@@ -6,31 +6,57 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Copy } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-
+import { useWalletStore } from "@/store/wallet-store";
+import { getWalletAddress } from "@/lib/wallet-service";
+import toast from "react-hot-toast";
+import { Loader2, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { Button } from "../ui/button";
 interface FundCardModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const bankDetails = [
-  { label: "Currency", value: "USD" },
-  { label: "Bank name", value: "Lead Bank" },
-  { label: "Account number", value: "218778527432" },
-  { label: "Bank address", value: "1801 Main St. Kansas City, MO 64108" },
-  { label: "Beneficiary Name", value: "Helicode Inc" },
-];
-
 export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { walletData, setWalletData, setError } = useWalletStore();
 
-  const handleCopy = (value: string, index: number) => {
-    navigator.clipboard.writeText(value);
+  useEffect(() => {
+    if (open && !walletData) {
+      fetchWalletData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, walletData]);
+
+  const fetchWalletData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getWalletAddress();
+      setWalletData(data);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch wallet details";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error("KYC status error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCopy = (value: string | undefined, index: number) => {
+    navigator.clipboard.writeText(value || "");
     setCopiedIndex(index);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
+
+  const hasKYCApproved = walletData?.virtualAccount?.fiatDepositInstructions;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,47 +72,213 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
           </p>
         </DialogHeader>
 
-        {/* Fee and Time Info */}
-        <div className="flex gap-6 mt-4 pb-4 border-b border-[#eaeaea]">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[#667085]">0.1% fee</span>
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <Loader2 className="animate-spin w-4 h-4" />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[#667085]">2 min</span>
-          </div>
-        </div>
-
-        {/* Bank Details */}
-        <div className="space-y-2 mt-6">
-          {bankDetails.map((detail, idx) => (
-            <div key={idx} className="bg-[#F6F6F6] rounded-sm p-3">
-              <label className="text-sm text-[#979CA6] block mb-1">
-                {detail.label}
-              </label>
-              <div className="flex items-center justify-between">
-                <p className="text-[#000000] font-medium">{detail.value}</p>
-                <button
-                  onClick={() => handleCopy(detail.value, idx)}
-                  className="text-[#667085] hover:text-[#0166f4] transition-colors"
-                  title="Copy to clipboard"
-                >
-                  {copiedIndex === idx ? (
-                    <span className="text-xs text-green-600 font-medium">
-                      Copied
-                    </span>
-                  ) : (
-                    <Image
-                      src="/wallet/copy-01.svg"
-                      alt="copy"
-                      width={16}
-                      height={16}
-                    />
-                  )}
-                </button>
+        ) : !hasKYCApproved ? (
+          <div>
+            <div className="flex gap-3 bg-[#fef2f2] border border-[#fecaca] rounded-lg p-4 mt-2">
+              <AlertCircle className="h-5 w-5 text-[#dc2626] shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-[#dc2626] text-sm">
+                  Complete KYC First
+                </h3>
+                <p className="text-sm text-[#991b1b] mt-1">
+                  You need to complete your KYC verification before you can
+                  receive funds.
+                </p>
               </div>
             </div>
-          ))}
-        </div>
+            <Link href="/dashboard/setup-account">
+              <Button className="mt-10">Complete KYC Now</Button>
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* Fee and Time Info */}
+            <div className="flex gap-6 mt-4 pb-4 border-b border-[#eaeaea]">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#667085]">0.1% fee</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#667085]">2 min</span>
+              </div>
+            </div>
+
+            {/* Bank Details */}
+            <div className="space-y-2 mt-6">
+              {/* <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
+                  Currency
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.bank_name
+                    }
+                  </p>
+                </div>
+              </div> */}
+
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
+                  Bank Name
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.bank_name
+                    }
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        walletData.virtualAccount.fiatDepositInstructions
+                          ?.bank_name,
+                        0,
+                      )
+                    }
+                    className="text-[#667085] hover:text-[#0166f4] transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedIndex === 0 ? (
+                      <span className="text-xs text-green-600 font-medium">
+                        Copied
+                      </span>
+                    ) : (
+                      <Image
+                        src="/wallet/copy-01.svg"
+                        alt="copy"
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
+                  Account Number
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.account_number
+                    }
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        walletData.virtualAccount.fiatDepositInstructions
+                          ?.account_number,
+                        1,
+                      )
+                    }
+                    className="text-[#667085] hover:text-[#0166f4] transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedIndex === 1 ? (
+                      <span className="text-xs text-green-600 font-medium">
+                        Copied
+                      </span>
+                    ) : (
+                      <Image
+                        src="/wallet/copy-01.svg"
+                        alt="copy"
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
+                  Bank Address
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.bank_address
+                    }
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        walletData.virtualAccount.fiatDepositInstructions
+                          ?.bank_address,
+                        2,
+                      )
+                    }
+                    className="text-[#667085] hover:text-[#0166f4] transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedIndex === 2 ? (
+                      <span className="text-xs text-green-600 font-medium">
+                        Copied
+                      </span>
+                    ) : (
+                      <Image
+                        src="/wallet/copy-01.svg"
+                        alt="copy"
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
+                  Beneficiary Name
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.beneficiary
+                    }
+                  </p>
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        walletData.virtualAccount.fiatDepositInstructions
+                          ?.beneficiary,
+                        3,
+                      )
+                    }
+                    className="text-[#667085] hover:text-[#0166f4] transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedIndex === 3 ? (
+                      <span className="text-xs text-green-600 font-medium">
+                        Copied
+                      </span>
+                    ) : (
+                      <Image
+                        src="/wallet/copy-01.svg"
+                        alt="copy"
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
