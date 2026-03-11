@@ -178,7 +178,7 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                   {kycStatus.tosStatus}
                 </span>
               </span>
-              {kycStatus.tosStatus === "not_started" && kycStatus.tosLink && (
+              {kycStatus.tosStatus === "pending" && kycStatus.tosLink && (
                 <Button
                   onClick={() => handleContinue(kycStatus.tosLink!, "tos")}
                   size="sm"
