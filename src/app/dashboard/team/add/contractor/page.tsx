@@ -3,34 +3,31 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageTitleContext } from "../../../layout";
-import { ContractorDetailsForm } from "@/components/team/contractor-details-form";
-import { ContractForm } from "@/components/team/contract-form";
+import { HireDetailsFormComponent } from "@/components/team/hire-details-form";
+import { HireContractFormComponent } from "@/components/team/hire-contract-form";
 import { NewHireSuccessModal } from "@/components/team/new-hire-success-modal";
+import { useAddHireStore } from "@/store/add-hire-store";
 
 export default function AddContractorPage() {
   const { setTitle } = useContext(PageTitleContext);
+  const { reset } = useAddHireStore();
   const router = useRouter();
   const [step, setStep] = useState<"details" | "contract">("details");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     setTitle("Team");
-  }, [setTitle]);
-
-  const handleNextToContract = () => {
-    setStep("contract");
-  };
-
-  const handleCreateHire = () => {
-    setShowSuccessModal(true);
-  };
+    reset(); // Clear any stale form data
+  }, [setTitle, reset]);
 
   const handleAddAnother = () => {
+    reset();
     setShowSuccessModal(false);
     router.push("/dashboard/team/add");
   };
 
   const handleInviteNow = () => {
+    reset();
     setShowSuccessModal(false);
     router.push("/dashboard/team");
   };
@@ -38,9 +35,20 @@ export default function AddContractorPage() {
   return (
     <>
       {step === "details" && (
-        <ContractorDetailsForm onNext={handleNextToContract} />
+        <HireDetailsFormComponent
+          title="Add Contractor"
+          subtitle="Create a contract for an individual contractor"
+          onNext={() => setStep("contract")}
+        />
       )}
-      {step === "contract" && <ContractForm onSubmit={handleCreateHire} />}
+      {step === "contract" && (
+        <HireContractFormComponent
+          title="Add Contractor"
+          subtitle="Create a contract for an individual contractor"
+          workerType="CONTRACTOR"
+          onSuccess={() => setShowSuccessModal(true)}
+        />
+      )}
       <NewHireSuccessModal
         open={showSuccessModal}
         onOpenChange={setShowSuccessModal}

@@ -3,34 +3,32 @@
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageTitleContext } from "../../../layout";
+import { HireDetailsFormComponent } from "@/components/team/hire-details-form";
+import { HireContractFormComponent } from "@/components/team/hire-contract-form";
 import { NewHireSuccessModal } from "@/components/team/new-hire-success-modal";
-import { EmployeeDetailsForm } from "@/components/team/employee/employee-details-form";
-import { EmployeeContractForm } from "@/components/team/employee/employee-form";
+import { useAddHireStore } from "@/store/add-hire-store";
+
 
 export default function AddEmployeePage() {
   const { setTitle } = useContext(PageTitleContext);
+  const { reset } = useAddHireStore();
   const router = useRouter();
   const [step, setStep] = useState<"details" | "contract">("details");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     setTitle("Team");
-  }, [setTitle]);
-
-  const handleNextToContract = () => {
-    setStep("contract");
-  };
-
-  const handleCreateHire = () => {
-    setShowSuccessModal(true);
-  };
+    reset();
+  }, [setTitle, reset]);
 
   const handleAddAnother = () => {
+    reset();
     setShowSuccessModal(false);
     router.push("/dashboard/team/add");
   };
 
   const handleInviteNow = () => {
+    reset();
     setShowSuccessModal(false);
     router.push("/dashboard/team");
   };
@@ -38,10 +36,19 @@ export default function AddEmployeePage() {
   return (
     <>
       {step === "details" && (
-        <EmployeeDetailsForm onNext={handleNextToContract} />
+        <HireDetailsFormComponent
+          title="Add Employee"
+          subtitle="Onboard a new team member and get them ready to receive payments in just a few clicks."
+          onNext={() => setStep("contract")}
+        />
       )}
       {step === "contract" && (
-        <EmployeeContractForm onSubmit={handleCreateHire} />
+        <HireContractFormComponent
+          title="Add Employee"
+          subtitle="Onboard a new team member and get them ready to receive payments in just a few clicks."
+          workerType="EMPLOYEE"
+          onSuccess={() => setShowSuccessModal(true)}
+        />
       )}
       <NewHireSuccessModal
         open={showSuccessModal}

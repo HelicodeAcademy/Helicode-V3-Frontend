@@ -89,7 +89,6 @@ export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   });
 }
 
-
 // POST request helper for FormData (file uploads)
 
 export async function postFormData<T>(
@@ -106,8 +105,9 @@ export async function postFormData<T>(
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  if (companyId) headers["x-company-id"] = companyId;
-
+  if (companyId) {
+    headers["x-company-id"] = companyId;
+  }
 
   const response = await fetch(url, {
     method: "POST",

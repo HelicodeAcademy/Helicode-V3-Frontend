@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { WaitlistButton } from "../waitlist/WaitlistModal";
 import { ChevronDown } from "lucide-react";
 import AnimatedLogo from "./AnimatedLogo";
+import { HireTalentButton } from "../Landing-page/HireTalentModal";
 
 interface Props {
   open: boolean;
@@ -88,12 +89,14 @@ export default function MobileMenu({ open, onClose }: Props) {
                 About
               </Link>
 
-              <Link href="/" onClick={onClose}>
+              <HireTalentButton variant="ghost" className="w-fit h-fit p-0! hover:bg-transparent cursor-pointer text-base text-black/70hover:text-black font-normal " scheduleCallUrl="https://calendly.com/fiyin-helicode/30min">
                 Hire Talent
-              </Link>
+              </HireTalentButton>
+
               <a href="https://learn.helicode.xyz/" onClick={onClose}>
                 Train Talent
               </a>
+
 
               <div className="mt-4 flex flex-col gap-4">
                 <Button
