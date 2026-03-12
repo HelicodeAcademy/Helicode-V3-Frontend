@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { PageTitleContext } from "../layout";
+import { Toaster } from "react-hot-toast";
 
 export default function SetupAccountPage() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function SetupAccountPage() {
       </div>
 
       <KYCForm onSuccess={onKYCSuccess} />
+
+      <Toaster position="top-right" />
     </div>
   );
 }

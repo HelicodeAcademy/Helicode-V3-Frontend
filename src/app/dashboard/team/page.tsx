@@ -22,10 +22,18 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 const ITEMS_PER_PAGE = 10;
 
-
 export default function TeamPage() {
   const { setTitle } = useContext(PageTitleContext);
-  const { members, totalCount, filters, isLoading, setMembers, setFilters, setIsLoading, setError } = useTeamStore();
+  const {
+    members,
+    totalCount,
+    filters,
+    isLoading,
+    setMembers,
+    setFilters,
+    setIsLoading,
+    setError,
+  } = useTeamStore();
 
   const [searchInput, setSearchInput] = useState(filters.search);
   const debouncedSearch = useDebounce(searchInput, 400);
@@ -99,7 +107,6 @@ export default function TeamPage() {
               <SelectItem value="CONTRACTOR">Contractor</SelectItem>
             </SelectContent>
           </Select>
-
 
           <Select
             // value={filters.status || "all"}

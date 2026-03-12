@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Dialog,
   DialogContent,
@@ -23,7 +22,6 @@ export function AcceptTermsModal({
   onClose,
   isSubmitting,
 }: AcceptTermsModalProps) {
-  console.log(isSubmitting);
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent

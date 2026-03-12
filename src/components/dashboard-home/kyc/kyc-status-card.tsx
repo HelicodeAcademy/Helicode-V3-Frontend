@@ -32,6 +32,7 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
       setError(errorMessage);
+      toast.error(errorMessage);
       console.error("KYC status error:", error);
     } finally {
       setIsLoading(false);

@@ -251,6 +251,7 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to submit KYC";
       toast.error(errorMessage);
+      toast.error("Testing toast");
       console.error("KYC submission error:", error);
     } finally {
       setIsLoading(false);
@@ -547,13 +548,13 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USD">USD - US Dollar</SelectItem>
-                <SelectItem value="EUR">EUR - Euro</SelectItem>
+                {/* <SelectItem value="EUR">EUR - Euro</SelectItem>
                 <SelectItem value="GBP">GBP - British Pound</SelectItem>
                 <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
                 <SelectItem value="KES">KES - Kenyan Shilling</SelectItem>
                 <SelectItem value="ZAR">ZAR - South African Rand</SelectItem>
                 <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
-                <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                <SelectItem value="AUD">AUD - Australian Dollar</SelectItem> */}
               </SelectContent>
             </Select>
           )}
