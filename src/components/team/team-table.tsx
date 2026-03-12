@@ -30,19 +30,20 @@ import { useState } from "react";
 import { TeamMember } from "@/store/team-store";
 import { revokeTeamMember } from "@/lib/team-service";
 import { toast } from "react-hot-toast";
+import { getFlagEmoji } from "@/lib/countries";
 
 // Country flags mapping
-const countryFlags: Record<string, string> = {
-  Kenya: "🇰🇪",
-  Singapore: "🇸🇬",
-  Rwanda: "🇷🇼",
-  "United States": "🇺🇸",
-  Namibia: "🇳🇦",
-  Ghana: "🇬🇭",
-  "United Kingdom": "🇬🇧",
-  Nigeria: "🇳🇬",
-  "South Africa": "🇿🇦",
-};
+// const countryFlags: Record<string, string> = {
+//   Kenya: "🇰🇪",
+//   Singapore: "🇸🇬",
+//   Rwanda: "🇷🇼",
+//   "United States": "🇺🇸",
+//   Namibia: "🇳🇦",
+//   Ghana: "🇬🇭",
+//   "United Kingdom": "🇬🇧",
+//   Nigeria: "🇳🇬",
+//   "South Africa": "🇿🇦",
+// };
 
 interface TeamTableProps {
   members: TeamMember[];
@@ -152,7 +153,8 @@ export function TeamTable({
                   </TableCell>
                   <TableCell className="py-4">
                     <div className="flex items-center gap-2">
-                      <span>{countryFlags[member.country] ?? "🏳️"}</span>
+                      <span>{getFlagEmoji(member.country)}</span>
+                      {/* <span>{countryFlags[member.country] ?? "🏳️"}</span> */}
                       <span className="text-[#101928] text-sm font-medium">
                         {member.country}
                       </span>
@@ -193,7 +195,8 @@ export function TeamTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Pay</DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600"
                           onClick={() => setRevokeTarget(member)}
