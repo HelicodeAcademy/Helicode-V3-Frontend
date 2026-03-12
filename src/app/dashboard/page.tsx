@@ -24,6 +24,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
+import { useWalletStore } from "@/store/wallet-store";
+import { getWalletAddress } from "@/lib/wallet-service";
 
 const payrollMetrics = [
   { label: "Total Payroll Processed", value: "$500,000.40" },
@@ -106,10 +108,26 @@ export default function DashboardHomePage() {
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState("usd");
   const [activeMetric] = useState("Last 30 days");
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
+  const { walletData, setWalletData } = useWalletStore();
 
   useEffect(() => {
     setTitle("Home");
   }, [setTitle]);
+
+  const fetchWalletBalance = async () => {
+    try {
+      setIsLoadingBalance(true);
+      const data = await getWalletAddress();
+      setWalletData(data);
+    } catch (error) {
+      console.error("Failed to fetch wallet balance", error);
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  };
+
+  const balance = walletData?.balance ?? 0;
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -160,9 +178,14 @@ export default function DashboardHomePage() {
                     Available Balance
                   </p>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-[2rem] font-bold text-[#1C232D]">
-                      {showBalance ? "$100,000.80" : "••••••"}
-                    </h2>
+                    {isLoadingBalance ? (
+                      <div className="text-[2rem] font-bold text-[#1C232D]">
+                        {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+
                     <button
                       onClick={() => setShowBalance(!showBalance)}
                       className="text-[#141B34] hover:text-[#667085] transition-colors"

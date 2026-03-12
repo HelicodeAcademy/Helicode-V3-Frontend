@@ -50,25 +50,27 @@ export function WalletBalanceCard({
           <p className="text-[#475367] font-medium mb-4">
             Total Wallet Balance
           </p>
-          {isLoading ? (
-            <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <h3 className="text-[2rem] font-bold text-[#1C232D] leading-0">
-                {showBalance ? `${balance.toFixed(2)}` : "••••••"}
-              </h3>
-              <button
-                onClick={() => setShowBalance(!showBalance)}
-                className="text-[#141B34] hover:text-[#667085] transition-colors"
-              >
-                {showBalance ? (
-                  <Eye className="h-5 w-5" />
-                ) : (
-                  <EyeOff className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          )}
+          <div className="flex gap-2 items-center">
+            {isLoading ? (
+              <div className="h-10 w-32 bg-gray-200 rounded animate-pulse"></div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <h3 className="text-[2rem] font-bold text-[#1C232D] leading-0">
+                  {showBalance ? `${balance.toFixed(2)}` : "••••••"}
+                </h3>
+              </div>
+            )}
+            <button
+              onClick={() => setShowBalance(!showBalance)}
+              className="text-[#141B34] hover:text-[#667085] transition-colors"
+            >
+              {showBalance ? (
+                <Eye className="h-5 w-5" />
+              ) : (
+                <EyeOff className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
 
         <hr className="my-6 bg-[#E4E7EC]" />

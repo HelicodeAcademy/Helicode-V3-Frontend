@@ -28,6 +28,26 @@ export interface WalletData {
   virtualAccount: virtualAccount;
 }
 
+// For managing the table
+export interface Transaction {
+  transactionId: string
+  category: string
+  amount: string
+  type: string
+  currency: string
+  status: 'SUCCESSFUL' | 'PENDING' | 'FAILED'
+  date: string
+}
+
+export interface TransactionsResponse {
+  meta: {
+    total: number
+    page: number
+    lastPage: number
+  }
+  data: Transaction[]
+}
+
 export interface WalletStore {
   walletData: WalletData | null;
   isLoading: boolean;
