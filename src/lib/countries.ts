@@ -196,3 +196,44 @@ export const countries = [
   "Zambia",
   "Zimbabwe",
 ];
+
+// Convert a country name to its ISO 3166-1 alpha-2 code using Intl.DisplayNames
+const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+// Build a reverse map: "United States" → "US" by iterating all valid ISO codes
+const nameToCode = new Map<string, string>();
+
+for (let i = 65; i <= 90; i++) {
+  for (let j = 65; j <= 90; j++) {
+    const code = String.fromCharCode(i) + String.fromCharCode(j);
+    try {
+      const name = regionNames.of(code);
+      if (name && name !== code) {
+        nameToCode.set(name.toLowerCase(), code);
+      }
+    } catch {
+      // Invalid code — skip
+    }
+  }
+}
+
+// Get a country flag emoji from a country name. e.g. "Nigeria" → "🇳🇬"
+export function getFlagEmoji(countryName: string): string {
+  const code = nameToCode.get(countryName.toLowerCase());
+  if (!code) return "🏳️";
+  // Flag emoji = regional indicator symbols for each letter
+  return [...code]
+    .map((c) => String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0)))
+    .join("");
+}
+
+// Get all countries as { code, name } sorted alphabetically by name
+export function getAllCountries(): { code: string; name: string }[] {
+  return Array.from(nameToCode.entries())
+    .map(([name, code]) => ({
+      code,
+      // Use proper casing from Intl rather than the lowercased key
+      name: regionNames.of(code) ?? name,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}

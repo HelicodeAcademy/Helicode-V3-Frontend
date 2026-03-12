@@ -23,8 +23,7 @@ export interface AddTeamMemberPayload {
   department: string;
   country: string;
   type: "CONTRACTOR" | "EMPLOYEE";
-  //   amount: string;
-  amount: number;
+  amount: string;
   startDate: string;
   frequency: "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
   currency: "USD" | "EUR" | "USDC" | "USDT";
@@ -39,8 +38,8 @@ export async function getTeamMembers(
   if (filters.search) params.set("search", filters.search);
   if (filters.type) params.set("type", filters.type);
   if (filters.status) params.set("status", filters.status);
-  if (filters.page) params.set("page", String(filters.page));
-  if (filters.limit) params.set("limit", String(filters.limit));
+  //   if (filters.page) params.set("page", String(filters.page));
+  //   if (filters.limit) params.set("limit", String(filters.limit));
 
   const query = params.toString();
   const response = await get<TeamListRaw>(`/teams${query ? `?${query}` : ""}`);
@@ -64,8 +63,8 @@ export async function addTeamMember(
   formData.append("department", payload.department);
   formData.append("country", payload.country);
   formData.append("type", payload.type);
-  //   formData.append("amount", payload.amount);
-  formData.append("amount", String(payload.amount));
+  formData.append("amount", payload.amount);
+  //   formData.append("amount", String(payload.amount));
   formData.append("startDate", payload.startDate);
   formData.append("frequency", payload.frequency);
   formData.append("currency", payload.currency);

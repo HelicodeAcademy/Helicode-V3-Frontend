@@ -92,8 +92,7 @@ export default function TeamPage() {
             value={filters.type || ""}
             onValueChange={(val) =>
               setFilters({
-                // type: val === "all" ? "" : (val as "CONTRACTOR" | "EMPLOYEE"),
-                type: val === "" ? "" : (val as "CONTRACTOR" | "EMPLOYEE"),
+                type: val === "all" ? "" : (val as "CONTRACTOR" | "EMPLOYEE"),
                 page: 1,
               })
             }
@@ -113,8 +112,8 @@ export default function TeamPage() {
             value={filters.status || ""}
             onValueChange={(val) =>
               setFilters({
-                // status: val === "all" ? "" : (val as "Active" | "Inactive"),
-                status: val === "" ? "" : (val as "Active" | "Inactive"),
+                status: val === "all" ? "" : (val as "Active" | "Inactive"),
+                // status: val === "" ? "" : (val as "Active" | "Inactive"),
                 page: 1,
               })
             }

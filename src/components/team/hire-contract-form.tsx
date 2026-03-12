@@ -65,22 +65,7 @@ export function HireContractFormComponent({
     const handleSubmit = async () => {
         if (!validate()) return;
         setIsSubmitting(true);
-        const payload = {
-            firstName: details.firstName,
-            lastName: details.lastName,
-            email: details.email,
-            role: details.role,
-            department: contract.department,
-            country: details.country,
-            type: workerType,
-            // amount: contract.amount,
-            amount: Number(contract.amount),
-            startDate: details.startDate,
-            frequency: contract.frequency,
-            currency: contract.currency,
-            contract: contract.contract!,
-        }
-        console.log("payload", payload)
+
         try {
             await addTeamMember({
                 firstName: details.firstName,
@@ -90,8 +75,7 @@ export function HireContractFormComponent({
                 department: contract.department,
                 country: details.country,
                 type: workerType,
-                // amount: contract.amount,
-                amount: Number(contract.amount),
+                amount: contract.amount,
                 startDate: details.startDate,
                 frequency: contract.frequency,
                 currency: contract.currency,
