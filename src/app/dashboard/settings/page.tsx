@@ -5,6 +5,7 @@ import { PageTitleContext } from '../layout';
 import { SettingsCard } from '@/components/settings/settings-card';
 import { Button } from '@/components/ui/button';
 import { ChangePasswordModal } from '@/components/settings/change-password-modal';
+import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
 
 const settingsData = [
   {
@@ -49,8 +50,7 @@ const settingsData = [
 export default function SettingsPage() {
   const { setTitle } = useContext(PageTitleContext);
   const [changePasswordOpen, setChangePasswordOpen] = useState<boolean>(false);
-  // const [createPinOpen, setCreatePinOpen] =
-  //   useState<boolean>(false);
+  const [createPinOpen, setCreatePinOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setTitle('Settings');
@@ -79,7 +79,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <p className="text-base font-medium text-[#475367]">Password</p>
               <Button
-                onClick={() => setChangePasswordOpen(true)}
+                onClick={() => setChangePasswordOpen(!changePasswordOpen)}
                 className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
               >
                 Change
@@ -87,7 +87,10 @@ export default function SettingsPage() {
             </div>
             <div className="flex items-center justify-between">
               <p className="text-base font-medium text-[#475367]">Pin</p>
-              <Button className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9">
+              <Button
+                onClick={() => setCreatePinOpen(!createPinOpen)}
+                className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
+              >
                 Set up
               </Button>
             </div>
@@ -100,6 +103,7 @@ export default function SettingsPage() {
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}
       />
+      <ModifyPinModal open={createPinOpen} onOpenChange={setCreatePinOpen} />
     </div>
   );
 }
