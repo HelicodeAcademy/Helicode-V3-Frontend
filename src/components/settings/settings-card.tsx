@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
+import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 interface SettingsCardProps {
   label: string;
-  value: string;
+  value?: string;
   isEditable?: boolean;
   isStatus?: boolean;
   onEdit?: () => void;
+  children?: React.ReactNode;
 }
 
 export function SettingsCard({
@@ -17,18 +18,19 @@ export function SettingsCard({
   isEditable = false,
   isStatus = false,
   onEdit,
+  children,
 }: SettingsCardProps) {
   return (
     <div className="border border-[#eaeaea] rounded-lg bg-white p-6 w-110.75">
       <div className="flex items-start justify-between mb-4">
-        <p className="text-base font-medium text-[#475367]">{label}</p>
-        {isEditable && onEdit && (
+        <p className="text-[20px] font-medium text-[#000000]">{label}</p>
+        {isEditable && onEdit && !children && (
           <button
             onClick={onEdit}
             className="text-[#667085] hover:text-[#101828] transition-colors"
           >
             <Image
-              src={"/settings/pencil-edit-02.svg"}
+              src={'/settings/pencil-edit-02.svg'}
               alt="edit"
               width={24}
               height={24}
@@ -37,7 +39,9 @@ export function SettingsCard({
         )}
       </div>
       <div>
-        {isStatus ? (
+        {children ? (
+          children
+        ) : isStatus ? (
           //   <Badge className="bg-[#d1f3d1] text-[#219d53] hover:bg-[#d1f3d1] flex w-fit gap-1">
           //     <span className="text-lg">✓</span>
           //     {value}
@@ -54,7 +58,7 @@ export function SettingsCard({
             </span>
           </div>
         ) : (
-          <h3 className="text-2xl font-medium text-[#344054]">{value}</h3>
+          <h3 className="text-[16px] font-medium text-[#344054]">{value}</h3>
         )}
       </div>
     </div>
