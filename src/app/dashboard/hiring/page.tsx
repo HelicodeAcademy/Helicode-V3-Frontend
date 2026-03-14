@@ -25,8 +25,8 @@ export default function HiringPage() {
           Role Request
         </h1>
         <p className="text-[#444444] text-sm leading-relaxed max-w-lg">
-          Dorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-          vulputate libero et velit interdum, ac aliquet odio mattis.
+          Hire faster, reduce hiring costs, and scale your team globally without
+          the operational complexity.
         </p>
       </div>
 

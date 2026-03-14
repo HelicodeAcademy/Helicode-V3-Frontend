@@ -63,11 +63,11 @@ export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
   );
 
   return (
-    <div className="max-w-md mx-auto w-full">
+    <div className="max-w-md mx-auto w-full bg-white p-6 rounded-lg border border-[#F2F2F2]">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-[#0F112A] mb-2">
-            Payroll group name <span className="text-red-500">*</span>
+            Payroll group name <span className="text-[#FF383C]">*</span>
           </label>
           <Input
             type="text"

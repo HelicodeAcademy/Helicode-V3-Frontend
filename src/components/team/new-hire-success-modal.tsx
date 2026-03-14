@@ -48,7 +48,7 @@ export function NewHireSuccessModal({
             </a>
           </p>
           <div className="flex gap-3">
-            <Button variant="surface" onClick={onAddAnother} className="">
+            <Button variant="surface" onClick={onAddAnother} className="hidden">
               Add Another {modalType === "employee" ? "Employee" : "Contractor"}
             </Button>
             <Button

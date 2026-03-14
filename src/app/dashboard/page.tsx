@@ -26,6 +26,7 @@ import {
 import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
 import { useWalletStore } from "@/store/wallet-store";
 import { getWalletAddress } from "@/lib/wallet-service";
+import Link from "next/link";
 
 const payrollMetrics = [
   { label: "Total Payroll Processed", value: "$500,000.40" },
@@ -39,7 +40,6 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross",
   },
   {
     name: "Vandross Idiake",
@@ -47,7 +47,6 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross1",
   },
   {
     name: "Vandross Idiake",
@@ -55,7 +54,6 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross2",
   },
   {
     name: "Vandross Idiake",
@@ -63,7 +61,6 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross3",
   },
   {
     name: "Vandross Idiake",
@@ -71,7 +68,6 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross4",
   },
   {
     name: "Vandross Idiake",
@@ -79,28 +75,8 @@ const recentPayments = [
     status: "Paid",
     amount: "$3,400.00",
     date: "19 May 07:23 AM",
-    // avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Vandross5",
   },
 ];
-
-// const quickActions = [
-//   {
-//     title: "Finish setting up your account",
-//     description:
-//       "To unlock all the benefits of Remoto's HR platform, complete your company details.",
-//     icon: "/home/profile-circle.svg",
-//   },
-//   {
-//     title: "Add a new admin",
-//     description: "Invite a co-worker to help manage your team on Helicode.",
-//     icon: "/home/profile-circle.svg",
-//   },
-//   {
-//     title: "Get started with Recruit",
-//     description: "Hire Africa’s best talent",
-//     icon: "/home/profile-circle.svg",
-//   },
-// ];
 
 export default function DashboardHomePage() {
   const router = useRouter();
@@ -113,6 +89,9 @@ export default function DashboardHomePage() {
 
   useEffect(() => {
     setTitle("Home");
+    fetchWalletBalance();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
 
   const fetchWalletBalance = async () => {
@@ -279,7 +258,7 @@ export default function DashboardHomePage() {
             variant="primary"
             className="text-white hover:bg-[#101828]/90"
           >
-            Get Started
+            <Link href={"/dashboard/payroll"}>Run Payroll</Link>
           </Button>
         </div>
 
@@ -306,7 +285,7 @@ export default function DashboardHomePage() {
               variant="secondary"
               className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
             >
-              View all
+              <Link href={"/dashboard/transactions"}>View all</Link>
             </Button>
           </div>
 

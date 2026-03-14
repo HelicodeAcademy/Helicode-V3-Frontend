@@ -73,7 +73,7 @@ export function FundCryptoModal({ open, onOpenChange }: FundCryptoModalProps) {
       <DialogContent className="sm:max-w-113.25 gap-0">
         <DialogHeader className="gap-0">
           <DialogTitle className="text-2xl font-medium">
-            Fund with Crypto
+            Fund with Stablecoin
           </DialogTitle>
           <p className="text-sm text-[#0F112A] mt-1">
             Instant transfer from your crypto wallet.

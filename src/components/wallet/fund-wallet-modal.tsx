@@ -36,7 +36,7 @@ export function FundWalletModal({
         <hr className="bg-[#E4E7EC] my-3" />
 
         <div className="space-y-3">
-          {/* Fund with Crypto */}
+          {/* Fund with Stablecoin */}
           <button
             onClick={onSelectCrypto}
             className="w-full flex items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
@@ -47,7 +47,9 @@ export function FundWalletModal({
               width={25.57}
               height={19.49}
             />
-            <span className="text-[#000000] font-normal">Fund with crypto</span>
+            <span className="text-[#000000] font-normal">
+              Fund with stablecoin
+            </span>
           </button>
 
           {/* Fund with Card or Bank Transfer */}

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,7 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon } from "lucide-react";
 import Image from "next/image";
 
 interface RoleRequestFormData {
@@ -29,7 +37,15 @@ interface RoleRequestFormProps {
 }
 
 export function RoleRequestForm({ onSubmit }: RoleRequestFormProps) {
-  const { register, handleSubmit, setValue } = useForm<RoleRequestFormData>({
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<RoleRequestFormData>({
     defaultValues: {
       roleTitle: "",
       roleType: "",
@@ -41,6 +57,8 @@ export function RoleRequestForm({ onSubmit }: RoleRequestFormProps) {
       workerType: "",
     },
   });
+
+  const expectedStartDate = watch("expectedStartDate");
 
   const handleFormSubmit = (data: RoleRequestFormData) => {
     onSubmit?.(data);
@@ -120,15 +138,49 @@ export function RoleRequestForm({ onSubmit }: RoleRequestFormProps) {
         <label className="text-sm font-medium text-[#101828]">
           Expected Start date <span className="text-[#f04438]">*</span>
         </label>
-        <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#000000]" />
-          <Input
-            {...register("expectedStartDate", { required: true })}
-            type="date"
-            placeholder="DD:MM:YYYY"
-            className="pl-10"
-          />
-        </div>
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className={`flex h-10 w-full items-center gap-3 rounded-md border bg-white px-3 text-sm text-left ${
+                expectedStartDate ? "text-[#101928]" : "text-[#667085]"
+              } ${errors.expectedStartDate ? "border-red-400" : "border-[#E4E7EC]"}`}
+            >
+              <CalendarIcon className="h-5 w-5 shrink-0 text-[#667085]" />
+              {expectedStartDate
+                ? format(parseISO(expectedStartDate), "MMM d, yyyy")
+                : "Pick a date"}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={
+                expectedStartDate ? parseISO(expectedStartDate) : undefined
+              }
+              onSelect={(date) => {
+                if (date) {
+                  setValue("expectedStartDate", format(date, "yyyy-MM-dd"), {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                  setCalendarOpen(false);
+                }
+              }}
+              autoFocus
+              captionLayout="dropdown-years"
+            />
+          </PopoverContent>
+        </Popover>
+        <input
+          type="hidden"
+          {...register("expectedStartDate", { required: true })}
+        />
+        {errors.expectedStartDate && (
+          <p className="text-xs text-red-500 mt-1">
+            Expected start date is required.
+          </p>
+        )}
       </div>
 
       {/* Monthly Salary Range */}

@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreVertical } from "lucide-react";
 import { getWalletTransactions } from "@/lib/wallet-service";
 import { Transaction } from "@/store/wallet-store";
 import toast from "react-hot-toast";
@@ -152,11 +151,6 @@ export function TransactionsTable() {
                     >
                       {transaction.status}
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <button className="p-1 hover:bg-gray-100 rounded">
-                      <MoreVertical className="h-4 w-4 text-[#667085]" />
-                    </button>
                   </TableCell>
                 </TableRow>
               ))

@@ -9,8 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MoreVertical } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 interface Transaction {
@@ -75,11 +74,8 @@ export function TransactionsTable({
               >
                 <TableCell className="py-6">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${transaction.name}`}
-                      />
-                      <AvatarFallback>
+                    <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
+                      <AvatarFallback className="bg-[#FFED94]">
                         {transaction.name
                           .split(" ")
                           .map((n) => n[0])
@@ -109,11 +105,6 @@ export function TransactionsTable({
                   <Badge className={statusStyles[transaction.status]}>
                     {transaction.status}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button variant="ghost" size="icon-sm">
-                    <MoreVertical className="h-4 w-4 text-[#344054]" />
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}
