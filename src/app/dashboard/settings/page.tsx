@@ -1,54 +1,61 @@
-"use client";
+'use client';
 
-import { useContext, useEffect } from "react";
-import { PageTitleContext } from "../layout";
-import { SettingsCard } from "@/components/settings/settings-card";
+import { useContext, useEffect, useState } from 'react';
+import { PageTitleContext } from '../layout';
+import { SettingsCard } from '@/components/settings/settings-card';
+import { Button } from '@/components/ui/button';
+import { ChangePasswordModal } from '@/components/settings/change-password-modal';
+import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
+import { useWalletStore } from '@/store/wallet-store';
 
 const settingsData = [
   {
-    id: "company_name",
-    label: "Company Name",
-    value: "Helicode",
+    id: 'company_name',
+    label: 'Company Name',
+    value: 'Helicode',
     isEditable: true,
   },
   {
-    id: "payroll_settings",
-    label: "Payroll Settings",
-    value: "Monthly",
+    id: 'payroll_settings',
+    label: 'Payroll Settings',
+    value: 'Monthly',
     isEditable: true,
   },
   {
-    id: "admin_name",
-    label: "Admin Name",
-    value: "Aaron Goh",
+    id: 'admin_name',
+    label: 'Admin Name',
+    value: 'Aaron Goh',
     isEditable: true,
   },
   {
-    id: "title",
-    label: "Title",
-    value: "COO",
+    id: 'title',
+    label: 'Title',
+    value: 'COO',
     isEditable: false,
   },
   {
-    id: "status",
-    label: "Status",
-    value: "Active",
+    id: 'status',
+    label: 'Status',
+    value: 'Active',
     isStatus: true,
     isEditable: false,
   },
   {
-    id: "currency",
-    label: "Currency",
-    value: "USD",
+    id: 'currency',
+    label: 'Currency',
+    value: 'USD',
     isEditable: false,
   },
 ];
 
 export default function SettingsPage() {
   const { setTitle } = useContext(PageTitleContext);
+  const [changePasswordOpen, setChangePasswordOpen] = useState<boolean>(false);
+  const [createPinOpen, setCreatePinOpen] = useState<boolean>(false);
+  const hasPin = useWalletStore((state) => state.hasPin);
 
   useEffect(() => {
-    setTitle("Settings");
+    setTitle('Settings');
   }, [setTitle]);
 
   const handleEdit = (settingId: string) => {
@@ -69,7 +76,36 @@ export default function SettingsPage() {
             onEdit={() => handleEdit(setting.id)}
           />
         ))}
+        <SettingsCard label="Security">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-base font-medium text-[#475367]">Password</p>
+              <Button
+                onClick={() => setChangePasswordOpen(!changePasswordOpen)}
+                className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
+              >
+                Change
+              </Button>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-medium text-[#475367]">Pin</p>
+              <Button
+                onClick={() => setCreatePinOpen(!createPinOpen)}
+                className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
+              >
+                {hasPin ? 'Change' : 'Set up'}
+              </Button>
+            </div>
+          </div>
+        </SettingsCard>
       </div>
+
+      {/* Modals */}
+      <ChangePasswordModal
+        open={changePasswordOpen}
+        onOpenChange={setChangePasswordOpen}
+      />
+      <ModifyPinModal open={createPinOpen} onOpenChange={setCreatePinOpen} />
     </div>
   );
 }

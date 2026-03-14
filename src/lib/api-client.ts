@@ -1,10 +1,10 @@
-import { useAuthStore } from "@/store/auth-store";
-import { executeTokenRefresh } from "./token-refresh";
+import { useAuthStore } from '@/store/auth-store';
+import { executeTokenRefresh } from './token-refresh';
 
-const PUBLIC_ENDPOINTS = ["/auth/signin", "/auth/signup", "/auth/refresh"];
+const PUBLIC_ENDPOINTS = ['/auth/signin', '/auth/signup', '/auth/refresh'];
 
 // API client configuration
-const BASE_URL = "https://helicode-backend.onrender.com";
+const BASE_URL = 'https://helicode-backend.onrender.com';
 
 export interface ApiResponse<T> {
   status: boolean;
@@ -20,13 +20,13 @@ export interface ApiResponse<T> {
 export async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {},
-  retry = true,
+  retry = true
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
   const { accessToken, companyId } = useAuthStore.getState();
 
   const headers: Record<string, string> = {
-    "content-type": "application/json",
+    'content-type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
 
@@ -35,7 +35,7 @@ export async function apiCall<T>(
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  if (companyId) headers["x-company-id"] = companyId;
+  if (companyId) headers['x-company-id'] = companyId;
 
   const response = await fetch(url, {
     ...options,
@@ -46,7 +46,7 @@ export async function apiCall<T>(
   // Intercepts 401s and attempt a refresh, then retry the original request once
   if (response.status === 401) {
     const isPublicEndpoint = PUBLIC_ENDPOINTS.some((e) =>
-      endpoint.startsWith(e),
+      endpoint.startsWith(e)
     );
 
     if (!isPublicEndpoint && retry) {
@@ -56,12 +56,12 @@ export async function apiCall<T>(
       } catch {
         // refresh failed, redirect to login
         useAuthStore.getState().clearLoginData();
-        window.location.href = "/login";
-        throw new Error("Session expired. Please log in again.");
+        window.location.href = '/login';
+        throw new Error('Session expired. Please log in again.');
       }
     }
     // For public endpoints, throw the backend's actual error message
-    throw new Error(data.message || "Unauthorized");
+    throw new Error(data.message || 'Unauthorized');
   }
 
   // Handles succesful and error responses uniformly
@@ -74,10 +74,21 @@ export async function apiCall<T>(
 // Post request helper
 export async function post<T>(
   endpoint: string,
-  body: unknown,
+  body: unknown
 ): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
-    method: "POST",
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+// Patch request helper
+export async function patch<T>(
+  endpoint: string,
+  body: unknown
+): Promise<ApiResponse<T>> {
+  return apiCall<T>(endpoint, {
+    method: 'PATCH',
     body: JSON.stringify(body),
   });
 }
@@ -85,7 +96,7 @@ export async function post<T>(
 // Get request helper
 export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
-    method: "GET",
+    method: 'GET',
   });
 }
 
@@ -93,7 +104,7 @@ export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
 
 export async function postFormData<T>(
   endpoint: string,
-  formData: FormData,
+  formData: FormData
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
   const { accessToken, companyId } = useAuthStore.getState();
@@ -102,15 +113,15 @@ export async function postFormData<T>(
 
   // Include Authorization header if token is available
   if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
+    headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
   if (companyId) {
-    headers["x-company-id"] = companyId;
+    headers['x-company-id'] = companyId;
   }
 
   const response = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     body: formData,
     headers,
   });
