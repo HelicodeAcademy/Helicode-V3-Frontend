@@ -1,4 +1,4 @@
-import { get, post } from './api-client';
+import { get, post, patch } from './api-client';
 import { WalletData, TransactionsResponse } from '@/store/wallet-store';
 
 // Get the wallet address and bank details
@@ -28,5 +28,6 @@ export async function setWalletPin(
   oldPin?: string
 ): Promise<void> {
   const body = oldPin ? { oldPin, newPin: pin } : { pin };
-  await post<void>(`/wallet/pin`, body);
+  const method = oldPin ? patch : post;
+  await method<void>(`/wallet/pin`, body);
 }
