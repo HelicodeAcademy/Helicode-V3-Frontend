@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export type WorkerType = "CONTRACTOR" | "EMPLOYEE";
-export type TeamStatus = "Active" | "Inactive";
+export type TeamStatus = "Active" | "Inactive" | "Pending";
 export type PaymentFrequency = "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
 export type Currency = "USD" | "EUR" | "USDC" | "USDT";
 

@@ -157,7 +157,7 @@ export default function DashboardHomePage() {
                     Available Balance
                   </p>
                   <div className="flex items-center gap-2">
-                    {isLoadingBalance ? (
+                    {!isLoadingBalance ? (
                       <div className="text-[2rem] font-bold text-[#1C232D]">
                         {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
                       </div>
