@@ -3,82 +3,11 @@
 import { useContext, useEffect, useState } from "react";
 import { PageTitleContext } from "../layout";
 import { WalletBalanceCard } from "@/components/wallet/wallet-balance-card";
-import {
-  TransactionsTable,
-  Transaction,
-} from "@/components/wallet/transactions-table";
+import { TransactionsTable } from "@/components/wallet/transactions-table";
 import { FundWalletModal } from "@/components/wallet/fund-wallet-modal";
 import { FundCryptoModal } from "@/components/wallet/fund-crypto-modal";
 import { FundCardModal } from "@/components/wallet/fund-card-modal";
 import { WalletFundedModal } from "@/components/wallet/wallet-funded-modal";
-
-// Mock transaction data
-const mockTransactions: Transaction[] = [
-  {
-    id: "1",
-    type: "Deposit",
-    amount: "$10,000",
-    date: "19 May 07:23 AM",
-    method: "Fiat",
-    status: "Paid",
-  },
-  {
-    id: "2",
-    type: "Deposit",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Stablecoin",
-    status: "Failed",
-  },
-  {
-    id: "3",
-    type: "Withdraw",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Fiat",
-    status: "Pending",
-  },
-  {
-    id: "4",
-    type: "Deposit",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Stablecoin",
-    status: "Paid",
-  },
-  {
-    id: "5",
-    type: "Withdraw",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Stablecoin",
-    status: "Paid",
-  },
-  {
-    id: "6",
-    type: "Deposit",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Stablecoin",
-    status: "Paid",
-  },
-  {
-    id: "7",
-    type: "Deposit",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Fiat",
-    status: "Pending",
-  },
-  {
-    id: "8",
-    type: "Withdraw",
-    amount: "$12,000",
-    date: "19 May 07:23 AM",
-    method: "Fiat",
-    status: "Failed",
-  },
-];
 
 export default function WalletPage() {
   const { setTitle } = useContext(PageTitleContext);
@@ -121,7 +50,7 @@ export default function WalletPage() {
       />
 
       {/* Transactions Table */}
-      <TransactionsTable transactions={mockTransactions} membersCount={8} />
+      <TransactionsTable />
 
       {/* Modals */}
       <FundWalletModal
