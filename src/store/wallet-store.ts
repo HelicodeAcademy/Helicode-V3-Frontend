@@ -52,10 +52,12 @@ export interface WalletStore {
   walletData: WalletData | null;
   isLoading: boolean;
   error: string | null;
+  hasPin: boolean;
 
   setWalletData: (data: WalletData) => void;
   setIsLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setHasPin: (hasPin: boolean) => void;
   clearWallet: () => void;
 }
 
@@ -65,10 +67,12 @@ export const useWalletStore = create<WalletStore>()(
       walletData: null,
       isLoading: false,
       error: null,
+      hasPin: false,
 
       setWalletData: (data: WalletData) => set({ walletData: data }),
       setIsLoading: (loading: boolean) => set({ isLoading: loading }),
       setError: (error: string | null) => set({ error: error }),
+      setHasPin: (hasPin: boolean) => set({ hasPin }),
       clearWallet: () => set({ walletData: null }),
     }),
     {

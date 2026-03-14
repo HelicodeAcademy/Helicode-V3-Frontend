@@ -6,6 +6,7 @@ import { SettingsCard } from '@/components/settings/settings-card';
 import { Button } from '@/components/ui/button';
 import { ChangePasswordModal } from '@/components/settings/change-password-modal';
 import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
+import { useWalletStore } from '@/store/wallet-store';
 
 const settingsData = [
   {
@@ -51,6 +52,7 @@ export default function SettingsPage() {
   const { setTitle } = useContext(PageTitleContext);
   const [changePasswordOpen, setChangePasswordOpen] = useState<boolean>(false);
   const [createPinOpen, setCreatePinOpen] = useState<boolean>(false);
+  const hasPin = useWalletStore((state) => state.hasPin);
 
   useEffect(() => {
     setTitle('Settings');
@@ -91,7 +93,7 @@ export default function SettingsPage() {
                 onClick={() => setCreatePinOpen(!createPinOpen)}
                 className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
               >
-                Set up
+                {hasPin ? 'Change' : 'Set up'}
               </Button>
             </div>
           </div>
