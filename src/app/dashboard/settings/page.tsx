@@ -82,7 +82,7 @@ export default function SettingsPage() {
               <p className="text-base font-medium text-[#475367]">Password</p>
               <Button
                 onClick={() => setChangePasswordOpen(!changePasswordOpen)}
-                className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
+                className="bg-[#E9E9E9] text-[#363636] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
               >
                 Change
               </Button>
@@ -91,7 +91,7 @@ export default function SettingsPage() {
               <p className="text-base font-medium text-[#475367]">Pin</p>
               <Button
                 onClick={() => setCreatePinOpen(!createPinOpen)}
-                className="bg-[#E9E9E9] text-[#363636] text-[14px] hover:bg-[#d1d5db] text-sm w-18.25 h-9"
+                className="bg-[#E9E9E9] text-[#363636] text-sm hover:bg-[#d1d5db] w-16.25 h-9"
               >
                 {hasPin ? "Change" : "Set up"}
               </Button>
