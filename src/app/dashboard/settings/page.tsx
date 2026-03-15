@@ -1,49 +1,49 @@
-"use client";
+'use client';
 
-import { useContext, useEffect, useState } from "react";
-import { PageTitleContext } from "../layout";
-import { SettingsCard } from "@/components/settings/settings-card";
-import { Button } from "@/components/ui/button";
-import { ChangePasswordModal } from "@/components/settings/change-password-modal";
-import { ModifyPinModal } from "@/components/settings/modify-pin-modal";
-import { useWalletStore } from "@/store/wallet-store";
+import { useContext, useEffect, useState } from 'react';
+import { PageTitleContext } from '../layout';
+import { SettingsCard } from '@/components/settings/settings-card';
+import { Button } from '@/components/ui/button';
+import { ChangePasswordModal } from '@/components/settings/change-password-modal';
+import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
+import { useWalletStore } from '@/store/wallet-store';
 
 const settingsData = [
   {
-    id: "company_name",
-    label: "Company Name",
-    value: "Helicode",
+    id: 'company_name',
+    label: 'Company Name',
+    value: 'Helicode',
     isEditable: true,
   },
   {
-    id: "payroll_settings",
-    label: "Payroll Settings",
-    value: "Monthly",
+    id: 'payroll_settings',
+    label: 'Payroll Settings',
+    value: 'Monthly',
     isEditable: true,
   },
   {
-    id: "admin_name",
-    label: "Admin Name",
-    value: "Aaron Goh",
+    id: 'admin_name',
+    label: 'Admin Name',
+    value: 'Aaron Goh',
     isEditable: true,
   },
   {
-    id: "title",
-    label: "Title",
-    value: "COO",
+    id: 'title',
+    label: 'Title',
+    value: 'COO',
     isEditable: false,
   },
   {
-    id: "status",
-    label: "Status",
-    value: "Active",
+    id: 'status',
+    label: 'Status',
+    value: 'Active',
     isStatus: true,
     isEditable: false,
   },
   {
-    id: "currency",
-    label: "Currency",
-    value: "USD",
+    id: 'currency',
+    label: 'Currency',
+    value: 'USD',
     isEditable: false,
   },
 ];
@@ -55,7 +55,7 @@ export default function SettingsPage() {
   const hasPin = useWalletStore((state) => state.hasPin);
 
   useEffect(() => {
-    setTitle("Settings");
+    setTitle('Settings');
   }, [setTitle]);
 
   const handleEdit = (settingId: string) => {
@@ -65,7 +65,7 @@ export default function SettingsPage() {
 
   return (
     <div className="py-4 px-8 space-y-6 gap-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-227.5 mx-auto py-41.25">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-228 mx-20 py-14">
         {settingsData.map((setting) => (
           <SettingsCard
             key={setting.id}
@@ -93,7 +93,7 @@ export default function SettingsPage() {
                 onClick={() => setCreatePinOpen(!createPinOpen)}
                 className="bg-[#E9E9E9] text-[#363636] text-sm hover:bg-[#d1d5db] w-16.25 h-9"
               >
-                {hasPin ? "Change" : "Set up"}
+                {hasPin ? 'Change' : 'Set up'}
               </Button>
             </div>
           </div>

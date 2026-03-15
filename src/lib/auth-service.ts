@@ -129,3 +129,16 @@ export async function confirmPasswordReset(
     code,
   });
 }
+
+// Change user password
+// Requires current password and new password
+// Used in settings to update password
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string,
+): Promise<void> {
+  await post("/auth/password/change", {
+    oldPassword,
+    newPassword,
+  });
+}
