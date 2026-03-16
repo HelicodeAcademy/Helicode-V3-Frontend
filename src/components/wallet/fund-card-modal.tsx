@@ -163,7 +163,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       </span>
                     ) : (
                       <Image
-                        src="/wallet/copy-01.svg"
+                        src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
                         height={16}
@@ -202,7 +202,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       </span>
                     ) : (
                       <Image
-                        src="/wallet/copy-01.svg"
+                        src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
                         height={16}
@@ -241,7 +241,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       </span>
                     ) : (
                       <Image
-                        src="/wallet/copy-01.svg"
+                        src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
                         height={16}
@@ -279,7 +279,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       </span>
                     ) : (
                       <Image
-                        src="/wallet/copy-01.svg"
+                        src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
                         height={16}
