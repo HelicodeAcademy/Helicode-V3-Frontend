@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
+import PaymentHistory from '@/components/talent/payment-history';
 
 const payrollData = [
   { label: 'Incoming', value: '$3,000.40' },
@@ -130,6 +131,10 @@ export default function TalentDashboardHomePage() {
             Withdraw funds
           </Button>
         </div>
+      </div>
+
+      <div className="">
+        <PaymentHistory />
       </div>
     </div>
   );
