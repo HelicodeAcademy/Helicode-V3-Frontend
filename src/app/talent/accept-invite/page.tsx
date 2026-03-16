@@ -1,8 +1,8 @@
-import { TalentOnboardingForm } from '@/components/team/talent-onboarding-form';
-import Image from 'next/image';
-import { Toaster } from 'react-hot-toast';
+import { AcceptInviteForm } from "@/components/talent/aacept-invite";
+import Image from "next/image";
+import { Toaster } from "react-hot-toast";
 
-export default function TalentOnboardingPage() {
+export default function AcceptInvite() {
   return (
     <div className="h-screen flex items-stretch md:flex-row flex-col">
       {/* Left sidebar with logo */}
@@ -36,7 +36,7 @@ export default function TalentOnboardingPage() {
       <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
         {/* Form */}
         <div className="flex items-center justify-center h-screen">
-          <TalentOnboardingForm />
+          <AcceptInviteForm />
         </div>
       </div>
 

@@ -105,9 +105,11 @@ export function TransactionsTable() {
                 Method
               </TableHead>
               <TableHead className="text-[#344054] font-medium text-xs">
+                Currency
+              </TableHead>
+              <TableHead className="text-[#344054] font-medium text-xs">
                 Status
               </TableHead>
-              <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -134,17 +136,18 @@ export function TransactionsTable() {
                     {getTransactionType(transaction.type)}
                   </TableCell>
                   <TableCell className="text-[#101828] font-medium">
+                    ${parseFloat(transaction.amount).toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-[#101828] font-medium">
+                    {transaction.date}
+                  </TableCell>
+                  <TableCell className="text-[#101828] font-medium">
                     {transaction.category}
                   </TableCell>
                   <TableCell className="text-[#101828] font-medium">
                     {transaction.currency}
                   </TableCell>
-                  <TableCell className="text-[#101828] font-medium">
-                    ${parseFloat(transaction.amount).toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-[#667085]">
-                    {transaction.date}
-                  </TableCell>
+
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[transaction.status as keyof typeof statusStyles]} font-medium`}

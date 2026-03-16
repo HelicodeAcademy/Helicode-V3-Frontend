@@ -97,30 +97,42 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
         ) : (
           <>
             {/* Fee and Time Info */}
-            <div className="flex gap-6 mt-4 pb-4 border-b border-[#eaeaea]">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[#667085]">0.1% fee</span>
+            <div className="flex gap-3.5 mt-4 pb-4">
+              <div className="flex items-center gap-2 bg-[#F1F5FF] px-2 py-1 rounded-sm">
+                <Image
+                  src="/wallet/coins-02.svg"
+                  alt="coins"
+                  width={14}
+                  height={14}
+                />
+                <span className="text-sm text-[#0052FF] font-medium mt-1">
+                  0.1% fee
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[#667085]">2 min</span>
+              <div className="flex items-center gap-2 bg-[#F1F5FF] px-2 py-1 rounded-sm">
+                <Image
+                  src="/wallet/clock-01.svg"
+                  alt="coins"
+                  width={14}
+                  height={14}
+                  className=""
+                />
+                <span className="text-sm text-[#0052FF] font-medium mt-1">
+                  2 min
+                </span>
               </div>
             </div>
 
             {/* Bank Details */}
-            <div className="space-y-2 mt-6">
-              {/* <div className="bg-[#F6F6F6] rounded-sm p-3">
+            <div className="space-y-2">
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
                 <label className="text-sm text-[#979CA6] block mb-1">
                   Currency
                 </label>
                 <div className="flex items-center justify-between">
-                  <p className="text-[#000000] font-medium">
-                    {
-                      walletData.virtualAccount.fiatDepositInstructions
-                        ?.bank_name
-                    }
-                  </p>
+                  <p className="text-[#000000] font-medium">USD</p>
                 </div>
-              </div> */}
+              </div>
 
               <div className="bg-[#F6F6F6] rounded-sm p-3">
                 <label className="text-sm text-[#979CA6] block mb-1">
