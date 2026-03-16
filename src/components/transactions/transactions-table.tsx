@@ -47,7 +47,7 @@ export function TransactionsTable({
         <Table>
           <TableHeader>
             <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent bg-[#F9FAFB]">
-              <TableHead className="text-[#808B9E] font-medium py-4">
+              <TableHead className="text-[#808B9E] font-medium py-4 px-6">
                 Name
               </TableHead>
               <TableHead className="text-[#808B9E] font-medium py-4">
@@ -60,10 +60,9 @@ export function TransactionsTable({
                 Amount
               </TableHead>
               <TableHead className="text-[#808B9E] font-medium">Date</TableHead>
-              <TableHead className="text-[#808B9E] font-medium">
+              <TableHead className="text-[#808B9E] font-medium pl-10">
                 Status
               </TableHead>
-              <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,7 +71,7 @@ export function TransactionsTable({
                 key={transaction.id}
                 className="border-b border-[#E4E7EC] hover:bg-[#f9fafb]"
               >
-                <TableCell className="py-6">
+                <TableCell className="py-6 px-6">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
                       <AvatarFallback className="bg-[#FFED94]">
@@ -101,7 +100,7 @@ export function TransactionsTable({
                 <TableCell className="text-sm text-[#101928] font-medium">
                   {transaction.date}
                 </TableCell>
-                <TableCell>
+                <TableCell className="px-6 pl-10">
                   <Badge className={statusStyles[transaction.status]}>
                     {transaction.status}
                   </Badge>

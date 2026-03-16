@@ -221,7 +221,7 @@ export default function DashboardHomePage() {
         {/* Action Buttons */}
         <div className="flex gap-3">
           <Button
-            className="bg-[#0052FF] rounded-lg text-white font-medium"
+            className="bg-[#0052FF] rounded-lg text-white font-medium hover:bg-[#0041c4]"
             onClick={() => router.push("/dashboard/team/add")}
           >
             <Image
