@@ -22,7 +22,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/useAuth';
-import { LogOut, MoreVertical } from 'lucide-react';
+import { LogOut, MoreVertical, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -144,6 +144,8 @@ export default function TalentDashboardLayout({
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
+  const { user } = useAuth();
+
   return (
     <PageTitleContext.Provider
       value={{ title: pageTitle, setTitle: setPageTitle }}
@@ -153,7 +155,7 @@ export default function TalentDashboardLayout({
         <SidebarInset>
           <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
             <h1 className="text-2xl font-bold text-[#444444]">
-              {pageTitle || 'Dashboard'}
+              Welcome back, {user?.firstName}
             </h1>
             <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
               <Button variant="ghost" size="icon">
