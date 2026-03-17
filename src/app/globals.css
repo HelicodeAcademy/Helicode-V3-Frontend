@@ -163,3 +163,10 @@
   stroke-dashoffset: 40;
   animation: flowVertical 4s linear infinite;
 }
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
