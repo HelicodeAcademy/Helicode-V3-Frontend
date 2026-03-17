@@ -1,4 +1,4 @@
-import { post } from "../api-client";
+import { teamPost } from "../api-client";
 import {
   AcceptInviteData,
   AcceptInviteResponse,
@@ -11,11 +11,14 @@ import {
 export async function acceptTeamInvite(
   data: AcceptInviteData,
 ): Promise<AcceptInviteResponse> {
-  const response = await post<AcceptInviteResponse>("/teams/accept-invite", {
-    otp: data.otp,
-    email: data.email,
-    password: data.password,
-  });
+  const response = await teamPost<AcceptInviteResponse>(
+    "/teams/accept-invite",
+    {
+      otp: data.otp,
+      email: data.email,
+      password: data.password,
+    },
+  );
   return response.data;
 }
 
@@ -26,7 +29,7 @@ export async function teamLogin(
   email: string,
   password: string,
 ): Promise<TeamLoginResponse> {
-  const response = await post<TeamLoginResponse>("/teams/login", {
+  const response = await teamPost<TeamLoginResponse>("/team/login", {
     email,
     password,
   });

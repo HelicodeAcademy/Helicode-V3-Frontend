@@ -49,7 +49,7 @@ export function TeamLoginForm() {
       setTeamLoginData(loginResponse);
 
       toast.success("Login successful!");
-      router.push("/talent/dashboard");
+      router.push("/team/dashboard");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";

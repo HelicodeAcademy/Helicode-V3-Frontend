@@ -21,7 +21,6 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth";
 import { LogOut, MoreVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,6 +28,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { ProtectedRoute } from "@/components/team-dashboard/access/protected-route";
+import { useTeamAuth } from "@/hooks/useTeamAuth";
 
 const menuItems: Array<{
   icon: React.ComponentType<{ className?: string }>;
@@ -46,7 +46,7 @@ const menuItems: Array<{
 
 function TalentSidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout } = useTeamAuth();
 
   return (
     <Sidebar className="w-64 border-r border-[#eaeaea]">
@@ -145,7 +145,7 @@ export default function TalentDashboardLayout({
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useTeamAuth();
 
   return (
     <ProtectedRoute>

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { useTeamAuth } from "@/hooks/useTeamAuth";
 
 interface PublicRouteProps {
   children: React.ReactNode;
@@ -14,7 +15,9 @@ interface PublicRouteProps {
 
 export function PublicRoute({ children }: PublicRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useTeamAuthStore();
+  const { isAuthenticated, isLoading } = useTeamAuth();
+
+  console.log("IS AUTHENTICATED", isAuthenticated);
 
   useEffect(() => {
     // If the user is already authenticated, redirect to dashboard or company selection
