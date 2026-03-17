@@ -1,67 +1,49 @@
 'use client';
 
-import type React from 'react';
-import Image from 'next/image';
-import { createContext, useState } from 'react';
-import { ProtectedRoute } from '@/components/auth/access/protected-route';
-import { useAuth } from '@/hooks/useAuth';
-
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-} from '@/components/ui/sidebar';
-import { LogOut, MoreVertical } from 'lucide-react';
-import Link from 'next/link';
+import { PageTitleContext } from '@/app/dashboard/layout';
+import { ContractsIcon, HomeIcon, WalletIcon } from '@/components/icons/icons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { usePathname } from 'next/navigation';
 import {
-  HomeIcon,
-  HiringIcon,
-  PayrollIcon,
-  SettingsIcon,
-  TeamsIcon,
-  TransactionsIcon,
-  WalletIcon,
-} from '@/components/icons/icons';
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/useAuth';
+import { LogOut, MoreVertical, User } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 
-export const PageTitleContext = createContext<{
-  title: string | null;
-  setTitle: (title: string) => void;
-}>({
-  title: null,
-  setTitle: () => {},
-});
-
-const menuItems = [
-  { icon: HomeIcon, label: 'Home', href: '/dashboard' },
-  { icon: TeamsIcon, label: 'Team', href: '/dashboard/team' },
+const menuItems: Array<{
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  href: string;
+}> = [
+  { icon: HomeIcon, label: 'Home', href: '/talent/dashboard' },
+  { icon: WalletIcon, label: 'Wallet', href: '/talent/dashboard/wallet' },
   {
-    icon: TransactionsIcon,
-    label: 'Transactions',
-    href: '/dashboard/transactions',
+    icon: ContractsIcon,
+    label: 'Contracts',
+    href: '/talent/dashboard/contracts',
   },
-  { icon: HiringIcon, label: 'Hiring', href: '/dashboard/hiring' },
-  { icon: WalletIcon, label: 'Wallet', href: '/dashboard/wallet' },
-  { icon: PayrollIcon, label: 'Payroll', href: '/dashboard/payroll' },
-  { icon: SettingsIcon, label: 'Settings', href: '/dashboard/settings' },
 ];
 
-function DashboardSidebar() {
+function TalentSidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
@@ -83,10 +65,10 @@ function DashboardSidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive =
-              item.href === '/dashboard'
-                ? pathname === '/dashboard' ||
-                  pathname.startsWith('/dashboard/setup-account')
+              item.href === '/talent/dashboard'
+                ? pathname === '/talent/dashboard'
                 : pathname.startsWith(item.href);
+
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -156,49 +138,49 @@ function DashboardSidebar() {
   );
 }
 
-export default function DashboardLayout({
+export default function TalentDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
+  const { user } = useAuth();
+
   return (
-    <ProtectedRoute>
-      <PageTitleContext.Provider
-        value={{ title: pageTitle, setTitle: setPageTitle }}
-      >
-        <SidebarProvider>
-          <DashboardSidebar />
-          <SidebarInset>
-            <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-              <h1 className="text-2xl font-bold text-[#444444]">
-                {pageTitle || 'Dashboard'}
-              </h1>
-              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-                <Button variant="ghost" size="icon">
-                  <Image
-                    src="/header/notification.svg"
-                    alt="Notification"
-                    width={20}
-                    height={20}
-                  />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Image
-                    src="/header/nrk_help.svg"
-                    alt="Help"
-                    width={20}
-                    height={20}
-                    style={{ width: 'auto', height: 'auto' }}
-                  />
-                </Button>
-              </div>
-            </header>
-            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </PageTitleContext.Provider>
+    <PageTitleContext.Provider
+      value={{ title: pageTitle, setTitle: setPageTitle }}
+    >
+      <SidebarProvider>
+        <TalentSidebar />
+        <SidebarInset>
+          <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
+            <h1 className="text-2xl font-bold text-[#444444]">
+              Welcome back, {user?.firstName}
+            </h1>
+            <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+              <Button variant="ghost" size="icon">
+                <Image
+                  src="/header/notification.svg"
+                  alt="Notification"
+                  width={20}
+                  height={20}
+                />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Image
+                  src="/header/nrk_help.svg"
+                  alt="Help"
+                  width={20}
+                  height={20}
+                  style={{ width: 'auto', height: 'auto' }}
+                />
+              </Button>
+            </div>
+          </header>
+          <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
       <Toaster position="top-right" />
-    </ProtectedRoute>
+    </PageTitleContext.Provider>
   );
 }
