@@ -20,7 +20,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     // only redirect if it has finished loading and user is not authenticated
     if (!isLoading && !isAuthenticated) {
-      router.push("/login");
+      router.push("/team/login");
     }
   }, [isAuthenticated, isLoading, router]);
 

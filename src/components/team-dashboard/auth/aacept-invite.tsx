@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
-import { acceptTeamInvite } from "@/lib/talent/team-auth-service";
+import { acceptTeamInvite } from "@/lib/team/team-auth-service";
 import { Loader2 } from "lucide-react";
 
 // Accept Invite form component for talent

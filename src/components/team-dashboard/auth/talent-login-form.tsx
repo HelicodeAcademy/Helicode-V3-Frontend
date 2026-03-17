@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
-import { teamLogin } from "@/lib/talent/team-auth-service";
+import { teamLogin } from "@/lib/team/team-auth-service";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { Eye, EyeOff, Loader2 } from "lucide-react";

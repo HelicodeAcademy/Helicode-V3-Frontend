@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { PageTitleContext } from '@/app/dashboard/layout';
-import { ContractsIcon, HomeIcon, WalletIcon } from '@/components/icons/icons';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { PageTitleContext } from "@/app/dashboard/layout";
+import { ContractsIcon, HomeIcon, WalletIcon } from "@/components/icons/icons";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -20,26 +20,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from '@/components/ui/sidebar';
-import { useAuth } from '@/hooks/useAuth';
-import { LogOut, MoreVertical, User } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Toaster } from 'react-hot-toast';
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/useAuth";
+import { LogOut, MoreVertical } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { ProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 
 const menuItems: Array<{
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   href: string;
 }> = [
-  { icon: HomeIcon, label: 'Home', href: '/talent/dashboard' },
-  { icon: WalletIcon, label: 'Wallet', href: '/talent/dashboard/wallet' },
+  { icon: HomeIcon, label: "Home", href: "/talent/dashboard" },
+  { icon: WalletIcon, label: "Wallet", href: "/talent/dashboard/wallet" },
   {
     icon: ContractsIcon,
-    label: 'Contracts',
-    href: '/talent/dashboard/contracts',
+    label: "Contracts",
+    href: "/talent/dashboard/contracts",
   },
 ];
 
@@ -65,8 +66,8 @@ function TalentSidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive =
-              item.href === '/talent/dashboard'
-                ? pathname === '/talent/dashboard'
+              item.href === "/talent/dashboard"
+                ? pathname === "/talent/dashboard"
                 : pathname.startsWith(item.href);
 
             return (
@@ -77,22 +78,22 @@ function TalentSidebar() {
                   tooltip={item.label}
                   className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
                     isActive
-                      ? 'text-[#0052FF] bg-[#0052FF1A]!'
-                      : 'text-[#0F112A]'
+                      ? "text-[#0052FF] bg-[#0052FF1A]!"
+                      : "text-[#0F112A]"
                   }`}
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center ${isActive ? 'text-[#0052FF] gap-3.5' : 'gap-3.5'}`}
+                    className={`flex items-center ${isActive ? "text-[#0052FF] gap-3.5" : "gap-3.5"}`}
                   >
                     <Icon
-                      className={`h-5 w-5  ${isActive ? 'text-[#0052FF]' : 'text-[#00001187]'}`}
+                      className={`h-5 w-5  ${isActive ? "text-[#0052FF]" : "text-[#00001187]"}`}
                     />
                     <span
                       className={
                         isActive
-                          ? 'text-[#0052FF] mt-1'
-                          : 'text-[#00001187] mt-1'
+                          ? "text-[#0052FF] mt-1"
+                          : "text-[#00001187] mt-1"
                       }
                     >
                       {item.label}
@@ -147,40 +148,42 @@ export default function TalentDashboardLayout({
   const { user } = useAuth();
 
   return (
-    <PageTitleContext.Provider
-      value={{ title: pageTitle, setTitle: setPageTitle }}
-    >
-      <SidebarProvider>
-        <TalentSidebar />
-        <SidebarInset>
-          <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-            <h1 className="text-2xl font-bold text-[#444444]">
-              Welcome back, {user?.firstName}
-            </h1>
-            <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/notification.svg"
-                  alt="Notification"
-                  width={20}
-                  height={20}
-                />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/nrk_help.svg"
-                  alt="Help"
-                  width={20}
-                  height={20}
-                  style={{ width: 'auto', height: 'auto' }}
-                />
-              </Button>
-            </div>
-          </header>
-          <main className="flex-1 bg-[#F9FAFB]">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-      <Toaster position="top-right" />
-    </PageTitleContext.Provider>
+    <ProtectedRoute>
+      <PageTitleContext.Provider
+        value={{ title: pageTitle, setTitle: setPageTitle }}
+      >
+        <SidebarProvider>
+          <TalentSidebar />
+          <SidebarInset>
+            <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
+              <h1 className="text-2xl font-bold text-[#444444]">
+                Welcome back, {user?.firstName}
+              </h1>
+              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/notification.svg"
+                    alt="Notification"
+                    width={20}
+                    height={20}
+                  />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/nrk_help.svg"
+                    alt="Help"
+                    width={20}
+                    height={20}
+                    style={{ width: "auto", height: "auto" }}
+                  />
+                </Button>
+              </div>
+            </header>
+            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+        <Toaster position="top-right" />
+      </PageTitleContext.Provider>
+    </ProtectedRoute>
   );
 }
