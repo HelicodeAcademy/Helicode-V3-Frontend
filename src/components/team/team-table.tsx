@@ -31,6 +31,8 @@ import { TeamMember } from "@/store/team-store";
 import { revokeTeamMember } from "@/lib/team-service";
 import { toast } from "react-hot-toast";
 import { getFlagEmoji } from "@/lib/countries";
+import { EditTeamMemberModal } from "./edit-team-member-modal";
+import { PayTeamMemberModal } from "./pay-team-member-modal";
 
 // Country flags mapping
 // const countryFlags: Record<string, string> = {
@@ -76,6 +78,8 @@ export function TeamTable({
 }: TeamTableProps) {
   const [revokeTarget, setRevokeTarget] = useState<TeamMember | null>(null);
   const [isRevoking, setIsRevoking] = useState(false);
+  const [editTarget, setEditTarget] = useState<TeamMember | null>(null);
+  const [payTarget, setPayTarget] = useState<TeamMember | null>(null);
 
   const handleRevoke = async () => {
     if (!revokeTarget) return;
@@ -191,8 +195,12 @@ export function TeamTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Pay</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setEditTarget(member)}>
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setPayTarget(member)}>
+                          Pay
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600"
                           onClick={() => setRevokeTarget(member)}
@@ -235,6 +243,21 @@ export function TeamTable({
           </div>
         </div>
       )}
+
+      {/* Edit Team Member Modal */}
+      <EditTeamMemberModal
+        open={!!editTarget}
+        onOpenChange={(open) => !open && setEditTarget(null)}
+        member={editTarget}
+        onSuccess={onRevoked}
+      />
+
+      {/* Pay Team Member Modal */}
+      <PayTeamMemberModal
+        open={!!payTarget}
+        onOpenChange={(open) => !open && setPayTarget(null)}
+        member={payTarget}
+      />
 
       {/* Revoke Confirmation Dialog */}
       <AlertDialog
