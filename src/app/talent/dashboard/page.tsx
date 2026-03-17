@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
 import PaymentHistory from '@/components/talent/payment-history';
+import { SendFundsModal } from '@/components/talent/send-funds-modal';
 
 const payrollData = [
   { label: 'Incoming', value: '$3,000.40' },
@@ -23,6 +24,7 @@ export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(PageTitleContext);
   const [currency, setCurrency] = useState<string>('usd');
   const [showBalance, setShowBalance] = useState<boolean>(true);
+  const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setTitle('Home');
@@ -112,7 +114,10 @@ export default function TalentDashboardHomePage() {
         <hr className="my-6" />
 
         <div className="flex gap-3">
-          <Button className="bg-[#0052FF] rounded-lg text-white font-medium">
+          <Button
+            className="bg-[#0052FF] rounded-lg text-white font-medium"
+            onClick={() => setSendFundsModalOpen(true)}
+          >
             <Image
               src="/home/arrow-narrow-up-right-white.svg"
               alt="send"
@@ -136,6 +141,11 @@ export default function TalentDashboardHomePage() {
       <div className="">
         <PaymentHistory />
       </div>
+
+      <SendFundsModal
+        open={sendFundsModalOpen}
+        onOpenChange={setSendFundsModalOpen}
+      />
     </div>
   );
 }
