@@ -1,4 +1,4 @@
-import { AcceptInviteForm } from "@/components/talent/aacept-invite";
+import { AcceptInviteForm } from "@/components/team-page/auth/aacept-invite";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 

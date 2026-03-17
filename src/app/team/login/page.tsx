@@ -1,10 +1,13 @@
-import Link from "next/link";
-import { LoginForm } from "@/components/auth/login/login-form";
-import Image from "next/image";
-import { Toaster } from "react-hot-toast";
-import { PublicRoute } from "@/components/team-page/access/public-route";
+"use client";
 
-export default function LoginPage() {
+import Link from "next/link";
+
+import { PublicRoute } from "@/components/auth/access/public-route";
+import { Toaster } from "react-hot-toast";
+import { TeamLoginForm } from "@/components/team-page/auth/talent-login-form";
+import Image from "next/image";
+
+export default function TeamLoginPage() {
   return (
     <PublicRoute>
       <div className="min-h-screen flex items-stretch md:flex-row flex-col">
@@ -35,7 +38,8 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-        {/* Right content area */}
+
+        {/* Right Content Area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Top navigation */}
           <div className="flex items-center justify-between w-full">
@@ -62,7 +66,7 @@ export default function LoginPage() {
 
           {/* Form */}
           <div className="flex-1 flex items-center justify-center">
-            <LoginForm />
+            <TeamLoginForm />
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-// Types for talent auth flow
+// Types for Team auth flow
 export interface AcceptInviteData {
   otp: string;
   email: string;
@@ -12,7 +12,13 @@ export interface AcceptInviteResponse {
   message: string;
 }
 
-export interface TalentLoginResponse {
+export interface Company {
+  companyId: string;
+  companyName: string;
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+}
+
+export interface TeamLoginResponse {
   accessToken: string;
   refreshToken: string;
   user: {
@@ -22,20 +28,26 @@ export interface TalentLoginResponse {
     lastName: string;
     role: string;
   };
+  companyId: string;
+  companies: Company[];
 }
 
-interface TalentAuthStore {
+interface TeamAuthStore {
   // Accept invite form data
   acceptInviteData: Partial<AcceptInviteData>;
   setAcceptInviteData: (data: Partial<AcceptInviteData>) => void;
   resetAcceptInviteData: () => void;
 
-  // Talent login state
+  // Team login state
   accessToken: string | null;
   refreshToken: string | null;
-  user: TalentLoginResponse["user"] | null;
-  setTalentLoginData: (data: TalentLoginResponse) => void;
-  clearTalentLoginData: () => void;
+  user: TeamLoginResponse["user"] | null;
+  companyId: string | null;
+  companies: Company[];
+  selectedCompanyId: string | null;
+  setTeamLoginData: (data: TeamLoginResponse) => void;
+  setSelectedCompany: (companyId: string) => void;
+  clearTeamLoginData: () => void;
   isAuthenticated: boolean;
 
   // Loading and error states
@@ -45,11 +57,11 @@ interface TalentAuthStore {
   error: string | null;
   setError: (error: string | null) => void;
 
-  // Reset the entire talent auth flow
-  resetTalentAuth: () => void;
+  // Reset the entire Team auth flow
+  resetTeamAuth: () => void;
 }
 
-export const useTalentAuthStore = create<TalentAuthStore>()(
+export const useTeamAuthStore = create<TeamAuthStore>()(
   persist(
     (set) => ({
       // Accept invite form data
@@ -58,22 +70,36 @@ export const useTalentAuthStore = create<TalentAuthStore>()(
         set({ acceptInviteData: data }),
       resetAcceptInviteData: () => set({ acceptInviteData: {} }),
 
-      // Talent login state
+      // Team login state
       accessToken: null,
       refreshToken: null,
       user: null,
-      setTalentLoginData: (data) =>
+      companyId: null,
+      companies: [],
+      selectedCompanyId: null,
+      setTeamLoginData: (data) =>
         set({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           user: data.user,
+          companyId: data.companyId,
+          companies: data.companies,
+          selectedCompanyId: data.companyId,
           isAuthenticated: true,
         }),
-      clearTalentLoginData: () => {
+      setSelectedCompany: (companyId) =>
+        set(() => ({
+          selectedCompanyId: companyId,
+          companyId: companyId,
+        })),
+      clearTeamLoginData: () => {
         set({
           accessToken: null,
           refreshToken: null,
           user: null,
+          companyId: null,
+          companies: [],
+          selectedCompanyId: null,
           isAuthenticated: false,
         });
       },
@@ -86,25 +112,31 @@ export const useTalentAuthStore = create<TalentAuthStore>()(
       error: null,
       setError: (error: string | null) => set({ error: error }),
 
-      // Reset the entire talent auth flow
-      resetTalentAuth: () =>
+      // Reset the entire Team auth flow
+      resetTeamAuth: () =>
         set({
           acceptInviteData: {},
           accessToken: null,
           refreshToken: null,
           user: null,
+          companyId: null,
+          companies: [],
+          selectedCompanyId: null,
           isAuthenticated: false,
           isLoading: false,
           error: null,
         }),
     }),
     {
-      name: "talent-auth-storage",
+      name: "team-auth-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
+        companyId: state.companyId,
+        companies: state.companies,
+        selectedCompanyId: state.selectedCompanyId,
         isAuthenticated: state.isAuthenticated,
       }),
     },

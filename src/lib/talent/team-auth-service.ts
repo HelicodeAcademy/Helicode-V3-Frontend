@@ -2,13 +2,13 @@ import { post } from "../api-client";
 import {
   AcceptInviteData,
   AcceptInviteResponse,
-  TalentLoginResponse,
-} from "@/store/talent/talent-auth-store";
+  TeamLoginResponse,
+} from "@/store/team/team-auth-store";
 
 // Accept takent invite
 // Sents otp, email and password to the endpoint
-// ccompletes account setup for invited talent
-export async function acceptTalentInvite(
+// ccompletes account setup for invited team
+export async function acceptTeamInvite(
   data: AcceptInviteData,
 ): Promise<AcceptInviteResponse> {
   const response = await post<AcceptInviteResponse>("/teams/accept-invite", {
@@ -19,14 +19,14 @@ export async function acceptTalentInvite(
   return response.data;
 }
 
-// Talent login
+// team login
 // Authenticates user with email and password
 // Returns access and refresh tokens
-export async function login(
+export async function teamLogin(
   email: string,
   password: string,
-): Promise<TalentLoginResponse> {
-  const response = await post<TalentLoginResponse>("/teams/login", {
+): Promise<TeamLoginResponse> {
+  const response = await post<TeamLoginResponse>("/teams/login", {
     email,
     password,
   });

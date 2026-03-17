@@ -8,8 +8,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useTalentAuthStore } from "@/store/talent/talent-auth-store";
-import { acceptTalentInvite } from "@/lib/talent/talent-auth-service";
+import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { acceptTeamInvite } from "@/lib/talent/team-auth-service";
 import { Loader2 } from "lucide-react";
 
 // Accept Invite form component for talent
@@ -25,7 +25,7 @@ interface AcceptInviteFormData {
 export function AcceptInviteForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { setIsLoading, isLoading } = useTalentAuthStore();
+  const { setIsLoading, isLoading } = useTeamAuthStore();
 
   const {
     register,
@@ -43,7 +43,7 @@ export function AcceptInviteForm() {
     try {
       setIsLoading(true);
 
-      await acceptTalentInvite({
+      await acceptTeamInvite({
         otp: data.otp,
         email: data.email,
         password: data.password,

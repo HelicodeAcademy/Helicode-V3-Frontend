@@ -6,6 +6,7 @@ import {
   LoginResponse,
   useAuthStore,
 } from "../store/auth-store";
+import { useTeamAuthStore } from "../store/team/team-auth-store";
 
 const BASE_URL = "https://helicode-backend.onrender.com";
 
@@ -96,7 +97,33 @@ export async function refreshAccessToken(): Promise<{
   return data.data;
 }
 
-//  Initiate password recovery
+// Refresh team access token using refresh token
+// This will be called when the team access token is about to expire and it returns the new access token and refresh token
+export async function refreshTeamAccessToken(): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> {
+  const { refreshToken, companyId } = useTeamAuthStore.getState();
+
+  if (!refreshToken) throw new Error("No team refresh token found");
+  if (!companyId) throw new Error("No team company ID found");
+
+  const response = await fetch(`${BASE_URL}/auth/refresh`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${refreshToken}`,
+      "x-company-id": companyId,
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Team token refresh failed");
+  }
+
+  return data.data;
+}
 //  Sends email and new password to backend
 //  Backend sends verification code to user's email
 //  Returns userId and token for verification step

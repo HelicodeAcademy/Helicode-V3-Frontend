@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type React from 'react';
-import Image from 'next/image';
-import { createContext, useState } from 'react';
-import { ProtectedRoute } from '@/components/auth/access/protected-route';
-import { useAuth } from '@/hooks/useAuth';
+import type React from "react";
+import Image from "next/image";
+import { createContext, useState } from "react";
+import { ProtectedRoute } from "@/components/auth/access/protected-route";
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   SidebarProvider,
@@ -16,18 +16,18 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
-} from '@/components/ui/sidebar';
-import { LogOut, MoreVertical } from 'lucide-react';
-import Link from 'next/link';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/sidebar";
+import { LogOut, MoreVertical } from "lucide-react";
+import Link from "next/link";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { usePathname } from 'next/navigation';
+} from "@/components/ui/dropdown-menu";
+import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   HiringIcon,
@@ -36,8 +36,8 @@ import {
   TeamsIcon,
   TransactionsIcon,
   WalletIcon,
-} from '@/components/icons/icons';
-import { Toaster } from 'react-hot-toast';
+} from "@/components/icons/icons";
+import { Toaster } from "react-hot-toast";
 
 export const PageTitleContext = createContext<{
   title: string | null;
@@ -48,17 +48,17 @@ export const PageTitleContext = createContext<{
 });
 
 const menuItems = [
-  { icon: HomeIcon, label: 'Home', href: '/dashboard' },
-  { icon: TeamsIcon, label: 'Team', href: '/dashboard/team' },
+  { icon: HomeIcon, label: "Home", href: "/dashboard" },
+  { icon: TeamsIcon, label: "Team", href: "/dashboard/team" },
   {
     icon: TransactionsIcon,
-    label: 'Transactions',
-    href: '/dashboard/transactions',
+    label: "Transactions",
+    href: "/dashboard/transactions",
   },
-  { icon: HiringIcon, label: 'Hiring', href: '/dashboard/hiring' },
-  { icon: WalletIcon, label: 'Wallet', href: '/dashboard/wallet' },
-  { icon: PayrollIcon, label: 'Payroll', href: '/dashboard/payroll' },
-  { icon: SettingsIcon, label: 'Settings', href: '/dashboard/settings' },
+  { icon: HiringIcon, label: "Hiring", href: "/dashboard/hiring" },
+  { icon: WalletIcon, label: "Wallet", href: "/dashboard/wallet" },
+  { icon: PayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
+  { icon: SettingsIcon, label: "Settings", href: "/dashboard/settings" },
 ];
 
 function DashboardSidebar() {
@@ -83,9 +83,9 @@ function DashboardSidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive =
-              item.href === '/dashboard'
-                ? pathname === '/dashboard' ||
-                  pathname.startsWith('/dashboard/setup-account')
+              item.href === "/dashboard"
+                ? pathname === "/dashboard" ||
+                  pathname.startsWith("/dashboard/setup-account")
                 : pathname.startsWith(item.href);
             return (
               <SidebarMenuItem key={item.href}>
@@ -95,22 +95,22 @@ function DashboardSidebar() {
                   tooltip={item.label}
                   className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
                     isActive
-                      ? 'text-[#0052FF] bg-[#0052FF1A]!'
-                      : 'text-[#0F112A]'
+                      ? "text-[#0052FF] bg-[#0052FF1A]!"
+                      : "text-[#0F112A]"
                   }`}
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center ${isActive ? 'text-[#0052FF] gap-3.5' : 'gap-3.5'}`}
+                    className={`flex items-center ${isActive ? "text-[#0052FF] gap-3.5" : "gap-3.5"}`}
                   >
                     <Icon
-                      className={`h-5 w-5  ${isActive ? 'text-[#0052FF]' : 'text-[#00001187]'}`}
+                      className={`h-5 w-5  ${isActive ? "text-[#0052FF]" : "text-[#00001187]"}`}
                     />
                     <span
                       className={
                         isActive
-                          ? 'text-[#0052FF] mt-1'
-                          : 'text-[#00001187] mt-1'
+                          ? "text-[#0052FF] mt-1"
+                          : "text-[#00001187] mt-1"
                       }
                     >
                       {item.label}
@@ -173,7 +173,7 @@ export default function DashboardLayout({
             {/* removed the border bottom here as it is not needed */}
             <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
               <h1 className="text-2xl font-bold text-[#444444]">
-                {pageTitle || 'Dashboard'}
+                {pageTitle || "Dashboard"}
               </h1>
               <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
                 <Button variant="ghost" size="icon">
@@ -190,7 +190,7 @@ export default function DashboardLayout({
                     alt="Help"
                     width={20}
                     height={20}
-                    style={{ width: 'auto', height: 'auto' }}
+                    style={{ width: "auto", height: "auto" }}
                   />
                 </Button>
               </div>
