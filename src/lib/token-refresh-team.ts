@@ -8,7 +8,7 @@ export async function executeTeamTokenRefresh(): Promise<void> {
   if (refreshPromise) return refreshPromise;
 
   refreshPromise = (async () => {
-    const { setTeamLoginData, clearTeamLoginData, user, companyId } =
+    const { setTeamLoginData, clearTeamLoginData, user, companyId, companies } =
       useTeamAuthStore.getState();
 
     try {
@@ -18,7 +18,7 @@ export async function executeTeamTokenRefresh(): Promise<void> {
         refreshToken: response.refreshToken,
         user: user!,
         companyId: companyId || "",
-        companies: [], // Assuming companies are not updated on refresh
+        companies: companies, // Preserve existing companies
       });
     } catch {
       clearTeamLoginData();

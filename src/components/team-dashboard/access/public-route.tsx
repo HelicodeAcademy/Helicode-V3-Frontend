@@ -17,20 +17,20 @@ export function PublicRoute({ children }: PublicRouteProps) {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useTeamAuth();
 
-  console.log("IS AUTHENTICATED", isAuthenticated);
+  // console.log("IS AUTHENTICATED", isAuthenticated);
 
-  useEffect(() => {
-    // If the user is already authenticated, redirect to dashboard or company selection
-    if (isAuthenticated) {
-      const { companies } = useTeamAuthStore.getState();
+  // useEffect(() => {
+  //   // If the user is already authenticated, redirect to dashboard or company selection
+  //   if (isAuthenticated) {
+  //     const { companies } = useTeamAuthStore.getState();
 
-      if (companies.length === 1) {
-        router.push("/team/dashboard");
-      } else {
-        router.push("/team/select-company");
-      }
-    }
-  }, [isAuthenticated, router]);
+  //     if (companies.length === 1) {
+  //       router.push("/team/dashboard");
+  //     } else {
+  //       router.push("/team/select-company");
+  //     }
+  //   }
+  // }, [isAuthenticated, router]);
 
   //   Loading state
   if (isLoading) {
