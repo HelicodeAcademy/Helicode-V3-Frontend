@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[#363636] font-medium text-primary-foreground hover:bg-[#151515] transition-colors duration-200",
+          "bg-[#363636] font-medium text-primary-foreground hover:bg-[#151515] transition-colors duration-200 cursor-pointer",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
@@ -27,11 +27,7 @@ const buttonVariants = cva(
    focus-visible:ring-2 focus-visible:ring-ring/20",
 
         primary:
-          //         "text-white font-medium border border-black/10 \
-          //  bg-[linear-gradient(181.43deg,#363636_1.21%,#1c1c1c_58.57%)] \
-          //  hover:brightness-110 active:brightness-95 \
-          //  focus-visible:ring-2 focus-visible:ring-ring/30",
-          "bg-[#363636] font-medium text-primary-foreground hover:bg-[#151515] transition-colors duration-200",
+          "bg-[#363636] font-medium text-primary-foreground hover:bg-[#151515] transition-colors duration-200 cursor-pointer",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -54,11 +54,11 @@ export function ScheduledPayrolls() {
         {payrolls.map((payroll) => (
           <div
             key={payroll.id}
-            className="rounded-lg border border-[#eaeaea] bg-white"
+            className="rounded-lg border border-[#eaeaea] bg-[#F8F8F8]"
           >
             <div className="">
-              {/* Header with Date and Frequency */}
-              <div className="flex items-start justify-between bg-[#F8F8F8] p-4 rounded-tl-lg rounded-tr-lg">
+              {/* Header with Date */}
+              <div className="flex items-start justify-between bg-[#F8F8F8] p-4 rounded-t-lg">
                 <p className="text-sm text-[#0052FF]">Date Created</p>
                 <p className="text-sm font-medium text-[#101828]">
                   {payroll.dateCreated}
@@ -66,7 +66,7 @@ export function ScheduledPayrolls() {
               </div>
 
               {/* Frequency and Name */}
-              <div className="p-4 bg-white border-t border-[#EAEAEA] rounded-lg">
+              <div className="p-4 bg-white border-t border-[#EAEAEA] rounded-2xl">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[#C4C6D1] mb-1.5 font-medium">

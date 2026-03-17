@@ -26,9 +26,9 @@ function SkeletonRow() {
 }
 
 const statusStyles = {
-  Paid: "bg-[#ECFDF3] text-[#12B76A] border border-[#CAEFDC]",
-  Failed: "bg-[#FDECEC] text-[#D32828] border boder-[#F0D0D0]",
-  Pending: "bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB]",
+  SUCCESSFUL: "bg-[#ECFDF3] text-[#12B76A] border border-[#CAEFDC] px-2 py-1",
+  FAILED: "bg-[#FDECEC] text-[#D32828] border border-[#F0D0D0] px-2 py-1",
+  PENDING: "bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB] px-2 py-1",
 };
 
 export function TransactionsTable() {
@@ -150,9 +150,9 @@ export function TransactionsTable() {
 
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[transaction.status as keyof typeof statusStyles]} font-medium`}
+                      className={`py-1 rounded-full text-xs font-medium ${statusStyles[transaction.status as keyof typeof statusStyles]} capitalize font-medium`}
                     >
-                      {transaction.status}
+                      {transaction.status.toLowerCase()}
                     </span>
                   </TableCell>
                 </TableRow>

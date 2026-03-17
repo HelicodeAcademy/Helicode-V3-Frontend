@@ -56,7 +56,7 @@ export function WalletBalanceCard({
             ) : (
               <div className="flex items-center gap-3">
                 <h3 className="text-[2rem] font-bold text-[#1C232D] leading-0">
-                  {showBalance ? `${balance.toFixed(2)}` : "••••••"}
+                  {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
                 </h3>
               </div>
             )}
