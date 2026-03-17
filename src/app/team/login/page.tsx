@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { PublicRoute } from "@/components/auth/access/public-route";
 import { Toaster } from "react-hot-toast";
-import { TeamLoginForm } from "@/components/team-page/auth/talent-login-form";
+import { TeamLoginForm } from "@/components/team-dashboard/auth/talent-login-form";
 import Image from "next/image";
 
 export default function TeamLoginPage() {

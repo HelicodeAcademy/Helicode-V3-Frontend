@@ -170,7 +170,6 @@ export default function DashboardLayout({
         <SidebarProvider>
           <DashboardSidebar />
           <SidebarInset>
-            {/* removed the border bottom here as it is not needed */}
             <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
               <h1 className="text-2xl font-bold text-[#444444]">
                 {pageTitle || "Dashboard"}

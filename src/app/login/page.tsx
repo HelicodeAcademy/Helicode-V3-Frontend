@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LoginForm } from "@/components/auth/login/login-form";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
-import { PublicRoute } from "@/components/team-page/access/public-route";
+import { PublicRoute } from "@/components/team-dashboard/access/public-route";
 
 export default function LoginPage() {
   return (
