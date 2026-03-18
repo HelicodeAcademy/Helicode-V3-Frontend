@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
-import PaymentHistory from '@/components/team-dashboard/home/payment-history';
-import { SendFundsModal } from '@/components/team-dashboard/home/send-funds-modal';
+import PaymentHistory from '@/components/talent/payment-history';
+import { SendFundsModal } from '@/components/talent/send-funds-modal';
 
 const payrollData = [
   { label: 'Incoming', value: '$3,000.40' },
