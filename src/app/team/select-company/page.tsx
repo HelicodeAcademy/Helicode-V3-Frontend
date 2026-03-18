@@ -83,27 +83,7 @@ export default function SelectCompany() {
         {/* Right content area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Top navigation */}
-          <div className="flex items-center justify-between w-full">
-            {/* <Link
-              href="/signup"
-              className="text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
-            >
-              <Image
-                src="/signup/back-arrow.svg"
-                alt="back-arrow"
-                width={16}
-                height={16}
-              />
-              Go back
-            </Link> */}
-            {/* <div></div>
-            <Link
-              href="/signup"
-              className="font-medium hover:underline text-black text-sm"
-            >
-              Logout
-            </Link> */}
-          </div>
+          <div className="flex items-center justify-between w-full"></div>
 
           {/* Form */}
           <div className="w-full max-w-154 mx-auto flex-1 flex items-center justify-center">

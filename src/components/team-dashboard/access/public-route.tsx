@@ -45,8 +45,8 @@ export function PublicRoute({ children }: PublicRouteProps) {
   }
 
   //   Shows nothing if user is authenticated (this will redirect to dashboard)
-  if (isAuthenticated) {
-    return null;
-  }
+  // if (isAuthenticated) {
+  //   return null;
+  // }
   return <>{children}</>;
 }

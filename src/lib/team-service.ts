@@ -1,4 +1,4 @@
-import { teamGet, teamPostFormData, teamApiCall } from "./api-client";
+import { get, post, apiCall } from "./api-client";
 import { TeamMember, TeamFilters } from "@/store/team-store";
 
 type TeamListRaw = TeamMember[] | { data: TeamMember[]; total: number };
@@ -42,9 +42,7 @@ export async function getTeamMembers(
   //   if (filters.limit) params.set("limit", String(filters.limit));
 
   const query = params.toString();
-  const response = await teamGet<TeamListRaw>(
-    `/teams${query ? `?${query}` : ""}`,
-  );
+  const response = await get<TeamListRaw>(`/teams${query ? `?${query}` : ""}`);
 
   if (Array.isArray(response.data)) {
     return { data: response.data, total: response.data.length };
@@ -73,9 +71,9 @@ export async function addTeamMember(
   //   formData.append("contract", payload.contract);
   formData.append("contract", payload.contract, payload.contract.name);
 
-  await teamPostFormData<void>("/teams/add", formData);
+  await post<void>("/teams/add", formData);
 }
 
 export async function revokeTeamMember(teamId: string): Promise<void> {
-  await teamApiCall<void>(`/teams/${teamId}/revoke`, { method: "DELETE" });
+  await apiCall<void>(`/teams/${teamId}/revoke`, { method: "DELETE" });
 }

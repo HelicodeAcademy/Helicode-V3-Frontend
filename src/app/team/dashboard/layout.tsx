@@ -148,42 +148,42 @@ export default function TalentDashboardLayout({
   const { user } = useTeamAuth();
 
   return (
-    // <ProtectedRoute>
-    <PageTitleContext.Provider
-      value={{ title: pageTitle, setTitle: setPageTitle }}
-    >
-      <SidebarProvider>
-        <TalentSidebar />
-        <SidebarInset>
-          <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-            <h1 className="text-2xl font-bold text-[#444444]">
-              Welcome back, {user?.firstName}
-            </h1>
-            <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/notification.svg"
-                  alt="Notification"
-                  width={20}
-                  height={20}
-                />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Image
-                  src="/header/nrk_help.svg"
-                  alt="Help"
-                  width={20}
-                  height={20}
-                  style={{ width: "auto", height: "auto" }}
-                />
-              </Button>
-            </div>
-          </header>
-          <main className="flex-1 bg-[#F9FAFB]">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-      <Toaster position="top-right" />
-    </PageTitleContext.Provider>
-    // </ProtectedRoute>
+    <ProtectedRoute>
+      <PageTitleContext.Provider
+        value={{ title: pageTitle, setTitle: setPageTitle }}
+      >
+        <SidebarProvider>
+          <TalentSidebar />
+          <SidebarInset>
+            <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
+              <h1 className="text-2xl font-bold text-[#444444]">
+                Welcome back, {user?.firstName}
+              </h1>
+              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/notification.svg"
+                    alt="Notification"
+                    width={20}
+                    height={20}
+                  />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Image
+                    src="/header/nrk_help.svg"
+                    alt="Help"
+                    width={20}
+                    height={20}
+                    style={{ width: "auto", height: "auto" }}
+                  />
+                </Button>
+              </div>
+            </header>
+            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+        <Toaster position="top-right" />
+      </PageTitleContext.Provider>
+    </ProtectedRoute>
   );
 }
