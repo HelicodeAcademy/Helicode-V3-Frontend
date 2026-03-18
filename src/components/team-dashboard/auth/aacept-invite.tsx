@@ -50,7 +50,7 @@ export function AcceptInviteForm() {
       });
 
       toast.success("Account created successfully! Redirecting to login");
-      router.push("/talent/login");
+      router.push("/team/login");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
