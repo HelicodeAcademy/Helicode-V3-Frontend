@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
-import { PublicRoute } from "@/components/team-dashboard/access/public-route";
+import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { Button } from "@/components/ui/button";
 
@@ -51,7 +51,7 @@ export default function SelectCompany() {
   };
 
   return (
-    <PublicRoute>
+    <TeamPublicRoute>
       <div className="min-h-screen flex items-stretch md:flex-row flex-col">
         {/* Left sidebar with logo */}
         <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
@@ -180,6 +180,6 @@ export default function SelectCompany() {
 
         <Toaster position="top-right" />
       </div>
-    </PublicRoute>
+    </TeamPublicRoute>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTeamAuth } from "@/hooks/useTeamAuth";
+import { useTeamAuthStore } from "@/store/team/team-auth-store";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,19 +13,19 @@ interface ProtectedRouteProps {
 // Redirects to login if user is not authenticated
 // Shows loading state while checking authentication status
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function TeamProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useTeamAuth();
+  const { isAuthenticated, accessToken } = useTeamAuthStore();
 
   useEffect(() => {
     // only redirect if it has finished loading and user is not authenticated
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated || !accessToken) {
       router.push("/team/login");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, accessToken, router]);
 
   //   Loading state
-  if (isLoading) {
+  if (!isAuthenticated || !accessToken) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
@@ -34,11 +34,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         </div>
       </div>
     );
-  }
-
-  //   Shows nothing if user is not authenticated (this will redirect to login page)
-  if (!isAuthenticated) {
-    return null;
   }
 
   return <>{children}</>;

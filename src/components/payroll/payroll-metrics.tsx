@@ -32,7 +32,7 @@ export function PayrollMetrics() {
           </p>
           <div className="flex items-center gap-3">
             <h3 className="text-[2rem] font-bold text-[#1C232D]">
-              {showBalance ? "$87,420.80" : "••••••"}
+              {showBalance ? "$0.00" : "••••••"}
             </h3>
             <button
               onClick={() => setShowBalance(!showBalance)}
@@ -89,7 +89,7 @@ export function PayrollMetrics() {
             <p className="text-sm text-[#475367] font-medium mb-2">
               Available Balance
             </p>
-            <p className="text-[#1C232D] text-[2rem] font-bold">$92,000.75</p>
+            <p className="text-[#1C232D] text-[2rem] font-bold">$0.00</p>
           </div>
           <div>
             <p className="text-sm text-[#475367] font-medium">
