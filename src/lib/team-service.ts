@@ -1,4 +1,4 @@
-import { get, post, apiCall } from "./api-client";
+import { get, postFormData, apiCall } from "./api-client";
 import { TeamMember, TeamFilters } from "@/store/team-store";
 
 type TeamListRaw = TeamMember[] | { data: TeamMember[]; total: number };
@@ -71,7 +71,7 @@ export async function addTeamMember(
   //   formData.append("contract", payload.contract);
   formData.append("contract", payload.contract, payload.contract.name);
 
-  await post<void>("/teams/add", formData);
+  await postFormData<void>("/teams/add", formData);
 }
 
 export async function revokeTeamMember(teamId: string): Promise<void> {
