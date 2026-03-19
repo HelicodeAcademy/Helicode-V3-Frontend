@@ -1,9 +1,9 @@
-import { AcceptInviteForm } from "@/components/team-dashboard/auth/accept-invite";
+import { AcceptInviteExistingForm } from "@/components/team-dashboard/auth/accept-invite-existing";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
 
-export default function AcceptInvite() {
+export default function AcceptInviteExisting() {
   return (
     <TeamPublicRoute>
       <div className="h-screen flex items-stretch md:flex-row flex-col">
@@ -38,7 +38,7 @@ export default function AcceptInvite() {
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Form */}
           <div className="flex items-center justify-center h-screen">
-            <AcceptInviteForm />
+            <AcceptInviteExistingForm />
           </div>
         </div>
 

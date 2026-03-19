@@ -38,6 +38,23 @@ export async function teamLogin(
   return response.data;
 } 
 
+
+//  Accept team invite for existing team members joining another company
+//  sends OTP and email to /teams/accept-invite endpoint (no password required)
+//  Completes company invitation for existing team members
+
+export async function acceptTeamInviteExisting(data: {
+  otp: string
+  email: string
+}): Promise<AcceptInviteResponse> {
+  const response = await teamPost<AcceptInviteResponse>('/teams/accept-invite', {
+    otp: data.otp,
+    email: data.email,
+  })
+
+  return response.data
+}
+
 export async function getTeamMe(): Promise<TeamMeResponse> {
   const response = await teamGet<TeamMeResponse>("/team/me");
   return response.data;
