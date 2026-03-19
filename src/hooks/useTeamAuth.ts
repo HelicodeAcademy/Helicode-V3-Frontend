@@ -85,6 +85,7 @@ export function useTeamAuth() {
   }, [accessToken, refreshTokenIfNeeded]);
 
   const logout = () => {
+    localStorage.removeItem("team-auth-storage");
     clearTeamLoginData();
     router.push("/team/login");
     toast.success("Team logout successful!");

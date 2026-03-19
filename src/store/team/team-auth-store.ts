@@ -32,6 +32,44 @@ export interface TeamLoginResponse {
   companies: Company[];
 }
 
+export interface TeamMeResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  status: "VERIFIED" | "UNVERIFIED" | "PENDING";
+  wallet: {
+    id: string;
+    balance: number;
+  };
+  company: {
+    id: string;
+    name: string;
+    country: string;
+  };
+
+  membership: {
+    status: string;
+    department: string;
+    role: string;
+    type: string;
+    startDate: string;
+  };
+
+  payroll: {
+    amount: number;
+    frequency: string;
+    currency: string;
+  };
+
+  contract: {
+    id: string;
+    document: string;
+    isSigned: boolean;
+  };
+}
+
 interface TeamAuthStore {
   // Accept invite form data
   acceptInviteData: Partial<AcceptInviteData>;
@@ -59,6 +97,10 @@ interface TeamAuthStore {
 
   // Reset the entire Team auth flow
   resetTeamAuth: () => void;
+
+  // Hydration
+  hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useTeamAuthStore = create<TeamAuthStore>()(
@@ -126,6 +168,9 @@ export const useTeamAuthStore = create<TeamAuthStore>()(
           isLoading: false,
           error: null,
         }),
+
+      hasHydrated: false,
+      setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
     }),
     {
       name: "team-auth-storage",
@@ -139,6 +184,10 @@ export const useTeamAuthStore = create<TeamAuthStore>()(
         selectedCompanyId: state.selectedCompanyId,
         isAuthenticated: state.isAuthenticated,
       }),
+
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

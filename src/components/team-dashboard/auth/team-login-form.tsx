@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,13 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
  * Stores tokens and user data in Zustand store on success
  */
 
-interface TalentLoginFormInputs {
+interface TeamLoginFormInputs {
   email: string;
   password: string;
 }
 
 export function TeamLoginForm() {
-  const router = useRouter();
+  // const router = useRouter();
   const { setTeamLoginData, setIsLoading, isLoading } = useTeamAuthStore();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -31,14 +31,14 @@ export function TeamLoginForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<TalentLoginFormInputs>({
+  } = useForm<TeamLoginFormInputs>({
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (data: TalentLoginFormInputs) => {
+  const onSubmit = async (data: TeamLoginFormInputs) => {
     try {
       setIsLoading(true);
 
@@ -49,7 +49,14 @@ export function TeamLoginForm() {
       setTeamLoginData(loginResponse);
 
       toast.success("Login successful!");
-      router.push("/team/dashboard");
+
+      // // If only one company, auto-select and redirect to dashboard
+
+      // if (loginResponse.companies.length === 1) {
+      //   router.push("/team/dashboard");
+      // } else {
+      //   router.push("/team/select-company");
+      // }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";

@@ -16,19 +16,33 @@ interface PublicRouteProps {
 export function TeamPublicRoute({ children }: PublicRouteProps) {
   const router = useRouter();
   // const { isAuthenticated, isLoading } = useTeamAuth();
-  const { isAuthenticated, accessToken, companies } = useTeamAuthStore();
+  const { isAuthenticated, accessToken, companies, hasHydrated } =
+    useTeamAuthStore();
+  const companyCount = companies.length;
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     // Only redirect if user is authenticated
     if (isAuthenticated && accessToken) {
-      console.log(companies);
-      if (companies.length > 1) {
-        router.push("/team/select-company");
+      if (companyCount > 1) {
+        router.replace("/team/select-company");
       } else {
-        router.push("/team/dashboard");
+        router.replace("/team/dashboard");
       }
     }
-  }, [isAuthenticated, accessToken, companies, router]);
+  }, [isAuthenticated, accessToken, router, hasHydrated, companyCount]);
+
+  if (!hasHydrated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e5e7eb] border-t-[#0166f4]" />
+          <p className="text-[#667085]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   //   Loading state
   if (isAuthenticated && accessToken) {

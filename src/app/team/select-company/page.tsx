@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
-import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
+import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { Button } from "@/components/ui/button";
 
@@ -16,42 +16,64 @@ export default function SelectCompany() {
     setSelectedCompany,
     isAuthenticated,
     accessToken,
+    hasHydrated,
   } = useTeamAuthStore();
 
   useEffect(() => {
-    // If not autehticated or no companies, redirect to login
-    if (!isAuthenticated || !accessToken) {
-      router.push("/team/login");
-      return;
-    }
+    if (!hasHydrated) return;
 
-    // If only one company, auto-select and redirect
-    if (companies.length === 1) {
-      setSelectedCompany(companies[0].companyId);
-      router.push("/team/dashboard");
+    // If not authenticated or no companies, redirect to login
+    if (!isAuthenticated || !accessToken) {
+      router.replace("/team/login");
       return;
     }
 
     // If no companies, redirect to login
     if (companies.length === 0) {
-      router.push("/team/login");
+      router.replace("/team/login");
       return;
     }
-  }, [companies, isAuthenticated, accessToken, router, setSelectedCompany]);
+
+   
+
+    // If company already selected, redirect to dashboard
+    // if (selectedCompanyId) {
+    //   router.replace("/team/dashboard");
+    //   return;
+    // }
+
+    // If only one company, auto-select and redirect
+    if (companies.length === 1) {
+      setSelectedCompany(companies[0].companyId);
+      router.replace("/team/dashboard");
+      return;
+    }
+  }, [
+    companies,
+    isAuthenticated,
+    accessToken,
+    selectedCompanyId,
+    router,
+    setSelectedCompany,
+    hasHydrated,
+  ]);
 
   const handleSelectCompany = (companyId: string) => {
     setSelectedCompany(companyId);
+    console.log(selectedCompanyId, "selected company id");
+    console.log(companyId, "company id");
     router.push("/team/dashboard");
   };
 
   const handleLogout = () => {
     const { clearTeamLoginData } = useTeamAuthStore.getState();
+    localStorage.removeItem("team-auth-storage");
     clearTeamLoginData();
     router.push("/team/login");
   };
 
   return (
-    <TeamPublicRoute>
+    <TeamProtectedRoute>
       <div className="min-h-screen flex items-stretch md:flex-row flex-col">
         {/* Left sidebar with logo */}
         <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
@@ -99,7 +121,7 @@ export default function SelectCompany() {
               </div>
 
               {/* Companies Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 mt-10">
                 {companies.map((company) => (
                   <button
                     key={company.companyId}
@@ -180,6 +202,6 @@ export default function SelectCompany() {
 
         <Toaster position="top-right" />
       </div>
-    </TeamPublicRoute>
+    </TeamProtectedRoute>
   );
 }

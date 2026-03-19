@@ -1,8 +1,9 @@
-import { teamPost } from "../api-client";
+import { teamGet, teamPost } from "../api-client";
 import {
   AcceptInviteData,
   AcceptInviteResponse,
   TeamLoginResponse,
+  TeamMeResponse,
 } from "@/store/team/team-auth-store";
 
 // Accept takent invite
@@ -34,5 +35,10 @@ export async function teamLogin(
     password,
   });
 
+  return response.data;
+} 
+
+export async function getTeamMe(): Promise<TeamMeResponse> {
+  const response = await teamGet<TeamMeResponse>("/team/me");
   return response.data;
 }

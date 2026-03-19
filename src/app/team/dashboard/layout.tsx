@@ -1,6 +1,4 @@
 "use client";
-
-import { PageTitleContext } from "@/app/dashboard/layout";
 import { ContractsIcon, HomeIcon } from "@/components/icons/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -21,14 +19,24 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { LogOut, MoreVertical } from "lucide-react";
+import { ChevronDown, LogOut, MoreVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, createContext } from "react";
+import { useRouter } from "next/navigation";
 import { Toaster } from "react-hot-toast";
 import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuth } from "@/hooks/useTeamAuth";
+import { useTeamAuthStore } from "@/store/team/team-auth-store";
+
+export const TeamPageTitleContext = createContext<{
+  title: string | null;
+  setTitle: (title: string) => void;
+}>({
+  title: null,
+  setTitle: () => {},
+});
 
 const menuItems: Array<{
   icon: React.ComponentType<{ className?: string }>;
@@ -40,13 +48,25 @@ const menuItems: Array<{
   {
     icon: ContractsIcon,
     label: "Contracts",
-    href: "/talent/dashboard/contracts",
+    href: "/team/dashboard/contract",
   },
 ];
 
-function TalentSidebar() {
+function TeamDashboardSidebar() {
   const pathname = usePathname();
   const { user, logout } = useTeamAuth();
+  const router = useRouter();
+  const { companies, selectedCompanyId, setSelectedCompany } =
+    useTeamAuthStore();
+
+  const currentCompany = companies.find(
+    (c) => c.companyId === selectedCompanyId,
+  );
+
+  const handleSelectCompany = (companyId: string) => {
+    setSelectedCompany(companyId);
+    router.push("/team/dashboard");
+  };
 
   return (
     <Sidebar className="w-64 border-r border-[#eaeaea]">
@@ -61,13 +81,74 @@ function TalentSidebar() {
         </div>
       </SidebarHeader>
 
+      {/* Company Selector */}
+      <div className="px-4 py-2 mb-4">
+        {companies.length > 1 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between border-[#d0d5dd] bg-white hover:bg-[#f9fafb]"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {currentCompany?.companyName?.substring(0, 1).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-[#101828] truncate">
+                    {currentCompany?.companyName}
+                  </span>
+                </div>
+                <ChevronDown className="h-4 w-4 text-[#667085] shrink-0" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              {companies.map((company) => (
+                <DropdownMenuItem
+                  key={company.companyId}
+                  onClick={() => handleSelectCompany(company.companyId)}
+                  className={
+                    selectedCompanyId === company.companyId
+                      ? "bg-[#eff4ff]"
+                      : ""
+                  }
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {company.companyName?.substring(0, 1).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#101828]">
+                        {company.companyName}
+                      </p>
+                      <p className="text-xs text-[#667085]">{company.status}</p>
+                    </div>
+                    {selectedCompanyId === company.companyId && (
+                      <div className="h-2 w-2 rounded-full bg-[#0166f4] shrink-0" />
+                    )}
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#f9fafb] border border-[#d0d5dd]">
+            <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+              {currentCompany?.companyName?.substring(0, 1).toUpperCase()}
+            </div>
+            <span className="text-sm font-medium text-[#101828] truncate">
+              {currentCompany?.companyName}
+            </span>
+          </div>
+        )}
+      </div>
+
       <SidebarContent className="px-4">
         <SidebarMenu>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive =
-              item.href === "/talent/dashboard"
-                ? pathname === "/talent/dashboard"
+              item.href === "/team/dashboard"
+                ? pathname === "/team/dashboard"
                 : pathname.startsWith(item.href);
 
             return (
@@ -139,7 +220,7 @@ function TalentSidebar() {
   );
 }
 
-export default function TalentDashboardLayout({
+export default function TeamDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -149,11 +230,11 @@ export default function TalentDashboardLayout({
 
   return (
     <TeamProtectedRoute>
-      <PageTitleContext.Provider
+      <TeamPageTitleContext.Provider
         value={{ title: pageTitle, setTitle: setPageTitle }}
       >
         <SidebarProvider>
-          <TalentSidebar />
+          <TeamDashboardSidebar />
           <SidebarInset>
             <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
               <h1 className="text-2xl font-bold text-[#444444]">
@@ -183,7 +264,7 @@ export default function TalentDashboardLayout({
           </SidebarInset>
         </SidebarProvider>
         <Toaster position="top-right" />
-      </PageTitleContext.Provider>
+      </TeamPageTitleContext.Provider>
     </TeamProtectedRoute>
   );
 }

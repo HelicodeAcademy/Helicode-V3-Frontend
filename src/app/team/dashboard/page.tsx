@@ -1,34 +1,58 @@
-'use client';
+"use client";
 
-import { PageTitleContext } from '@/app/dashboard/layout';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useContext, useEffect, useState } from 'react';
+import { TeamPageTitleContext } from "./layout";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Eye, EyeOff } from 'lucide-react';
-import PaymentHistory from '@/components/team-dashboard/home/payment-history';
-import { SendFundsModal } from '@/components/team-dashboard/home/send-funds-modal';
+} from "@/components/ui/select";
+import { Eye, EyeOff } from "lucide-react";
+import PaymentHistory from "@/components/team-dashboard/home/payment-history";
+import { SendFundsModal } from "@/components/team-dashboard/home/send-funds-modal";
+import toast from "react-hot-toast";
+import { getTeamMe } from "@/lib/team/team-auth-service";
+import { TeamMeResponse } from "@/store/team/team-auth-store";
 
 const payrollData = [
-  { label: 'Incoming', value: '$3,000.40' },
-  { label: 'Next Payroll', value: 'Mar 31, 2026' },
+  { label: "Incoming", value: "$3,000.40" },
+  { label: "Next Payroll", value: "Mar 31, 2026" },
 ];
 
 export default function TalentDashboardHomePage() {
-  const { setTitle } = useContext(PageTitleContext);
-  const [currency, setCurrency] = useState<string>('usd');
+  const { setTitle } = useContext(TeamPageTitleContext);
+  const [currency, setCurrency] = useState<string>("usd");
   const [showBalance, setShowBalance] = useState<boolean>(true);
   const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [teamData, setTeamData] = useState<TeamMeResponse | null>(null);
 
   useEffect(() => {
-    setTitle('Home');
+    setTitle("Home");
+    fetchTeamData();
   }, [setTitle]);
+
+  const fetchTeamData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getTeamMe();
+      setTeamData(data);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to fetch team data";
+      toast.error(errorMessage);
+      console.error("Team data fetch error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const balance = teamData?.wallet.balance ?? 0;
+
   return (
     <div className="py-4 px-8 space-y-6">
       <div className="bg-white border border-[#F2F2F2] p-6 rounded-2xl">
@@ -74,20 +98,28 @@ export default function TalentDashboardHomePage() {
                     Available Balance
                   </p>
                   <div className="flex items-center gap-2">
-                    <div className="text-[2rem] font-bold text-[#1C232D]">
-                      {showBalance ? `$500.00` : '••••••'}
-                    </div>
+                    {isLoading ? (
+                      <div className="h-12 w-40 bg-gray-200 rounded animate-pulse"></div>
+                    ) : (
+                      <>
+                        <div className="text-[2rem] font-bold text-[#1C232D]">
+                          {showBalance ? `${balance.toFixed(2)} ` : "••••••"}
 
-                    <button
-                      onClick={() => setShowBalance(!showBalance)}
-                      className="text-[#141B34] hover:text-[#667085] transition-colors"
-                    >
-                      {showBalance ? (
-                        <Eye className="h-5 w-5" />
-                      ) : (
-                        <EyeOff className="h-5 w-5" />
-                      )}
-                    </button>
+                          {/* ${teamData?.payroll?.currency} */}
+                        </div>
+
+                        <button
+                          onClick={() => setShowBalance(!showBalance)}
+                          className="text-[#141B34] hover:text-[#667085] transition-colors"
+                        >
+                          {showBalance ? (
+                            <Eye className="h-5 w-5" />
+                          ) : (
+                            <EyeOff className="h-5 w-5" />
+                          )}
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

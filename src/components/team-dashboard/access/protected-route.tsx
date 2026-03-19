@@ -15,17 +15,20 @@ interface ProtectedRouteProps {
 
 export function TeamProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, accessToken } = useTeamAuthStore();
+  const { isAuthenticated, accessToken, hasHydrated } = useTeamAuthStore();
 
   useEffect(() => {
-    // only redirect if it has finished loading and user is not authenticated
+    // Only check auth after Zustand has hydrated from localStorage
+    if (!hasHydrated) return;
+
+    // Redirect if user is not authenticated after hydration
     if (!isAuthenticated || !accessToken) {
       router.push("/team/login");
     }
-  }, [isAuthenticated, accessToken, router]);
+  }, [hasHydrated, isAuthenticated, accessToken, router]);
 
-  //   Loading state
-  if (!isAuthenticated || !accessToken) {
+  // Show loading state while store is being hydrated
+  if (!hasHydrated) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">
@@ -36,5 +39,18 @@ export function TeamProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  return <>{children}</>;
+  // User is authenticated, render children
+  if (isAuthenticated && accessToken) {
+    return <>{children}</>;
+  }
+
+  // User is not authenticated, show loading before redirect
+  return (
+    <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e5e7eb] border-t-[#0166f4]" />
+        <p className="text-[#667085]">Redirecting...</p>
+      </div>
+    </div>
+  );
 }
