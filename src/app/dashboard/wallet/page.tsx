@@ -8,6 +8,7 @@ import { FundWalletModal } from "@/components/wallet/fund-wallet-modal";
 import { FundCryptoModal } from "@/components/wallet/fund-crypto-modal";
 import { FundCardModal } from "@/components/wallet/fund-card-modal";
 import { WalletFundedModal } from "@/components/wallet/wallet-funded-modal";
+import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 
 export default function WalletPage() {
   const { setTitle } = useContext(PageTitleContext);
@@ -17,6 +18,7 @@ export default function WalletPage() {
   const [fundCryptoOpen, setFundCryptoOpen] = useState(false);
   const [fundCardOpen, setFundCardOpen] = useState(false);
   const [fundedSuccessOpen, setFundedSuccessOpen] = useState(false);
+  const [withdrawFundsOpen, setWithdrawFundsOpen] = useState(false);
 
   useEffect(() => {
     setTitle("Wallet");
@@ -27,8 +29,7 @@ export default function WalletPage() {
   };
 
   const handleWithdraw = () => {
-    // TODO: Implement withdraw flow
-    console.log("Withdraw funds");
+    setWithdrawFundsOpen(true);
   };
 
   const handleSelectCrypto = () => {
@@ -67,6 +68,11 @@ export default function WalletPage() {
       <WalletFundedModal
         open={fundedSuccessOpen}
         onOpenChange={setFundedSuccessOpen}
+      />
+
+      <WithdrawFundsModal
+        open={withdrawFundsOpen}
+        onOpenChange={setWithdrawFundsOpen}
       />
     </div>
   );
