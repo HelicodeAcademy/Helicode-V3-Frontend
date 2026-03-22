@@ -100,6 +100,10 @@ interface AuthStore {
 
   // Reset the entire auth flow
   resetAuth: () => void;
+
+  // Hydration state
+  hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -170,6 +174,10 @@ export const useAuthStore = create<AuthStore>()(
           user: null,
           recoveryData: {},
         }),
+
+      // Hydration state
+      hasHydrated: false,
+      setHasHydrated: (state) => set({ hasHydrated: state }),
     }),
 
     {
@@ -182,6 +190,10 @@ export const useAuthStore = create<AuthStore>()(
         companyId: state.companyId,
         isAuthenticated: state.isAuthenticated,
       }),
+
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

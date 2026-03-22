@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/auth-store";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,13 +17,16 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
+  const { hasHydrated } = useAuthStore();
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     // only redirect if it has finished loading and user is not authenticated
     if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [ hasHydrated, isAuthenticated, isLoading, router,]);
 
   //   Loading state
   if (isLoading) {

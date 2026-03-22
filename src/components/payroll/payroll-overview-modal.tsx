@@ -1,6 +1,11 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PayrollOverviewModalProps {
   open: boolean;
@@ -32,6 +37,7 @@ export function PayrollOverviewModal({
         className="sm:max-w-2xl gap-0 bg-[#F8F8F8]"
         showCloseButton={false}
       >
+        <DialogTitle className="sr-only">Payroll Overview</DialogTitle>
         <DialogHeader className="flex-row items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-2xl font-bold text-[#0F112A]">Helicode Inc</h2>

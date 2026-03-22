@@ -1,112 +1,180 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-
-interface PayrollCard {
-  id: string;
-  dateCreated: string;
-  frequency: string;
-  name: string;
-  amount: string;
-  status: "Active" | "Inactive";
-}
-
-const payrolls: PayrollCard[] = [
-  {
-    id: "1",
-    dateCreated: "24/02/2026",
-    frequency: "Monthly",
-    name: "Helicode Payroll",
-    amount: "$100,000",
-    status: "Active",
-  },
-  {
-    id: "2",
-    dateCreated: "24/02/2026",
-    frequency: "Monthly",
-    name: "Only Contractor",
-    amount: "$100,000",
-    status: "Active",
-  },
-  {
-    id: "3",
-    dateCreated: "24/02/2026",
-    frequency: "Monthly",
-    name: "Helicode Payroll",
-    amount: "$100,000",
-    status: "Active",
-  },
-  {
-    id: "4",
-    dateCreated: "24/02/2026",
-    frequency: "Monthly",
-    name: "Helicode Payroll",
-    amount: "$100,000",
-    status: "Active",
-  },
-];
+import { getPayrollGroups, PayrollGroup } from "@/lib/payroll-service";
+import toast from "react-hot-toast";
+import { EditPayrollModal } from "./edit-payroll-modal";
+import { format } from "date-fns";
+import { PayrollStatusModal } from "./payroll-status-modal";
 
 export function ScheduledPayrolls() {
-  return (
-    <div className="space-y-4 bg-white p-6 rounded-lg">
-      <h2 className="text-sm font-medium text-[#475367]">Scheduled Payrolls</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {payrolls.map((payroll) => (
-          <div
-            key={payroll.id}
-            className="rounded-lg border border-[#eaeaea] bg-[#F8F8F8]"
-          >
-            <div className="">
-              {/* Header with Date */}
-              <div className="flex items-start justify-between bg-[#F8F8F8] p-4 rounded-t-lg">
-                <p className="text-sm text-[#0052FF]">Date Created</p>
-                <p className="text-sm font-medium text-[#101828]">
-                  {payroll.dateCreated}
-                </p>
-              </div>
+  const [payrolls, setPayrolls] = useState<PayrollGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editingPayroll, setEditingPayroll] = useState<PayrollGroup | null>(
+    null,
+  );
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [statusPayroll, setStatusPayroll] = useState<PayrollGroup | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
-              {/* Frequency and Name */}
-              <div className="p-4 bg-white border-t border-[#EAEAEA] rounded-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[#C4C6D1] mb-1.5 font-medium">
-                      {payroll.frequency}
-                    </p>
-                    <h3 className="text-2xl font-bold">{payroll.name}</h3>
-                  </div>
-                  <div className="border border-[#CAEFDC] text-[#4D8F72] text-xs font-medium px-2 py-1 rounded-full bg-[#ECFDF3]">
-                    {payroll.status}
-                  </div>
-                </div>
+  useEffect(() => {
+    fetchPayrollGroups();
+  }, []);
 
-                <hr className="border-dashed border-t border-[#D4D6E2] w-full my-6" />
+  const fetchPayrollGroups = async () => {
+    try {
+      setIsLoading(true);
+      const groups = await getPayrollGroups();
+      setPayrolls(groups);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch payroll groups";
+      toast.error(errorMessage);
+      console.error("Payroll groups fetch error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-                <div className="flex items-center justify-between">
-                  {/* Amount */}
-                  <div className="text-2xl font-bold">{payroll.amount}</div>
+  const handleEditClick = (payroll: PayrollGroup) => {
+    setEditingPayroll(payroll);
+    setShowEditModal(true);
+  };
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-[#1f2937] text-white hover:bg-[#1f2937]/90 h-9 px-3 py-2"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      //   variant="ghost"
-                      className="text-[#f04438] bg-[#FFF3F3] hover:bg-transparent px-3 py-2 h-9"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+  const handleEditSuccess = () => {
+    setShowEditModal(false);
+    setEditingPayroll(null);
+    fetchPayrollGroups();
+  };
+
+  const handleStatusClick = (payroll: PayrollGroup) => {
+    setStatusPayroll(payroll);
+    setShowStatusModal(true);
+  };
+
+  const handleStatusSuccess = () => {
+    setShowStatusModal(false);
+    setStatusPayroll(null);
+    fetchPayrollGroups();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-[#101828]">
+          Scheduled Payrolls
+        </h2>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#e5e7eb] border-t-[#0166f4] mx-auto mb-3"></div>
+            <p className="text-[#667085]">Loading payroll groups...</p>
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="space-y-4 bg-white p-6 rounded-lg">
+        <h2 className="text-sm font-medium text-[#475367]">
+          Scheduled Payrolls
+        </h2>
+        {payrolls.length === 0 ? (
+          <div className="rounded-lg border border-[#eaeaea] bg-white p-12 text-center">
+            <p className="text-[#667085]">
+              No scheduled payrolls yet. Create your first payroll group.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {payrolls.map((payroll) => (
+              <div
+                key={payroll.id}
+                className="rounded-lg border border-[#eaeaea] bg-[#F8F8F8]"
+              >
+                <div className="">
+                  {/* Header with Date */}
+                  <div className="flex items-start justify-between bg-[#F8F8F8] p-4 rounded-t-lg">
+                    <p className="text-sm text-[#0052FF]">Date Created</p>
+                    <p className="text-sm font-medium text-[#101828]">
+                      {format(payroll.createdAt as string, "MMM dd, yyyy") ||
+                        new Date().toISOString()}
+                    </p>
+                  </div>
+
+                  {/* Frequency and Name */}
+                  <div className="p-4 bg-white border-t border-[#EAEAEA] rounded-2xl">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[#C4C6D1] mb-1.5 font-medium">
+                          {payroll.frequency}
+                        </p>
+                        <h3 className="text-2xl font-bold">{payroll.name}</h3>
+                      </div>
+                      <div className="border border-[#CAEFDC] text-[#4D8F72] text-xs font-medium px-2 py-1 rounded-full bg-[#ECFDF3]">
+                        {payroll.isActive ? "Active" : "Inactive"}
+                      </div>
+                    </div>
+
+                    <hr className="border-dashed border-t border-[#D4D6E2] w-full my-6" />
+
+                    <div className="flex items-center justify-between">
+                      {/* Amount */}
+                      {/* <div className="text-2xl font-bold">{payroll.}</div> */}
+                      <div></div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleEditClick(payroll)}
+                          size="sm"
+                          className="bg-[#1f2937] text-white hover:bg-[#1f2937]/90 h-9 px-3 py-2"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          className={`hover:bg-transparent px-3 py-2 h-9 ${
+                            payroll.isActive
+                              ? "text-[#f04438] bg-[#FFF3F3]"
+                              : "text-[#0052FF] bg-[#ECF2FF]"
+                          }`}
+                          onClick={() => handleStatusClick(payroll)}
+                        >
+                          {payroll.isActive ? "Deactivate" : "Activate"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {editingPayroll && showEditModal && (
+        <EditPayrollModal
+          payroll={editingPayroll}
+          open={showEditModal}
+          onOpenChange={setShowEditModal}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {statusPayroll && (
+        <PayrollStatusModal
+          payrollId={statusPayroll.id}
+          payrollName={statusPayroll.name}
+          isActive={statusPayroll.isActive}
+          open={showStatusModal}
+          onOpenChange={setShowStatusModal}
+          onSuccess={handleStatusSuccess}
+        />
+      )}
+    </>
   );
 }

@@ -10,34 +10,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { X } from "lucide-react";
+import { Loader2, X, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { useTeamStore } from "@/store/team-store";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { createPayrollGroup } from "@/lib/payroll-service";
+import { type TeamMember } from "@/store/team-store";
 
 interface SchedulePayrollFormProps {
   onSuccess?: () => void;
 }
 
-const teamMembers = [
-  { id: 1, name: "Vandross Idiake" },
-  { id: 2, name: "Flyin Odebunmi" },
-  { id: 3, name: "John Doe" },
-  { id: 4, name: "Jane Smith" },
-];
-
 export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
+  const router = useRouter();
   const [groupName, setGroupName] = useState("");
   const [frequency, setFrequency] = useState("monthly");
-  const [recipients, setRecipients] = useState<typeof teamMembers>([
-    { id: 1, name: "Vandross Idiake" },
-    { id: 2, name: "Flyin Odebunmi" },
-    { id: 3, name: "Vandross Idiake" },
-  ]);
+  const [recipients, setRecipients] = useState<TeamMember[]>([]);
   const [searchInput, setSearchInput] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAddRecipient = (member: (typeof teamMembers)[0]) => {
-    if (!recipients.find((r) => r.id === member.id && r.name === member.name)) {
+  const { members } = useTeamStore();
+
+  const handleAddRecipient = (member: TeamMember) => {
+    if (!recipients.find((r) => r.id === member.id)) {
       setRecipients([...recipients, member]);
     }
     setSearchInput("");
@@ -48,18 +54,69 @@ export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
   };
 
   const handleSelectAll = () => {
-    setRecipients(teamMembers);
+    setRecipients(members);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSuccess) {
-      onSuccess();
+    if (!groupName.trim()) {
+      toast.error("Please enter a payroll group name.");
+      return;
+    }
+
+    if (recipients.length === 0) {
+      toast.error("Please select at least one recipient.");
+      return;
+    }
+
+    if (!startDate) {
+      toast.error("Please select a start date.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      type Frequency =
+        | "WEEKLY"
+        | "BIWEEKLY"
+        | "MONTHLY"
+        | "QUARTERLY"
+        | "ANNUAL";
+
+      const frequencyMap: Record<string, Frequency> = {
+        weekly: "WEEKLY",
+        biweekly: "BIWEEKLY",
+        monthly: "MONTHLY",
+        quarterly: "QUARTERLY",
+        annual: "ANNUAL",
+      };
+
+      await createPayrollGroup({
+        name: groupName,
+        teamIds: recipients.map((r) => r.id),
+        frequency: frequencyMap[frequency.toLowerCase()] || "MONTHLY",
+        startDate: format(startDate!, "yyyy-MM-dd"),
+      });
+      toast.success("Payroll group created successfully!");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/dashboard/payroll");
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create payroll group";
+      toast.error(errorMessage);
+      console.error("Payroll group creation error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const filteredMembers = teamMembers.filter((member) =>
-    member.name.toLowerCase().includes(searchInput.toLowerCase()),
+  const filteredMembers = members.filter((member) =>
+    `${member.fullName}`.toLowerCase().includes(searchInput.toLowerCase()),
   );
 
   return (
@@ -125,7 +182,7 @@ export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
                 key={idx}
                 className="inline-flex items-center gap-2 bg-blue-50 text-[#0166f4] px-3 py-1 rounded-full text-sm"
               >
-                <span>{recipient.name}</span>
+                <span>{recipient.fullName}</span>
                 <button
                   type="button"
                   onClick={() => handleRemoveRecipient(idx)}
@@ -147,7 +204,7 @@ export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
                   onClick={() => handleAddRecipient(member)}
                   className="w-full text-left px-4 py-2 hover:bg-[#f9fafb] text-sm text-[#101828]"
                 >
-                  {member.name}
+                  {member.fullName}
                 </button>
               ))}
             </div>
@@ -158,22 +215,45 @@ export function SchedulePayrollForm({ onSuccess }: SchedulePayrollFormProps) {
           <label className="block text-sm font-medium text-[#101828] mb-3">
             Select start date <span className="text-[#FF383C]">*</span>
           </label>
-          <Input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border-[#e5e7eb] focus:border-[#0166f4]"
-            required
-          />
+          <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left font-normal"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "MMM dd, yyyy") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={(date) => {
+                  setStartDate(date);
+                  setStartDateOpen(false);
+                }}
+                autoFocus
+                captionLayout="dropdown-years"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="flex justify-end pt-2">
           <Button
             type="submit"
             variant={"primary"}
-            className="bg-[#1f2937] text-white hover:bg-[#1f2937]/90"
+            className=""
+            disabled={isSubmitting}
           >
-            Schedule Payroll
+            {isSubmitting ? (
+              <div className="flex justify-between items-center">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            ) : (
+              "Schedule Payroll"
+            )}
           </Button>
         </div>
       </form>

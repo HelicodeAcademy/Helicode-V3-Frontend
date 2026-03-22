@@ -251,7 +251,6 @@ export function KYCForm({ onSuccess }: KYCFormProps) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to submit KYC";
       toast.error(errorMessage);
-      toast.error("Testing toast");
       console.error("KYC submission error:", error);
     } finally {
       setIsLoading(false);

@@ -99,7 +99,7 @@ export default function TalentDashboardHomePage() {
                   </p>
                   <div className="flex items-center gap-2">
                     {isLoading ? (
-                      <div className="h-12 w-40 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-10 w-36 bg-gray-200 rounded animate-pulse"></div>
                     ) : (
                       <>
                         <div className="text-[2rem] font-bold text-[#1C232D]">

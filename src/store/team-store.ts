@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export type WorkerType = "CONTRACTOR" | "EMPLOYEE";
 export type TeamStatus = "Active" | "Inactive" | "Pending";
@@ -47,19 +48,32 @@ const DEFAULT_FILTERS: TeamFilters = {
   limit: 10,
 };
 
-export const useTeamStore = create<TeamStore>((set) => ({
-  members: [],
-  totalCount: 0,
-  filters: DEFAULT_FILTERS,
-  isLoading: false,
-  isSubmitting: false,
-  error: null,
+export const useTeamStore = create<TeamStore>()(
+  persist(
+    (set) => ({
+      members: [],
+      totalCount: 0,
+      filters: DEFAULT_FILTERS,
+      isLoading: false,
+      isSubmitting: false,
+      error: null,
 
-  setMembers: (members, totalCount) => set({ members, totalCount }),
-  setFilters: (filters) =>
-    set((state) => ({ filters: { ...state.filters, ...filters } })),
-  setIsLoading: (isLoading) => set({ isLoading }),
-  setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
-  setError: (error) => set({ error }),
-  resetFilters: () => set({ filters: DEFAULT_FILTERS }),
-}));
+      setMembers: (members, totalCount) => set({ members, totalCount }),
+      setFilters: (filters) =>
+        set((state) => ({ filters: { ...state.filters, ...filters } })),
+      setIsLoading: (isLoading) => set({ isLoading }),
+      setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
+      setError: (error) => set({ error }),
+      resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+    }),
+    {
+      name: "team-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        members: state.members,
+        totalCount: state.totalCount,
+        filters: state.filters,
+      }),
+    },
+  ),
+);
