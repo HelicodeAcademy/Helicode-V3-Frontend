@@ -1,38 +1,46 @@
-"use client";
+'use client';
 
-import { TeamPageTitleContext } from "./layout";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useContext, useEffect, useState } from "react";
+import { TeamPageTitleContext } from './layout';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { useContext, useEffect, useState } from 'react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Eye, EyeOff } from "lucide-react";
-import PaymentHistory from "@/components/team-dashboard/home/payment-history";
-import { SendFundsModal } from "@/components/team-dashboard/home/send-funds-modal";
-import toast from "react-hot-toast";
-import { getTeamMe } from "@/lib/team/team-auth-service";
-import { TeamMeResponse } from "@/store/team/team-auth-store";
+} from '@/components/ui/select';
+import { Eye, EyeOff } from 'lucide-react';
+import PaymentHistory from '@/components/team-dashboard/home/payment-history';
+import { SendFundsModal } from '@/components/team-dashboard/home/send-funds-modal';
+import toast from 'react-hot-toast';
+import { getTeamMe } from '@/lib/team/team-auth-service';
+import { TeamMeResponse } from '@/store/team/team-auth-store';
+import { TalentWithdrawFundsModal } from '@/components/team-dashboard/home/withdraw-funds-modal';
 
 const payrollData = [
-  { label: "Incoming", value: "$3,000.40" },
-  { label: "Next Payroll", value: "Mar 31, 2026" },
+  { label: 'Incoming', value: '$3,000.40' },
+  { label: 'Next Payroll', value: 'Mar 31, 2026' },
 ];
 
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
-  const [currency, setCurrency] = useState<string>("usd");
+  const [currency, setCurrency] = useState<string>('usd');
   const [showBalance, setShowBalance] = useState<boolean>(true);
   const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [teamData, setTeamData] = useState<TeamMeResponse | null>(null);
+  const [withdrawFundsModalOpen, setWithdrawFundsModalOpen] =
+    useState<boolean>(false);
+
+  const handleSelectCrypto = () => {
+    setWithdrawFundsModalOpen(false);
+    setSendFundsModalOpen(true);
+  };
 
   useEffect(() => {
-    setTitle("Home");
+    setTitle('Home');
     fetchTeamData();
   }, [setTitle]);
 
@@ -43,9 +51,9 @@ export default function TalentDashboardHomePage() {
       setTeamData(data);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to fetch team data";
+        error instanceof Error ? error.message : 'Failed to fetch team data';
       toast.error(errorMessage);
-      console.error("Team data fetch error:", error);
+      console.error('Team data fetch error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +111,7 @@ export default function TalentDashboardHomePage() {
                     ) : (
                       <>
                         <div className="text-[2rem] font-bold text-[#1C232D]">
-                          {showBalance ? `${balance.toFixed(2)} ` : "••••••"}
+                          {showBalance ? `${balance.toFixed(2)} ` : '••••••'}
 
                           {/* ${teamData?.payroll?.currency} */}
                         </div>
@@ -146,7 +154,7 @@ export default function TalentDashboardHomePage() {
         <hr className="my-6" />
 
         <div className="flex gap-3">
-          <Button
+          {/* <Button
             className="bg-[#0052FF] rounded-lg text-white font-medium"
             onClick={() => setSendFundsModalOpen(true)}
           >
@@ -157,11 +165,15 @@ export default function TalentDashboardHomePage() {
               height={16}
             />
             Send
-          </Button>
-          <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
+          </Button> */}
+          <Button
+            onClick={() => setWithdrawFundsModalOpen(true)}
+            className="bg-[#0052FF] rounded-lg text-white items-center font-medium hover:bg-[#0052FF]/50"
+          >
             <Image
-              src="/home/arrow-narrow-down-left.svg"
+              src="/home/arrow-narrow-up-right-white.svg"
               alt="withdraw"
+              className="rotate-180"
               width={16}
               height={16}
             />
@@ -177,6 +189,11 @@ export default function TalentDashboardHomePage() {
       <SendFundsModal
         open={sendFundsModalOpen}
         onOpenChange={setSendFundsModalOpen}
+      />
+      <TalentWithdrawFundsModal
+        open={withdrawFundsModalOpen}
+        onOpenChange={setWithdrawFundsModalOpen}
+        onSelectCrypto={handleSelectCrypto}
       />
     </div>
   );
