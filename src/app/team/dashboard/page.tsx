@@ -4,6 +4,7 @@ import { TeamPageTitleContext } from './layout';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useContext, useEffect, useState } from 'react';
+import { addDays, addHours, addMonths, format, isValid, parseISO } from 'date-fns';
 import {
   Select,
   SelectContent,
@@ -22,11 +23,6 @@ import {
   getTeamTransactions,
   TeamTransactionData,
 } from '@/lib/team/team-transaction-service';
-
-const payrollData = [
-  { label: 'Incoming', value: '$3,000.40' },
-  { label: 'Next Payroll', value: 'Mar 31, 2026' },
-];
 
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -85,6 +81,81 @@ export default function TalentDashboardHomePage() {
 
   const balance = teamData?.wallet.balance ?? 0;
 
+  const getCurrencySymbol = (currency?: string) => {
+    switch (currency?.toUpperCase()) {
+      case 'USD':
+      case 'USDC':
+      case 'USDT':
+        return '$';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      default:
+        return currency ?? '';
+    }
+  };
+
+  const formatIncomingAmount = (amount?: number, currency?: string) => {
+    if (typeof amount !== 'number') return '--';
+
+    const symbol = getCurrencySymbol(currency);
+    return `${symbol}${amount.toFixed(2)}`;
+  };
+
+  const calculateNextPayroll = (
+    frequency?: string,
+    startDate?: string
+  ) => {
+    if (!frequency || !startDate) return '--';
+
+    const anchorDate = parseISO(startDate);
+    if (!isValid(anchorDate)) return '--';
+
+    const now = new Date();
+    let nextDate = anchorDate;
+
+    while (nextDate <= now) {
+      switch (frequency.toUpperCase()) {
+        case 'DAILY':
+          nextDate = addDays(nextDate, 1);
+          break;
+        case 'WEEKLY':
+          nextDate = addDays(nextDate, 7);
+          break;
+        case 'MONTHLY':
+          nextDate = addMonths(nextDate, 1);
+          break;
+        case 'HOURLY':
+          nextDate = addHours(nextDate, 1);
+          break;
+        default:
+          return '--';
+      }
+    }
+
+    return frequency.toUpperCase() === 'HOURLY'
+      ? format(nextDate, 'MMM d, yyyy hh:mm a')
+      : format(nextDate, 'MMM d, yyyy');
+  };
+
+  const payrollData = [
+    {
+      label: 'Incoming',
+      value: formatIncomingAmount(
+        teamData?.payroll.amount,
+        teamData?.payroll.currency
+      ),
+    },
+    {
+      label: 'Next Payroll',
+      value: calculateNextPayroll(
+        teamData?.payroll.frequency,
+        teamData?.membership.startDate
+      ),
+    },
+  ];
+
   return (
     <div className="py-4 px-8 space-y-6">
       <div className="bg-white border border-[#F2F2F2] p-6 rounded-2xl">
@@ -135,9 +206,9 @@ export default function TalentDashboardHomePage() {
                     ) : (
                       <>
                         <div className="text-[2rem] font-bold text-[#1C232D]">
-                          {showBalance ? `${balance.toFixed(2)} ` : '••••••'}
-
-                          {/* ${teamData?.payroll?.currency} */}
+                          {showBalance
+                            ? `${getCurrencySymbol(teamData?.payroll.currency)}${balance.toFixed(2)}`
+                            : '••••••'}
                         </div>
 
                         <button
