@@ -80,6 +80,7 @@ export default function TalentDashboardHomePage() {
   };
 
   const balance = teamData?.wallet.balance ?? 0;
+  const selectedCurrency = currency.toUpperCase();
 
   const getCurrencySymbol = (currency?: string) => {
     switch (currency?.toUpperCase()) {
@@ -144,7 +145,7 @@ export default function TalentDashboardHomePage() {
       label: 'Incoming',
       value: formatIncomingAmount(
         teamData?.payroll.amount,
-        teamData?.payroll.currency
+        selectedCurrency
       ),
     },
     {
@@ -207,7 +208,7 @@ export default function TalentDashboardHomePage() {
                       <>
                         <div className="text-[2rem] font-bold text-[#1C232D]">
                           {showBalance
-                            ? `${getCurrencySymbol(teamData?.payroll.currency)}${balance.toFixed(2)}`
+                            ? `${getCurrencySymbol(selectedCurrency)}${balance.toFixed(2)}`
                             : '••••••'}
                         </div>
 
