@@ -18,6 +18,10 @@ import toast from 'react-hot-toast';
 import { getTeamMe } from '@/lib/team/team-auth-service';
 import { TeamMeResponse } from '@/store/team/team-auth-store';
 import { TalentWithdrawFundsModal } from '@/components/team-dashboard/home/withdraw-funds-modal';
+import {
+  getTeamTransactions,
+  TeamTransactionData,
+} from '@/lib/team/team-transaction-service';
 
 const payrollData = [
   { label: 'Incoming', value: '$3,000.40' },
@@ -31,6 +35,9 @@ export default function TalentDashboardHomePage() {
   const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [teamData, setTeamData] = useState<TeamMeResponse | null>(null);
+  const [recentTransactions, setRecentTransactions] = useState<
+    TeamTransactionData[]
+  >([]);
   const [withdrawFundsModalOpen, setWithdrawFundsModalOpen] =
     useState<boolean>(false);
 
@@ -42,6 +49,7 @@ export default function TalentDashboardHomePage() {
   useEffect(() => {
     setTitle('Home');
     fetchTeamData();
+    fetchTeamTransactions();
   }, [setTitle]);
 
   const fetchTeamData = async () => {
@@ -56,6 +64,22 @@ export default function TalentDashboardHomePage() {
       console.error('Team data fetch error:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchTeamTransactions = async () => {
+    try {
+      setIsLoading(true);
+      const transactions = await getTeamTransactions();
+      setRecentTransactions(transactions.data);
+      console.log('Team transactions:', transactions);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to fetch team transactions';
+      toast.error(errorMessage);
+      console.error('Team transactions fetch error:', error);
     }
   };
 
@@ -183,7 +207,7 @@ export default function TalentDashboardHomePage() {
       </div>
 
       <div className="">
-        <PaymentHistory />
+        <PaymentHistory payments={recentTransactions} />
       </div>
 
       <SendFundsModal
