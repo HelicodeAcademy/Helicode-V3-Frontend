@@ -4,32 +4,25 @@ import { TeamPageTitleContext } from "./layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
-import {
-  addDays,
-  addHours,
-  addMonths,
-  format,
-  isValid,
-  parseISO,
-} from 'date-fns';
+import { format } from "date-fns";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Eye, EyeOff } from 'lucide-react';
-import PaymentHistory from '@/components/team-dashboard/home/payment-history';
-import { SendFundsModal } from '@/components/team-dashboard/home/send-funds-modal';
-import toast from 'react-hot-toast';
-import { getTeamMe } from '@/lib/team/team-auth-service';
-import { TeamMeResponse } from '@/store/team/team-auth-store';
-import { TalentWithdrawFundsModal } from '@/components/team-dashboard/home/withdraw-funds-modal';
+} from "@/components/ui/select";
+import { Eye, EyeOff } from "lucide-react";
+import PaymentHistory from "@/components/team-dashboard/home/payment-history";
+import { SendFundsModal } from "@/components/team-dashboard/home/send-funds-modal";
+import toast from "react-hot-toast";
+import { getTeamMe } from "@/lib/team/team-auth-service";
+import { TeamMeResponse } from "@/store/team/team-auth-store";
+import { TalentWithdrawFundsModal } from "@/components/team-dashboard/home/withdraw-funds-modal";
 import {
   getTeamTransactions,
   TeamTransactionData,
-} from '@/lib/team/team-transaction-service';
+} from "@/lib/team/team-transaction-service";
 
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -78,9 +71,9 @@ export default function TalentDashboardHomePage() {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Failed to fetch team transactions';
+          : "Failed to fetch team transactions";
       toast.error(errorMessage);
-      console.error('Team transactions fetch error:', error);
+      console.error("Team transactions fetch error:", error);
     }
   };
 
@@ -89,70 +82,39 @@ export default function TalentDashboardHomePage() {
 
   const getCurrencySymbol = (currencyCode?: string) => {
     switch (currencyCode?.toUpperCase()) {
-      case 'USD':
-      case 'USDC':
-      case 'USDT':
-        return '$';
-      case 'EUR':
-        return '€';
-      case 'GBP':
-        return '£';
+      case "USD":
+      case "USDC":
+      case "USDT":
+        return "$";
+      case "EUR":
+        return "€";
+      case "GBP":
+        return "£";
       default:
-        return currencyCode ?? '';
+        return currencyCode ?? "";
     }
   };
 
   const formatIncomingAmount = (amount?: number, currencyCode?: string) => {
-    if (typeof amount !== 'number') return '--';
+    if (typeof amount !== "number") return "--";
 
     const symbol = getCurrencySymbol(currencyCode);
     return `${symbol}${amount.toFixed(2)}`;
   };
 
-  const calculateNextPayroll = (frequency?: string, startDate?: string) => {
-    if (!frequency || !startDate) return '--';
-
-    const anchorDate = parseISO(startDate);
-    if (!isValid(anchorDate)) return '--';
-
-    const now = new Date();
-    let nextDate = anchorDate;
-
-    while (nextDate <= now) {
-      switch (frequency.toUpperCase()) {
-        case 'DAILY':
-          nextDate = addDays(nextDate, 1);
-          break;
-        case 'WEEKLY':
-          nextDate = addDays(nextDate, 7);
-          break;
-        case 'MONTHLY':
-          nextDate = addMonths(nextDate, 1);
-          break;
-        case 'HOURLY':
-          nextDate = addHours(nextDate, 1);
-          break;
-        default:
-          return '--';
-      }
-    }
-
-    return frequency.toUpperCase() === 'HOURLY'
-      ? format(nextDate, 'MMM d, yyyy hh:mm a')
-      : format(nextDate, 'MMM d, yyyy');
-  };
-
   const payrollData = [
     {
-      label: 'Incoming',
-      value: formatIncomingAmount(teamData?.payroll.amount, selectedCurrency),
+      label: "Incoming",
+      value: formatIncomingAmount(
+        teamData?.incomingPayrollAmount,
+        selectedCurrency,
+      ),
     },
     {
-      label: 'Next Payroll',
-      value: calculateNextPayroll(
-        teamData?.payroll.frequency,
-        teamData?.membership.startDate
-      ),
+      label: "Next Payroll",
+      value: teamData?.incomingPayrollDate
+        ? format(new Date(teamData.incomingPayrollDate), "MMM d, yyyy")
+        : "",
     },
   ];
 
@@ -204,7 +166,7 @@ export default function TalentDashboardHomePage() {
                     <div className="text-[1.75rem] font-bold text-[#1C232D] sm:text-[2rem]">
                       {showBalance
                         ? `${getCurrencySymbol(selectedCurrency)}${balance.toFixed(2)}`
-                        : '••••••'}
+                        : "••••••"}
                     </div>
 
                     <button

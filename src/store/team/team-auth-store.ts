@@ -68,6 +68,8 @@ export interface TeamMeResponse {
     document: string;
     isSigned: boolean;
   };
+  incomingPayrollAmount: number;
+  incomingPayrollDate: string;
 }
 
 interface TeamAuthStore {
