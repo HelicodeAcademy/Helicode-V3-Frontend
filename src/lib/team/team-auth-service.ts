@@ -6,9 +6,9 @@ import {
   TeamMeResponse,
 } from "@/store/team/team-auth-store";
 
-// Accept takent invite
-// Sents otp, email and password to the endpoint
-// ccompletes account setup for invited team
+// Accept talent invite
+// Sends otp, email and password to the endpoint
+// completes account setup for invited team
 export async function acceptTeamInvite(
   data: AcceptInviteData,
 ): Promise<AcceptInviteResponse> {

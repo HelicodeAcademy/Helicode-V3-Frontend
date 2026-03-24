@@ -7,8 +7,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Image from 'next/image';
+import { TeamTransactionData } from '@/lib/team/team-transaction-service';
 
-export default function PaymentHistory() {
+interface PaymentHistoryProps {
+  payments?: TeamTransactionData[];
+}
+
+export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
   const getStatusClasses = (status: string) => {
     switch (status.toLowerCase()) {
       case 'paid':
@@ -24,114 +29,159 @@ export default function PaymentHistory() {
     }
   };
 
-  const recentPayments = [
-    {
-      payrollFrequency: 'Monthly',
-      currency: 'USDC',
-      status: 'Paid',
-      amount: '$3,400.00',
-      date: '19 May 07:23 AM',
-    },
-    {
-      payrollFrequency: 'Weekly',
-      currency: 'USDC',
-      status: 'Pending',
-      amount: '$1,200.00',
-      date: '18 May 02:15 PM',
-    },
-    {
-      payrollFrequency: 'Monthly',
-      currency: 'USDC',
-      status: 'Paid',
-      amount: '$3,400.00',
-      date: '19 May 07:23 AM',
-    },
-    {
-      payrollFrequency: 'Bi-weekly',
-      currency: 'USDC',
-      status: 'Failed',
-      amount: '$2,500.00',
-      date: '17 May 11:45 AM',
-    },
-    {
-      payrollFrequency: 'Monthly',
-      currency: 'USDC',
-      status: 'Processing',
-      amount: '$3,400.00',
-      date: '19 May 07:23 AM',
-    },
-    {
-      payrollFrequency: 'Monthly',
-      currency: 'USDC',
-      status: 'Paid',
-      amount: '$3,400.00',
-      date: '19 May 07:23 AM',
-    },
-  ];
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const formatDate = (date: string) => {
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return date;
+    }
+
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(parsedDate);
+  };
+
   return (
-    <div className="bg-white border border-[#F2F2F2] p-6 rounded-2xl">
-      <h2 className="text-[#101928] text-[14px] p-4 font-semibold">
+    <div className="rounded-2xl border border-[#F2F2F2] bg-white p-4 sm:p-6">
+      <h2 className="p-2 text-[14px] font-semibold text-[#101928] sm:p-4">
         Payment history
       </h2>
-      <Table className="w-full">
-        <TableHeader className="bg-[#F9FAFB]">
-          <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent">
-            <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-              Date
-            </TableHead>
-            <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-              Amount
-            </TableHead>
-            <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-              Currency
-            </TableHead>
-            <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-              Status
-            </TableHead>
-            <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-              Payroll Frequency
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {recentPayments.map((payment, idx) => (
-            <TableRow
-              key={idx}
-              className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+
+      <div className="space-y-3 md:hidden">
+        {payments.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#E4E7EC] bg-[#F9FAFB] px-4 py-8 text-center text-sm text-[#667085]">
+            No recent transactions
+          </div>
+        ) : (
+          payments.map((payment, idx) => (
+            <div
+              key={`${payment.payrollDate}-${payment.amount}-${idx}`}
+              className="rounded-xl border border-[#E4E7EC] bg-[#FCFCFD] p-4"
             >
-              <TableCell className="px-6 py-5 text-sm text-[#101928]">
-                {payment.date}
-              </TableCell>
-              <TableCell className="px-6 py-5 text-sm font-bold text-[#101928]">
-                {payment.amount}
-              </TableCell>
-              <TableCell className="px-6 py-5">
-                <div className="flex flex-row items-center space-x-1">
-                  <Image
-                    src="/wallet/usdc.svg"
-                    alt="USDC"
-                    width={16}
-                    height={16}
-                  />
-                  <span className="text-sm text-[#101928]">
-                    {payment.currency}
-                  </span>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-lg font-bold text-[#101928]">
+                    {formatAmount(payment.amount)}
+                  </p>
+                  <p className="mt-1 text-sm text-[#667085]">
+                    {formatDate(payment.payrollDate)}
+                  </p>
                 </div>
-              </TableCell>
-              <TableCell className="px-6 py-5">
                 <span
-                  className={`${getStatusClasses(payment.status)} px-2 py-1 rounded-full font-medium text-sm`}
+                  className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-xs font-medium`}
                 >
                   {payment.status}
                 </span>
-              </TableCell>
-              <TableCell className="px-6 py-5 text-sm text-[#101928]">
-                {payment.payrollFrequency}
-              </TableCell>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-[#667085]">Currency</p>
+                  <div className="mt-1 flex items-center gap-1">
+                    <Image
+                      src="/wallet/usdc.svg"
+                      alt={payment.currency}
+                      width={16}
+                      height={16}
+                    />
+                    <span className="text-[#101928]">{payment.currency}</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[#667085]">Frequency</p>
+                  <p className="mt-1 text-[#101928]">{payment.frequency}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
+        <Table className="w-full min-w-180">
+          <TableHeader className="bg-[#F9FAFB]">
+            <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent">
+              <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
+                Date
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
+                Amount
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
+                Currency
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
+                Status
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
+                Payroll Frequency
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {payments.length === 0 ? (
+              <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent">
+                <TableCell
+                  colSpan={5}
+                  className="p-6 text-center text-sm text-[#667085]"
+                >
+                  No recent transactions
+                </TableCell>
+              </TableRow>
+            ) : (
+              payments.map((payment, idx) => (
+                <TableRow
+                  key={`${payment.payrollDate}-${payment.amount}-${idx}`}
+                  className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+                >
+                  <TableCell className="px-6 py-5 text-sm text-[#101928]">
+                    {formatDate(payment.payrollDate)}
+                  </TableCell>
+                  <TableCell className="px-6 py-5 text-sm font-bold text-[#101928]">
+                    {formatAmount(payment.amount)}
+                  </TableCell>
+                  <TableCell className="px-6 py-5">
+                    <div className="flex flex-row items-center space-x-1">
+                      <Image
+                        src="/wallet/usdc.svg"
+                        alt={payment.currency}
+                        width={16}
+                        height={16}
+                      />
+                      <span className="text-sm text-[#101928]">
+                        {payment.currency}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-5">
+                    <span
+                      className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-sm font-medium`}
+                    >
+                      {payment.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-6 py-5 text-sm text-[#101928]">
+                    {payment.frequency}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
