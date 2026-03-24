@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ChevronDown, LogOut, MoreVertical } from "lucide-react";
 import Image from "next/image";
@@ -44,7 +45,6 @@ const menuItems: Array<{
   href: string;
 }> = [
   { icon: HomeIcon, label: "Home", href: "/team/dashboard" },
-  // { icon: WalletIcon, label: "Wallet", href: "/team/dashboard/wallet" },
   {
     icon: ContractsIcon,
     label: "Contracts",
@@ -81,8 +81,7 @@ function TeamDashboardSidebar() {
         </div>
       </SidebarHeader>
 
-      {/* Company Selector */}
-      <div className="px-4 py-2 mb-4">
+      <div className="mb-4 px-4 py-2">
         {companies.length > 1 ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -90,15 +89,15 @@ function TeamDashboardSidebar() {
                 variant="outline"
                 className="w-full justify-between border-[#d0d5dd] bg-white hover:bg-[#f9fafb]"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#0166f4] text-xs font-bold text-white">
                     {currentCompany?.companyName?.substring(0, 1).toUpperCase()}
                   </div>
-                  <span className="text-sm font-medium text-[#101828] truncate">
+                  <span className="truncate text-sm font-medium text-[#101828]">
                     {currentCompany?.companyName}
                   </span>
                 </div>
-                <ChevronDown className="h-4 w-4 text-[#667085] shrink-0" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-[#667085]" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
@@ -112,18 +111,18 @@ function TeamDashboardSidebar() {
                       : ""
                   }
                 >
-                  <div className="flex items-center gap-2 w-full">
-                    <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  <div className="flex w-full items-center gap-2">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#0166f4] text-xs font-bold text-white">
                       {company.companyName?.substring(0, 1).toUpperCase()}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-[#101828]">
                         {company.companyName}
                       </p>
                       <p className="text-xs text-[#667085]">{company.status}</p>
                     </div>
                     {selectedCompanyId === company.companyId && (
-                      <div className="h-2 w-2 rounded-full bg-[#0166f4] shrink-0" />
+                      <div className="h-2 w-2 shrink-0 rounded-full bg-[#0166f4]" />
                     )}
                   </div>
                 </DropdownMenuItem>
@@ -131,11 +130,11 @@ function TeamDashboardSidebar() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#f9fafb] border border-[#d0d5dd]">
-            <div className="h-6 w-6 rounded bg-[#0166f4] flex items-center justify-center text-white text-xs font-bold shrink-0">
+          <div className="flex items-center gap-2 rounded-lg border border-[#d0d5dd] bg-[#f9fafb] px-3 py-2">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#0166f4] text-xs font-bold text-white">
               {currentCompany?.companyName?.substring(0, 1).toUpperCase()}
             </div>
-            <span className="text-sm font-medium text-[#101828] truncate">
+            <span className="truncate text-sm font-medium text-[#101828]">
               {currentCompany?.companyName}
             </span>
           </div>
@@ -157,24 +156,28 @@ function TeamDashboardSidebar() {
                   asChild
                   isActive={isActive}
                   tooltip={item.label}
-                  className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
+                  className={`h-11 px-4.5 py-3 text-sm font-medium leading-[145%] ${
                     isActive
-                      ? "text-[#0052FF] bg-[#0052FF1A]!"
+                      ? "bg-[#0052FF1A]! text-[#0052FF]"
                       : "text-[#0F112A]"
                   }`}
                 >
                   <Link
                     href={item.href}
-                    className={`flex items-center ${isActive ? "text-[#0052FF] gap-3.5" : "gap-3.5"}`}
+                    className={`flex items-center gap-3.5 ${
+                      isActive ? "text-[#0052FF]" : ""
+                    }`}
                   >
                     <Icon
-                      className={`h-5 w-5  ${isActive ? "text-[#0052FF]" : "text-[#00001187]"}`}
+                      className={`h-5 w-5 ${
+                        isActive ? "text-[#0052FF]" : "text-[#00001187]"
+                      }`}
                     />
                     <span
                       className={
                         isActive
-                          ? "text-[#0052FF] mt-1"
-                          : "text-[#00001187] mt-1"
+                          ? "mt-1 text-[#0052FF]"
+                          : "mt-1 text-[#00001187]"
                       }
                     >
                       {item.label}
@@ -188,18 +191,18 @@ function TeamDashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="flex items-center gap-3 rounded-lg p-2 border-t border-[#E4E7EC]">
+        <div className="flex items-center gap-3 rounded-lg border-t border-[#E4E7EC] p-2">
           <Avatar className="h-10 w-10 rounded-full">
             <AvatarFallback>
               {user?.firstName?.charAt(0)}
               {user?.lastName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-lg font-medium text-[#000000] truncate">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-lg font-medium text-[#000000]">
               {user?.firstName} {user?.lastName}
             </p>
-            <p className="text-sm text-[#B5B5B5] truncate">{user?.email}</p>
+            <p className="truncate text-sm text-[#B5B5B5]">{user?.email}</p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -209,7 +212,7 @@ function TeamDashboardSidebar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={logout}>
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="mr-2 h-4 w-4" />
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -236,11 +239,21 @@ export default function TeamDashboardLayout({
         <SidebarProvider>
           <TeamDashboardSidebar />
           <SidebarInset>
-            <header className="flex h-16 items-center justify-between bg-[#F9FAFB] px-6">
-              <h1 className="text-2xl font-bold text-[#444444]">
-                Welcome back, {user?.firstName}
-              </h1>
-              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+            <header className="flex min-h-16 flex-wrap items-center justify-between gap-3 bg-[#F9FAFB] px-4 py-3 sm:px-6">
+              <div className="flex min-w-0 items-center gap-3">
+                <SidebarTrigger className="md:hidden" />
+                <div className="min-w-0">
+                  <h1 className="truncate text-lg font-bold text-[#444444] sm:text-2xl">
+                    Welcome back, {user?.firstName}
+                  </h1>
+                  {pageTitle ? (
+                    <p className="text-sm text-[#667085] md:hidden">
+                      {pageTitle}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+              <div className="flex items-center rounded-[40px] border border-[#D2D2D2] px-2 py-1 sm:px-3">
                 <Button variant="ghost" size="icon">
                   <Image
                     src="/header/notification.svg"
