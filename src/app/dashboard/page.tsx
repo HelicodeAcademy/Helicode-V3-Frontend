@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useContext, useEffect } from 'react';
-import { PageTitleContext } from './layout';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from "react";
+import { PageTitleContext } from "./layout";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -12,69 +12,69 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronDown, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { KYCStatusCard } from '@/components/dashboard-home/kyc/kyc-status-card';
-import { useWalletStore } from '@/store/wallet-store';
-import { getWalletAddress } from '@/lib/wallet-service';
-import Link from 'next/link';
+} from "@/components/ui/select";
+import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
+import { useWalletStore } from "@/store/wallet-store";
+import { getWalletAddress } from "@/lib/wallet-service";
+import Link from "next/link";
 
 const payrollMetrics = [
-  { label: 'Total Payroll Processed', value: '$500,000.40' },
-  { label: 'Active Employee', value: '50' },
+  { label: "Total Payroll Processed", value: "$0.00" },
+  { label: "Active Employee", value: "5" },
 ];
 
 const recentPayments = [
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
   {
-    name: 'Vandross Idiake',
-    role: 'Software Engineer',
-    status: 'Paid',
-    amount: '$3,400.00',
-    date: '19 May 07:23 AM',
+    name: "Vandross Idiake",
+    role: "Software Engineer",
+    status: "Paid",
+    amount: "$3,400.00",
+    date: "19 May 07:23 AM",
   },
 ];
 
@@ -82,13 +82,13 @@ export default function DashboardHomePage() {
   const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
-  const [currency, setCurrency] = useState('usd');
-  const [activeMetric] = useState('Last 30 days');
+  const [currency, setCurrency] = useState("usd");
+  const [activeMetric] = useState("Last 30 days");
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const { walletData, setWalletData } = useWalletStore();
 
   useEffect(() => {
-    setTitle('Home');
+    setTitle("Home");
     fetchWalletBalance();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,7 +100,7 @@ export default function DashboardHomePage() {
       const data = await getWalletAddress();
       setWalletData(data);
     } catch (error) {
-      console.error('Failed to fetch wallet balance', error);
+      console.error("Failed to fetch wallet balance", error);
     } finally {
       setIsLoadingBalance(false);
     }
@@ -159,7 +159,7 @@ export default function DashboardHomePage() {
                   <div className="flex items-center gap-2">
                     {!isLoadingBalance ? (
                       <div className="text-[2rem] font-bold text-[#1C232D]">
-                        {showBalance ? `$${balance.toFixed(2)}` : '••••••'}
+                        {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
                       </div>
                     ) : (
                       <></>
@@ -222,7 +222,7 @@ export default function DashboardHomePage() {
         <div className="flex gap-3">
           <Button
             className="bg-[#0052FF] rounded-lg text-white font-medium"
-            onClick={() => router.push('/dashboard/team/add')}
+            onClick={() => router.push("/dashboard/team/add")}
           >
             <Image
               src="/home/plus-sign.svg"
@@ -258,7 +258,7 @@ export default function DashboardHomePage() {
             variant="primary"
             className="text-white hover:bg-[#101828]/90"
           >
-            <Link href={'/dashboard/payroll'}>Run Payroll</Link>
+            <Link href={"/dashboard/payroll"}>Run Payroll</Link>
           </Button>
         </div>
 
@@ -285,7 +285,7 @@ export default function DashboardHomePage() {
               variant="secondary"
               className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
             >
-              <Link href={'/dashboard/transactions'}>View all</Link>
+              <Link href={"/dashboard/transactions"}>View all</Link>
             </Button>
           </div>
 
@@ -314,7 +314,7 @@ export default function DashboardHomePage() {
                   .trim()
                   .split(/\s+/)
                   .map((word) => word[0].toUpperCase())
-                  .join('');
+                  .join("");
 
                 return (
                   <TableRow
