@@ -95,16 +95,17 @@ export function EditTeamMemberModal({
         if (!validate() || !member) return;
         setIsSubmitting(true);
         try {
-            // await apiCall(`/teams/${member.id}`, {
-            //     method: "PATCH",
-            //     body: JSON.stringify({
-            //         firstName: form.firstName,
-            //         lastName: form.lastName,
-            //         role: form.role,
-            //         startDate: form.startDate,
-            //         amount: Number(form.amount),
-            //     }),
-            // });
+            await apiCall(`/teams/${member.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    firstName: form.firstName,
+                    lastName: form.lastName,
+                    role: form.role,
+                    startDate: form.startDate,
+                    // amount: Number(form.amount),
+                    amount: String(form.amount),
+                }),
+            });
             setShowSuccess(true);
         } catch (err: unknown) {
             toast.error(
