@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { X, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TeamMember } from "@/store/team-store";
+import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -27,8 +27,8 @@ export function PayTeamMemberModal({
 }: PayTeamMemberModalProps) {
     const router = useRouter();
     const [step, setStep] = useState<PayStep>("pay");
-    const [amount, setAmount] = useState("");
-    const [amountError, setAmountError] = useState("");
+    // const [amount, setAmount] = useState("");
+    // const [amountError, setAmountError] = useState("");
     const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -37,8 +37,8 @@ export function PayTeamMemberModal({
     useEffect(() => {
         if (open) {
             setStep("pay");
-            setAmount(member ? String(member.amount) : "");
-            setAmountError("");
+            // setAmount(member ? String(member.amount) : "");
+            // setAmountError("");
             setPin(Array(PIN_LENGTH).fill(""));
         }
     }, [open, member]);
@@ -50,14 +50,14 @@ export function PayTeamMemberModal({
         }
     }, [step]);
 
-    const handleContinueToPay = () => {
-        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-            setAmountError("Enter a valid amount.");
-            return;
-        }
-        setAmountError("");
-        setStep("pin");
-    };
+    // const handleContinueToPay = () => {
+    //     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+    //         setAmountError("Enter a valid amount.");
+    //         return;
+    //     }
+    //     setAmountError("");
+    //     setStep("pin");
+    // };
 
     // PIN input handlers
     const handlePinChange = (index: number, value: string) => {
@@ -94,9 +94,12 @@ export function PayTeamMemberModal({
         if (!pinComplete) return;
         setIsSubmitting(true);
         try {
-            // Endpoint not ready yet — optimistically proceed to success
             // When endpoint is ready: await apiCall(`/teams/${member?.id}/pay`, { method: "POST", body: JSON.stringify({ amount: Number(amount), pin: pin.join("") }) })
-            await new Promise((res) => setTimeout(res, 800)); // simulate
+
+            await apiCall(`/payroll-groups/pay-now/${member?.id}`, {
+                method: "POST",
+                body: JSON.stringify({ pin: pin.join("") }),
+            });
             setStep("success");
         } catch (err: unknown) {
             toast.error(
@@ -161,7 +164,7 @@ export function PayTeamMemberModal({
                             </div>
 
                             {/* Amount card */}
-                            <div className="bg-white rounded-xl px-4 pt-3.5 pb-4">
+                            {/* <div className="bg-white rounded-xl px-4 pt-3.5 pb-4">
                                 <p className="text-sm text-[#667085] mb-2">Amount</p>
                                 <div className="relative">
                                     <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[2rem] font-bold text-[#101928]">
@@ -183,6 +186,12 @@ export function PayTeamMemberModal({
                                 {amountError && (
                                     <p className="text-xs text-red-500 mt-1">{amountError}</p>
                                 )}
+                            </div> */}
+                            <div className="bg-white rounded-xl px-4 pt-3.5 pb-4">
+                                <p className="text-sm text-[#667085] mb-2">Amount</p>
+                                <p className="text-[2rem] font-bold text-[#101928] leading-none">
+                                    ${member.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </p>
                             </div>
                         </div>
 
@@ -190,7 +199,8 @@ export function PayTeamMemberModal({
                         <div className="flex justify-end px-5 py-4">
                             <Button
                                 variant="primary"
-                                onClick={handleContinueToPay}
+                                onClick={() => setStep("pin")}
+                                // onClick={handleContinueToPay}
                                 className="hover:bg-[#101828]/90"
                             >
                                 Continue
