@@ -198,7 +198,11 @@ export function TeamTable({
                         <DropdownMenuItem onClick={() => setEditTarget(member)}>
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setPayTarget(member)}>
+                        <DropdownMenuItem
+                          onClick={() => setPayTarget(member)}
+                          disabled={member.status !== "Active"}
+                          className="disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
                           Pay
                         </DropdownMenuItem>
                         <DropdownMenuItem
