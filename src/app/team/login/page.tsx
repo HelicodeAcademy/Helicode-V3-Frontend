@@ -42,10 +42,10 @@ export default function TeamLoginPage() {
         {/* Right Content Area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Top navigation */}
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between gap-4 w-full">
             <Link
               href="/signup"
-              className="text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
+              className="text-[13px] md:text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
             >
               <Image
                 src="/signup/back-arrow.svg"
@@ -57,7 +57,7 @@ export default function TeamLoginPage() {
             </Link>
             <Link
               href="/signup"
-              className="font-medium hover:underline text-black text-sm"
+              className="font-medium hover:underline text-black text-[13px] md:text-sm"
             >
               Don&apos;t have an account?{" "}
               <span className="font-bold text-[#355587]">Sign up</span>

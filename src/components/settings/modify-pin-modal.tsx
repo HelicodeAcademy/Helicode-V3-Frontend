@@ -19,13 +19,16 @@ interface ModifyPinModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const PIN_LENGTH = 4;
+const createEmptyPin = () => Array(PIN_LENGTH).fill('');
+
 export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
   const { hasPin, setHasPin } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [oldPin, setOldPin] = useState(['', '', '', '', '', '']);
-  const [newPin, setNewPin] = useState(['', '', '', '', '', '']);
-  const [confirmPin, setConfirmPin] = useState(['', '', '', '', '', '']);
+  const [oldPin, setOldPin] = useState<string[]>(createEmptyPin);
+  const [newPin, setNewPin] = useState<string[]>(createEmptyPin);
+  const [confirmPin, setConfirmPin] = useState<string[]>(createEmptyPin);
 
   const oldInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const newInputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -34,9 +37,9 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
   const isComplete = (pin: string[]) => pin.every((digit) => digit !== '');
 
   const resetFields = () => {
-    setOldPin(['', '', '', '', '', '']);
-    setNewPin(['', '', '', '', '', '']);
-    setConfirmPin(['', '', '', '', '', '']);
+    setOldPin(createEmptyPin());
+    setNewPin(createEmptyPin());
+    setConfirmPin(createEmptyPin());
   };
 
   useEffect(() => {
@@ -60,7 +63,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
     const updatedPin = [...pin];
     updatedPin[index] = value;
     setPin(updatedPin);
-    if (value && index < 5) {
+    if (value && index < PIN_LENGTH - 1) {
       refs.current[index + 1]?.focus();
     }
   };
@@ -85,7 +88,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
     }
 
     if (!isComplete(newPin) || !isComplete(confirmPin)) {
-      toast.error('Please enter a 6-digit PIN');
+      toast.error('Please enter a 4-digit PIN');
       return;
     }
 

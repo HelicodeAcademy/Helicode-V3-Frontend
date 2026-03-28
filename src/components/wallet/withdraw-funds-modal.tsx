@@ -30,7 +30,7 @@ interface WithdrawFundsModal {
 
 type WithdrawStep = 'details' | 'pin' | 'success';
 
-const PIN_LENGTH = 6;
+const PIN_LENGTH = 4;
 
 interface WithdrawDetailsStepProps {
   walletAddress: string;
@@ -191,7 +191,7 @@ function WithdrawPinStep({
           Input Pin
         </DialogTitle>
         <DialogDescription className="mt-2 text-sm text-[#475367]">
-          Enter your 6-digit code to confirm this withdrawal
+          Enter your 4-digit code to confirm this withdrawal
         </DialogDescription>
       </div>
 

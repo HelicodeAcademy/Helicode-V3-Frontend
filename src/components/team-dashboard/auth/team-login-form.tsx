@@ -71,10 +71,10 @@ export function TeamLoginForm() {
     <form className="w-full max-w-91" onSubmit={handleSubmit(onSubmit)}>
       {/* Header Section */}
       <div className="md:mb-8 mb-6">
-        <h1 className="text-[2rem] md:text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
+        <h1 className="text-[1.625rem] md:text-[2rem] font-medium text-[#212121] mb-2 leading-[135%] md:leading-[145%]">
           Login to Helicode
         </h1>
-        <p className="text-[#444444] text-sm">
+        <p className="text-[#444444] text-[13px] md:text-sm">
           Please enter your details to sign into your account
         </p>
       </div>
