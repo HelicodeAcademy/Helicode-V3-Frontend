@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { LoginForm } from "@/components/auth/login/login-form";
-import Image from "next/image";
-import { Toaster } from "react-hot-toast";
-import { PublicRoute } from "@/components/auth/access/public-route";
+import Link from 'next/link';
+import { LoginForm } from '@/components/auth/login/login-form';
+import Image from 'next/image';
+import { Toaster } from 'react-hot-toast';
+import { PublicRoute } from '@/components/auth/access/public-route';
 
 export default function LoginPage() {
   return (
@@ -41,7 +41,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-between gap-4 w-full">
             <Link
               href="/signup"
-              className="text-[13px] md:text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
+              className="text-[13px] mb-4 md:text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
             >
               <Image
                 src="/signup/back-arrow.svg"
@@ -53,9 +53,9 @@ export default function LoginPage() {
             </Link>
             <Link
               href="/signup"
-              className="font-medium hover:underline text-black text-[13px] md:text-sm"
+              className="font-medium hover:underline text-black text-[13px] md:hidden hidden lg:block"
             >
-              Don&apos;t have an account?{" "}
+              Don&apos;t have an account?{' '}
               <span className="font-bold text-[#355587]">Sign up</span>
             </Link>
           </div>
