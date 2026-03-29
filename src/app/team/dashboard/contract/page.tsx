@@ -5,8 +5,9 @@ import { getTeamMe } from "@/lib/team/team-auth-service";
 import { TeamMeResponse } from "@/store/team/team-auth-store";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Download, ExternalLink, Loader2 } from "lucide-react";
+import { Download, ExternalLink, Loader2, Pen } from "lucide-react";
 import { TeamPageTitleContext } from "../layout";
+import { signTeamContract } from "@/lib/team/team-transaction-service";
 
 export default function ContractPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -14,6 +15,7 @@ export default function ContractPage() {
     TeamMeResponse["contract"] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSigning, setIsSigning] = useState(false);
 
   useEffect(() => {
     setTitle("Contract");
@@ -55,6 +57,22 @@ export default function ContractPage() {
   const handleOpenExternal = () => {
     if (contractData?.document) {
       window.open(contractData.document, "_blank");
+    }
+  };
+
+  const handleSignContract = async () => {
+    try {
+      setIsSigning(true);
+      await signTeamContract();
+      toast.success("Contract signed successfully");
+      fetchContractData();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to sign contract";
+      toast.error(errorMessage);
+      console.error("Contract signing error:", error);
+    } finally {
+      setIsSigning(false);
     }
   };
 
@@ -124,6 +142,26 @@ export default function ContractPage() {
                 <Download className="h-4 w-4 mr-2" />
                 Download PDF
               </Button>
+
+              {!contractData?.isSigned && (
+                <Button
+                  onClick={handleSignContract}
+                  disabled={isSigning}
+                  className="flex-1 bg-[#219d53] text-white hover:bg-[#219d53]/90"
+                >
+                  {isSigning ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Signing...
+                    </>
+                  ) : (
+                    <>
+                      <Pen className="h-4 w-4 mr-2" />
+                      Sign Signature
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         ) : (

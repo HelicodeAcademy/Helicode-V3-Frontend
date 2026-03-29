@@ -29,13 +29,14 @@ import {
 } from "@/store/team/team-kyc-store";
 import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-details-modal";
+import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
 
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
 
   const [currency, setCurrency] = useState<string>("usd");
-  const [showBalance, setShowBalance] = useState<boolean>(true);
+  const [showBalance, setShowBalance] = useState<boolean>(false);
   const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
   const [teamData, setTeamData] = useState<TeamMeResponse | null>(null);
@@ -47,10 +48,16 @@ export default function TalentDashboardHomePage() {
 
   const [kycModalOpen, setKycModalOpen] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);
+  const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
 
   const handleSelectCrypto = () => {
     setWithdrawFundsModalOpen(false);
     setSendFundsModalOpen(true);
+  };
+
+  const handleSelectCard = () => {
+    setWithdrawFundsModalOpen(false);
+    setWithdrawalModalOpen(true);
   };
 
   useEffect(() => {
@@ -300,10 +307,12 @@ export default function TalentDashboardHomePage() {
         open={sendFundsModalOpen}
         onOpenChange={setSendFundsModalOpen}
       />
+
       <TalentWithdrawFundsModal
         open={withdrawFundsModalOpen}
         onOpenChange={setWithdrawFundsModalOpen}
         onSelectCrypto={handleSelectCrypto}
+        onSelectCard={handleSelectCard}
       />
 
       <TeamKYCModal
@@ -316,6 +325,14 @@ export default function TalentDashboardHomePage() {
         open={bankModalOpen}
         onOpenChange={setBankModalOpen}
         onSuccess={() => fetchTeamData()}
+      />
+
+      <TeamWithdrawalModal
+        open={withdrawalModalOpen}
+        onOpenChange={setWithdrawalModalOpen}
+        onSuccess={() => {
+          fetchTeamData();
+        }}
       />
     </div>
   );
