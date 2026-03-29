@@ -232,15 +232,17 @@ export default function DashboardHomePage() {
             />
             Add new hire
           </Button>
-          <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
-            <Image
-              src="/home/arrow-narrow-up-right.svg"
-              alt="contract"
-              width={16}
-              height={16}
-            />
-            Pay everyone
-          </Button>
+          <Link href="/dashboard/payroll">
+            <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
+              <Image
+                src="/home/arrow-narrow-up-right.svg"
+                alt="contract"
+                width={16}
+                height={16}
+              />
+              Run Payroll
+            </Button>
+          </Link>
         </div>
       </div>
 
