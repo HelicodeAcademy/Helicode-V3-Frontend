@@ -10,6 +10,7 @@ export interface TeamMember {
   id: string;
   fullName: string;
   country: string;
+  role: string;
   type: WorkerType;
   amount: number;
   status: TeamStatus;

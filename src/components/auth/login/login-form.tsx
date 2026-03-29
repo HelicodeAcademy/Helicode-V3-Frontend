@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
-import { useAuthStore } from "@/store/auth-store";
-import { signin } from "@/lib/auth-service";
-import toast from "react-hot-toast";
-import { Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
+import { useAuthStore } from '@/store/auth-store';
+import { signin } from '@/lib/auth-service';
+import toast from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 interface LoginFormData {
   email: string;
@@ -29,10 +30,10 @@ export function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-    mode: "onBlur",
+    mode: 'onBlur',
   });
 
   const onSubmit = async (data: LoginFormData) => {
@@ -45,13 +46,13 @@ export function LoginForm() {
       // Store tokens and user data in store
       setLoginData(loginResponse);
 
-      toast.success("Login successful!");
-      router.push("/dashboard");
+      toast.success('Login successful!');
+      router.push('/dashboard');
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "An unknown error occurred";
+        error instanceof Error ? error.message : 'An unknown error occurred';
       toast.error(errorMessage);
-      console.error("Login error:", error);
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +62,10 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-91">
       {/* Header Section */}
       <div className="md:mb-8 mb-6">
-        <h1 className="text-[2rem] md:text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
+        <h1 className="text-[1.625rem] md:text-[2rem] font-medium text-[#212121] mb-2 leading-[135%] md:leading-[145%]">
           Login to Helicode
         </h1>
-        <p className="text-[#444444] text-sm">
+        <p className="text-[#444444] text-[13px] md:text-sm">
           Please enter your details to sign into your account
         </p>
       </div>
@@ -88,14 +89,14 @@ export function LoginForm() {
             <Input
               type="email"
               placeholder="Enter your email address"
-              {...register("email", {
-                required: "Work email is required",
+              {...register('email', {
+                required: 'Work email is required',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Please enter a valid email address",
+                  message: 'Please enter a valid email address',
                 },
               })}
-              className={`pl-10 ${errors.email ? "border-[#FF383C]" : ""}`}
+              className={`pl-10 ${errors.email ? 'border-[#FF383C]' : ''}`}
             />
           </div>
           {errors.email && (
@@ -112,12 +113,12 @@ export function LoginForm() {
           </label>
           <div className="relative">
             <Input
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
               })}
-              className={`pr-10 ${errors.password ? "border-[#ff383c]" : ""}`}
+              className={`pr-10 ${errors.password ? 'border-[#ff383c]' : ''}`}
             />
             <button
               type="button"
@@ -138,13 +139,21 @@ export function LoginForm() {
             </p>
           )}
           {/* Forgot Password Link */}
-          <div>
+          <div className="flex items-center justify-between mt-4">
             <a
               href="/forgot-password"
               className="text-xs font-medium text-[#101828] hover:text-[#0166f4] transition-colors"
             >
               Forgot Password?
             </a>
+
+            <Link
+              href="/signup"
+              className="font-medium hover:underline text-black text-[13px] md:block block lg:hidden"
+            >
+              Don&apos;t have an account?{' '}
+              <span className="font-bold text-[#355587]">Sign up</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -153,7 +162,7 @@ export function LoginForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        variant={"primary"}
+        variant={'primary'}
         className="w-20.75 hover:bg-[#101828] text-white mt-8"
       >
         {isSubmitting ? (
@@ -161,7 +170,7 @@ export function LoginForm() {
             <Loader2 className="h-4 w-4 animate-spin" />
           </span>
         ) : (
-          "Log in"
+          'Log in'
         )}
       </Button>
     </form>
