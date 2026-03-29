@@ -149,8 +149,9 @@ export function TeamTable({
                         {member.fullName}
                       </p>
                       <p className="text-[#475367] text-xs capitalize">
-                        {member.type.charAt(0) +
-                          member.type.slice(1).toLowerCase()}
+                        {/* {member.type.charAt(0) +
+                          member.type.slice(1).toLowerCase()} */}
+                        {member.role}
                       </p>
                     </div>
                   </TableCell>
