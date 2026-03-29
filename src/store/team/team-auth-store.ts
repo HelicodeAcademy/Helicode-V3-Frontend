@@ -39,6 +39,8 @@ export interface TeamMeResponse {
   email: string;
   country: string;
   status: "VERIFIED" | "UNVERIFIED" | "PENDING";
+  kycStatus?: boolean;
+  bankPayoutStatus?: boolean;
   wallet: {
     id: string;
     balance: number;

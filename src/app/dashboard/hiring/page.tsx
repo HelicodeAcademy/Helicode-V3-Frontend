@@ -13,7 +13,6 @@ export default function HiringPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = (data: any) => {
-    // TODO: Handle form submission - API call, Zustand store update, etc.
     console.log("Role request submitted:", data);
   };
 

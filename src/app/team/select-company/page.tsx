@@ -34,8 +34,6 @@ export default function SelectCompany() {
       return;
     }
 
-   
-
     // If company already selected, redirect to dashboard
     // if (selectedCompanyId) {
     //   router.replace("/team/dashboard");
@@ -60,8 +58,6 @@ export default function SelectCompany() {
 
   const handleSelectCompany = (companyId: string) => {
     setSelectedCompany(companyId);
-    console.log(selectedCompanyId, "selected company id");
-    console.log(companyId, "company id");
     router.push("/team/dashboard");
   };
 

@@ -12,7 +12,6 @@ export default function ProductSelectionPage() {
   const { setCurrentStep } = useAuthStore();
 
   const handleBack = () => {
-    console.log("Go back to company details");
     setCurrentStep("details");
     router.back();
   };

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import PaymentHistory from "@/components/team-dashboard/home/payment-history";
 import { SendFundsModal } from "@/components/team-dashboard/home/send-funds-modal";
 import toast from "react-hot-toast";
@@ -23,9 +23,17 @@ import {
   getTeamTransactions,
   TeamTransactionData,
 } from "@/lib/team/team-transaction-service";
+import {
+  useTeamKYCStore,
+  isTeamMemberDataCached,
+} from "@/store/team/team-kyc-store";
+import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
+import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-details-modal";
 
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
+  const { setTeamMember } = useTeamKYCStore();
+
   const [currency, setCurrency] = useState<string>("usd");
   const [showBalance, setShowBalance] = useState<boolean>(true);
   const [sendFundsModalOpen, setSendFundsModalOpen] = useState<boolean>(false);
@@ -37,6 +45,9 @@ export default function TalentDashboardHomePage() {
   const [withdrawFundsModalOpen, setWithdrawFundsModalOpen] =
     useState<boolean>(false);
 
+  const [kycModalOpen, setKycModalOpen] = useState(false);
+  const [bankModalOpen, setBankModalOpen] = useState(false);
+
   const handleSelectCrypto = () => {
     setWithdrawFundsModalOpen(false);
     setSendFundsModalOpen(true);
@@ -46,13 +57,31 @@ export default function TalentDashboardHomePage() {
     setTitle("Home");
     fetchTeamData();
     fetchTeamTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
 
   const fetchTeamData = async () => {
     try {
       setIsLoading(true);
+      // Check if we have cached data
+
+      if (isTeamMemberDataCached()) {
+        const cachedData = useTeamKYCStore.getState().teamMember;
+        if (cachedData) {
+          setTeamData(cachedData);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const data = await getTeamMe();
       setTeamData(data);
+      setTeamMember(data);
+
+      // Auto-open KYC if KYC is not approved
+      if (!data.kycStatus) {
+        setKycModalOpen(true);
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to fetch team data";
@@ -117,6 +146,9 @@ export default function TalentDashboardHomePage() {
         : "",
     },
   ];
+
+  const kycNotApproved = !teamData?.kycStatus;
+  const bankDetailsNotAdded = !teamData?.bankPayoutStatus;
 
   return (
     <div className="space-y-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -205,6 +237,7 @@ export default function TalentDashboardHomePage() {
           <Button
             onClick={() => setWithdrawFundsModalOpen(true)}
             className="w-full items-center rounded-lg bg-[#0052FF] font-medium text-white hover:bg-[#0052FF]/90 sm:w-auto"
+            disabled={kycNotApproved || bankDetailsNotAdded || isLoading}
           >
             <Image
               src="/home/arrow-narrow-up-right-white.svg"
@@ -216,6 +249,49 @@ export default function TalentDashboardHomePage() {
             Withdraw funds
           </Button>
         </div>
+
+        {kycNotApproved && !isLoading && (
+          <div className="bg-[#FEF3C7] border border-[#F59E0B] rounded-lg p-4 flex items-start gap-3 mt-10">
+            <AlertCircle className="h-5 w-5 text-[#F59E0B] shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-[#92400E]">
+                KYC Verification Required
+              </p>
+              <p className="text-sm text-[#B45309] mt-1">
+                Complete your KYC verification to access full features and
+                withdraw funds.
+              </p>
+            </div>
+            <Button
+              onClick={() => setKycModalOpen(true)}
+              className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90 h-9 text-sm shrink-0"
+            >
+              Complete KYC
+            </Button>
+          </div>
+        )}
+
+        {/* Bank Details Alert */}
+        {bankDetailsNotAdded && kycNotApproved === false && (
+          <div className="bg-[#DBEAFE] border border-[#0084FD] rounded-lg p-4 flex items-start gap-3 mt-10">
+            <AlertCircle className="h-5 w-5 text-[#0084FD] shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-[#003DA5]">
+                Bank Details Required
+              </p>
+              <p className="text-sm text-[#0084FD] mt-1">
+                Add your bank details to enable withdrawals and complete your
+                setup.
+              </p>
+            </div>
+            <Button
+              onClick={() => setBankModalOpen(true)}
+              className="bg-[#0084FD] text-white hover:bg-[#0084FD]/90 h-9 text-sm shrink-0"
+            >
+              Add Bank Details
+            </Button>
+          </div>
+        )}
       </div>
 
       <PaymentHistory payments={recentTransactions} />
@@ -228,6 +304,18 @@ export default function TalentDashboardHomePage() {
         open={withdrawFundsModalOpen}
         onOpenChange={setWithdrawFundsModalOpen}
         onSelectCrypto={handleSelectCrypto}
+      />
+
+      <TeamKYCModal
+        open={kycModalOpen}
+        onOpenChange={setKycModalOpen}
+        onSuccess={() => fetchTeamData()}
+      />
+
+      <TeamBankDetailsModal
+        open={bankModalOpen}
+        onOpenChange={setBankModalOpen}
+        onSuccess={() => fetchTeamData()}
       />
     </div>
   );
