@@ -17,6 +17,10 @@ import { changePassword } from '@/lib/auth-service';
 interface ChangePasswordModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSubmitPassword?: (
+    oldPassword: string,
+    newPassword: string,
+  ) => Promise<void>;
 }
 
 interface ChangePasswordFormData {
@@ -28,6 +32,7 @@ interface ChangePasswordFormData {
 export function ChangePasswordModal({
   open,
   onOpenChange,
+  onSubmitPassword = changePassword,
 }: ChangePasswordModalProps) {
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
@@ -53,7 +58,7 @@ export function ChangePasswordModal({
     }
 
     try {
-      await changePassword(data.oldPassword, data.newPassword);
+      await onSubmitPassword(data.oldPassword, data.newPassword);
       toast.success('Password changed successfully!');
       reset();
       setTimeout(() => onOpenChange(false), 1500);

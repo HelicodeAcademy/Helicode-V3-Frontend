@@ -9,7 +9,8 @@ import { ChangePasswordModal } from '@/components/settings/change-password-modal
 import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
 import { useWalletStore } from '@/store/wallet-store';
 import { useTeamKYCStore } from '@/store/team/team-kyc-store';
-import { getTeamMe } from '@/lib/team/team-auth-service';
+import { changeTeamPassword, getTeamMe } from '@/lib/team/team-auth-service';
+import { setWalletPin as setTeamWalletPin } from '@/lib/team/team-transaction-service';
 import toast from 'react-hot-toast';
 import { KYCIcon } from '@/components/icons/icons';
 
@@ -80,13 +81,13 @@ export default function TeamSettingsPage() {
               </p>
               <Badge
                 className={
-                  !isVerified
+                  isVerified
                     ? 'border-[#CAEFDC] bg-[#ECFDF3] text-[#12B76A]'
                     : 'border-[#E5D7CB] bg-[#FFEFE2] text-[#EE7D1F]'
                 }
                 variant="outline"
               >
-                {!isVerified ? (
+                {isVerified ? (
                   <div className="flex items-center space-x-1">
                     <KYCIcon />
                     <span>KYC completed</span>
@@ -140,8 +141,14 @@ export default function TeamSettingsPage() {
       <ChangePasswordModal
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}
+        onSubmitPassword={changeTeamPassword}
       />
-      <ModifyPinModal open={modifyPinOpen} onOpenChange={setModifyPinOpen} />
+      <ModifyPinModal
+        open={modifyPinOpen}
+        onOpenChange={setModifyPinOpen}
+        hasPin={hasPin}
+        onSubmitPin={setTeamWalletPin}
+      />
     </div>
   );
 }

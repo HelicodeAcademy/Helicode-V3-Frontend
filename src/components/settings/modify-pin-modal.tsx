@@ -11,20 +11,30 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
-import { setWalletPin } from "@/lib/team/team-transaction-service";
+import { setWalletPin } from "@/lib/wallet-service";
 import { useWalletStore } from "@/store/wallet-store";
 
 interface ModifyPinModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  hasPin?: boolean;
+  onPinSaved?: () => void;
+  onSubmitPin?: (pin: string, oldPin?: string) => Promise<void>;
 }
 
 const PIN_LENGTH = 4;
 const createEmptyPin = () => Array(PIN_LENGTH).fill("");
 
-export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
-  const { hasPin, setHasPin } = useWalletStore();
+export function ModifyPinModal({
+  open,
+  onOpenChange,
+  hasPin: hasPinProp,
+  onPinSaved,
+  onSubmitPin = setWalletPin,
+}: ModifyPinModalProps) {
+  const { hasPin: storedHasPin, setHasPin } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const hasPin = hasPinProp ?? storedHasPin;
 
   const [oldPin, setOldPin] = useState<string[]>(createEmptyPin);
   const [newPin, setNewPin] = useState<string[]>(createEmptyPin);
@@ -102,7 +112,8 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
 
     try {
       setIsSubmitting(true);
-      await setWalletPin(newPinValue, hasPin ? oldPin.join("") : undefined);
+      await onSubmitPin(newPinValue, hasPin ? oldPin.join("") : undefined);
+      onPinSaved?.();
       setHasPin(true);
       toast.success("PIN saved successfully!");
       setTimeout(() => onOpenChange(false), 1500);
