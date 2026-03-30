@@ -11,6 +11,7 @@ import { useWalletStore } from '@/store/wallet-store';
 import { useTeamKYCStore } from '@/store/team/team-kyc-store';
 import { getTeamMe } from '@/lib/team/team-auth-service';
 import toast from 'react-hot-toast';
+import { KYCIcon } from '@/components/icons/icons';
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -79,13 +80,20 @@ export default function TeamSettingsPage() {
               </p>
               <Badge
                 className={
-                  isVerified
+                  !isVerified
                     ? 'border-[#CAEFDC] bg-[#ECFDF3] text-[#12B76A]'
                     : 'border-[#E5D7CB] bg-[#FFEFE2] text-[#EE7D1F]'
                 }
                 variant="outline"
               >
-                {isVerified ? 'Verified' : 'Not verified'}
+                {!isVerified ? (
+                  <div className="flex items-center space-x-1">
+                    <KYCIcon />
+                    <span>KYC completed</span>
+                  </div>
+                ) : (
+                  'Not verified'
+                )}
               </Badge>
             </div>
           </div>
