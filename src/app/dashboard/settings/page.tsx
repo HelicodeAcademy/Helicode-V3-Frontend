@@ -6,6 +6,8 @@ import { SettingsCard } from "@/components/settings/settings-card";
 import { Button } from "@/components/ui/button";
 import { ChangePasswordModal } from "@/components/settings/change-password-modal";
 import { ModifyPinModal } from "@/components/settings/modify-pin-modal";
+import { changePassword } from "@/lib/auth-service";
+import { setWalletPin } from "@/lib/wallet-service";
 import { useWalletStore } from "@/store/wallet-store";
 
 const settingsData = [
@@ -103,8 +105,14 @@ export default function SettingsPage() {
       <ChangePasswordModal
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}
+        onSubmitPassword={changePassword}
       />
-      <ModifyPinModal open={createPinOpen} onOpenChange={setCreatePinOpen} />
+      <ModifyPinModal
+        open={createPinOpen}
+        onOpenChange={setCreatePinOpen}
+        hasPin={hasPin}
+        onSubmitPin={setWalletPin}
+      />
     </div>
   );
 }
