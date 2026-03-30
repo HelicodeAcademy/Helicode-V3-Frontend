@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Dialog,
@@ -6,13 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useWalletStore } from '@/store/wallet-store';
-import Image from 'next/image';
-import { Lock } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useWalletStore } from "@/store/wallet-store";
+import Image from "next/image";
+import { Lock } from "lucide-react";
 import {
   KeyboardEvent,
   ClipboardEvent,
@@ -20,15 +20,15 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
-import toast from 'react-hot-toast';
+} from "react";
+import toast from "react-hot-toast";
 
 interface WithdrawFundsModal {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type WithdrawStep = 'details' | 'pin' | 'success';
+type WithdrawStep = "details" | "pin" | "success";
 
 const PIN_LENGTH = 4;
 
@@ -232,7 +232,7 @@ function WithdrawPinStep({
           onClick={onConfirm}
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Processing...' : 'Confirm'}
+          {isSubmitting ? "Processing..." : "Confirm"}
         </Button>
       </div>
     </div>
@@ -276,13 +276,13 @@ function WithdrawSuccessStep({ onGoHome }: WithdrawSuccessStepProps) {
 
 export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const { walletData, setWalletData } = useWalletStore();
-  const [step, setStep] = useState<WithdrawStep>('details');
-  const [walletAddress, setWalletAddress] = useState('');
-  const [amount, setAmount] = useState('');
-  const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(''));
+  const [step, setStep] = useState<WithdrawStep>("details");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [amount, setAmount] = useState("");
+  const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [addressError, setAddressError] = useState('');
-  const [amountError, setAmountError] = useState('');
+  const [addressError, setAddressError] = useState("");
+  const [amountError, setAmountError] = useState("");
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const availableBalance = walletData?.balance ?? 0;
@@ -291,17 +291,17 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   useEffect(() => {
     if (!open) return;
 
-    setStep('details');
-    setWalletAddress('');
-    setAmount('');
-    setPin(Array(PIN_LENGTH).fill(''));
-    setAddressError('');
-    setAmountError('');
+    setStep("details");
+    setWalletAddress("");
+    setAmount("");
+    setPin(Array(PIN_LENGTH).fill(""));
+    setAddressError("");
+    setAmountError("");
     setIsSubmitting(false);
   }, [open]);
 
   useEffect(() => {
-    if (step !== 'pin') return;
+    if (step !== "pin") return;
 
     const timer = setTimeout(() => {
       pinRefs.current[0]?.focus();
@@ -311,11 +311,11 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   }, [step]);
 
   const handleContinue = () => {
-    setStep('pin');
+    setStep("pin");
   };
 
   const handlePinChange = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, '').slice(-1);
+    const digit = value.replace(/\D/g, "").slice(-1);
     const nextPin = [...pin];
     nextPin[index] = digit;
     setPin(nextPin);
@@ -327,9 +327,9 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
 
   const handlePinKeyDown = (
     index: number,
-    event: KeyboardEvent<HTMLInputElement>
+    event: KeyboardEvent<HTMLInputElement>,
   ) => {
-    if (event.key === 'Backspace' && !pin[index] && index > 0) {
+    if (event.key === "Backspace" && !pin[index] && index > 0) {
       pinRefs.current[index - 1]?.focus();
     }
   };
@@ -337,8 +337,8 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const handlePinPaste = (event: ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     const pasted = event.clipboardData
-      .getData('text')
-      .replace(/\D/g, '')
+      .getData("text")
+      .replace(/\D/g, "")
       .slice(0, PIN_LENGTH);
     const nextPin = [...pin];
 
@@ -366,12 +366,12 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
         });
       }
 
-      setStep('success');
+      setStep("success");
     } catch (error) {
       toast.error(
         error instanceof Error
           ? error.message
-          : 'Withdrawal failed. Please try again.'
+          : "Withdrawal failed. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -384,7 +384,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        {step === 'details' ? (
+        {step === "details" ? (
           <WithdrawDetailsStep
             walletAddress={walletAddress}
             amount={amount}
@@ -393,29 +393,29 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
             amountError={amountError}
             onWalletAddressChange={(value) => {
               setWalletAddress(value);
-              if (addressError) setAddressError('');
+              if (addressError) setAddressError("");
             }}
             onAmountChange={(value) => {
               setAmount(value);
 
               const nextAmount = Number(value);
               if (!value) {
-                setAmountError('');
+                setAmountError("");
                 return;
               }
 
               if (nextAmount > availableBalance) {
                 setAmountError(
-                  'Amount cannot be more than your available balance.'
+                  "Amount cannot be more than your available balance.",
                 );
                 return;
               }
 
-              setAmountError('');
+              setAmountError("");
             }}
             onContinue={handleContinue}
           />
-        ) : step === 'pin' ? (
+        ) : step === "pin" ? (
           <WithdrawPinStep
             pin={pin}
             parsedAmount={parsedAmount}
@@ -424,7 +424,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
             onPinChange={handlePinChange}
             onPinKeyDown={handlePinKeyDown}
             onPinPaste={handlePinPaste}
-            onBack={() => setStep('details')}
+            onBack={() => setStep("details")}
             onConfirm={handleConfirmPin}
           />
         ) : (

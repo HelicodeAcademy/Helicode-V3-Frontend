@@ -169,3 +169,6 @@ export async function changePassword(
     newPassword,
   });
 }
+
+//company details
+

@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { TeamPageTitleContext } from '../layout';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ChangePasswordModal } from '@/components/settings/change-password-modal';
-import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
-import { useWalletStore } from '@/store/wallet-store';
-import { useTeamKYCStore } from '@/store/team/team-kyc-store';
-import { changeTeamPassword, getTeamMe } from '@/lib/team/team-auth-service';
-import { setWalletPin as setTeamWalletPin } from '@/lib/team/team-transaction-service';
-import toast from 'react-hot-toast';
-import { KYCIcon } from '@/components/icons/icons';
+import { useContext, useEffect, useMemo, useState } from "react";
+import { TeamPageTitleContext } from "../layout";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ChangePasswordModal } from "@/components/settings/change-password-modal";
+import { ModifyPinModal } from "@/components/settings/modify-pin-modal";
+import { useTeamKYCStore } from "@/store/team/team-kyc-store";
+import { changeTeamPassword, getTeamMe } from "@/lib/team/team-auth-service";
+import { setWalletPin as setTeamWalletPin } from "@/lib/team/team-transaction-service";
+import toast from "react-hot-toast";
+import { KYCIcon } from "@/components/icons/icons";
+import { useTeamAuthStore } from "@/store/team/team-auth-store";
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [modifyPinOpen, setModifyPinOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const hasPin = useWalletStore((state) => state.hasPin);
   const { teamMember, setTeamMember } = useTeamKYCStore();
+  const { hasPin: teamHasPin } = useTeamAuthStore();
 
   useEffect(() => {
-    setTitle('Settings');
+    setTitle("Settings");
   }, [setTitle]);
 
   useEffect(() => {
@@ -36,9 +36,9 @@ export default function TeamSettingsPage() {
         setTeamMember(data);
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : 'Failed to fetch team data';
+          error instanceof Error ? error.message : "Failed to fetch team data";
         toast.error(errorMessage);
-        console.error('Team settings fetch error:', error);
+        console.error("Team settings fetch error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -48,14 +48,14 @@ export default function TeamSettingsPage() {
   }, [setTeamMember, teamMember]);
 
   const fullName = useMemo(() => {
-    if (!teamMember) return 'Team member';
+    if (!teamMember) return "Team member";
     return `${teamMember.firstName} ${teamMember.lastName}`.trim();
   }, [teamMember]);
 
   const initials = useMemo(() => {
-    const firstInitial = teamMember?.firstName?.charAt(0) ?? '';
-    const lastInitial = teamMember?.lastName?.charAt(0) ?? '';
-    return `${firstInitial}${lastInitial}` || 'TM';
+    const firstInitial = teamMember?.firstName?.charAt(0) ?? "";
+    const lastInitial = teamMember?.lastName?.charAt(0) ?? "";
+    return `${firstInitial}${lastInitial}` || "TM";
   }, [teamMember]);
 
   const isVerified = Boolean(teamMember?.kycStatus);
@@ -77,13 +77,13 @@ export default function TeamSettingsPage() {
 
             <div className="flex items-center space-x-4">
               <p className="text-base font-medium text-[#344054]">
-                {isLoading ? 'Loading...' : fullName}
+                {isLoading ? "Loading..." : fullName}
               </p>
               <Badge
                 className={
                   isVerified
-                    ? 'border-[#CAEFDC] bg-[#ECFDF3] text-[#12B76A]'
-                    : 'border-[#E5D7CB] bg-[#FFEFE2] text-[#EE7D1F]'
+                    ? "border-[#CAEFDC] bg-[#ECFDF3] text-[#12B76A]"
+                    : "border-[#E5D7CB] bg-[#FFEFE2] text-[#EE7D1F]"
                 }
                 variant="outline"
               >
@@ -93,7 +93,7 @@ export default function TeamSettingsPage() {
                     <span>KYC completed</span>
                   </div>
                 ) : (
-                  'Not verified'
+                  "Not verified"
                 )}
               </Badge>
             </div>
@@ -121,7 +121,7 @@ export default function TeamSettingsPage() {
                 onClick={() => setModifyPinOpen(true)}
                 className="h-9 min-w-16 bg-[#E9E9E9] text-sm text-[#363636] hover:bg-[#d1d5db]"
               >
-                {hasPin ? 'Change' : 'Set up'}
+                {teamHasPin ? "Change" : "Set up"}
               </Button>
             </div>
 
@@ -146,7 +146,7 @@ export default function TeamSettingsPage() {
       <ModifyPinModal
         open={modifyPinOpen}
         onOpenChange={setModifyPinOpen}
-        hasPin={hasPin}
+        hasPin={teamHasPin}
         onSubmitPin={setTeamWalletPin}
       />
     </div>

@@ -26,6 +26,7 @@ import {
 import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
 import { useWalletStore } from "@/store/wallet-store";
 import { getWalletAddress } from "@/lib/wallet-service";
+import { getCompanyDetails } from "@/lib/company-details";
 import Link from "next/link";
 
 const payrollMetrics = [
@@ -85,12 +86,12 @@ export default function DashboardHomePage() {
   const [currency, setCurrency] = useState("usd");
   const [activeMetric] = useState("Last 30 days");
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
-  const { walletData, setWalletData } = useWalletStore();
+  const { walletData, setWalletData, setHasPin } = useWalletStore();
 
   useEffect(() => {
     setTitle("Home");
     fetchWalletBalance();
-
+    fetchCompanyDetails();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
 
@@ -103,6 +104,15 @@ export default function DashboardHomePage() {
       console.error("Failed to fetch wallet balance", error);
     } finally {
       setIsLoadingBalance(false);
+    }
+  };
+
+  const fetchCompanyDetails = async () => {
+    try {
+      const data = await getCompanyDetails();
+      setHasPin(data.hasTransactionPin);
+    } catch (error) {
+      console.error("Failed to fetch company details", error);
     }
   };
 

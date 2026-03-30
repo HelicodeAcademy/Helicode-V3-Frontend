@@ -30,10 +30,11 @@ import {
 import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-details-modal";
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
-
+import { useTeamAuthStore } from "@/store/team/team-auth-store";
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
+  const { setHasPin } = useTeamAuthStore();
 
   const [currency, setCurrency] = useState<string>("usd");
   const [showBalance, setShowBalance] = useState<boolean>(false);
@@ -84,6 +85,7 @@ export default function TalentDashboardHomePage() {
       const data = await getTeamMe();
       setTeamData(data);
       setTeamMember(data);
+      setHasPin(data.hasTransactionPin);
 
       // Auto-open KYC if KYC is not approved
       if (!data.kycStatus) {

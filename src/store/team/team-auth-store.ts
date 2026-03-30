@@ -41,6 +41,7 @@ export interface TeamMeResponse {
   status: "VERIFIED" | "UNVERIFIED" | "PENDING";
   kycStatus?: boolean;
   bankPayoutStatus?: boolean;
+  hasTransactionPin: boolean;
   wallet: {
     id: string;
     balance: number;
@@ -101,6 +102,10 @@ interface TeamAuthStore {
 
   // Reset the entire Team auth flow
   resetTeamAuth: () => void;
+
+  // Pin data
+  hasPin: boolean;
+  setHasPin: (hasPin: boolean) => void;
 
   // Hydration
   hasHydrated: boolean;
@@ -172,6 +177,10 @@ export const useTeamAuthStore = create<TeamAuthStore>()(
           isLoading: false,
           error: null,
         }),
+
+      // Pin data
+      hasPin: false,
+      setHasPin: (hasPin: boolean) => set({ hasPin }),
 
       hasHydrated: false,
       setHasHydrated: (state: boolean) => set({ hasHydrated: state }),
