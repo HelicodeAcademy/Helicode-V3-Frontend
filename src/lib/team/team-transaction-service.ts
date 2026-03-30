@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { teamGet, teamPatch, teamPost } from "../api-client";
 
-interface TeamTransaction {
-  status: boolean;
-  statusCode: number;
-  message: string;
-  data: TeamTransactionData[];
-}
+// export interface TeamTransaction {
+//   status: boolean;
+//   statusCode: number;
+//   message: string;
+//   data: TeamTransactionData[];
+// }
 
 export interface TeamTransactionData {
   payrollDate: string;
@@ -41,7 +41,7 @@ export interface BankDetailsResponse {
 export interface WithdrawalData {
   amount: number;
   pin: string;
-  reason: "others";
+  reason: string;
 }
 
 export interface WithdrawalResponse {
@@ -54,8 +54,8 @@ export interface WithdrawalResponse {
   simulatedWebhookPayload: Record<string, any>;
 }
 
-export async function getTeamTransactions(): Promise<TeamTransaction> {
-  const response = await teamGet<TeamTransaction>(`/team/transactions`);
+export async function getTeamTransactions(): Promise<TeamTransactionData[]> {
+  const response = await teamGet<TeamTransactionData[]>(`/team/transactions`);
   return response.data;
 }
 
@@ -74,7 +74,7 @@ export async function signTeamContract(): Promise<{
   return response.data;
 }
 
-/** 
+/**
  * Initiate wallet withdrawal/off-ramp
  * Sends withdrawal request to YellowCard integration
  */
@@ -82,8 +82,17 @@ export async function initiateWalletWithdrawal(
   data: WithdrawalData,
 ): Promise<WithdrawalResponse> {
   const response = await teamPost<WithdrawalResponse>(
-    "/team/wallet/offramp",
+    "/team/wallet/offramp/fiat",
     data,
   );
   return response.data;
+}
+
+export async function setWalletPin(
+  pin: string,
+  oldPin?: string,
+): Promise<void> {
+  const body = oldPin ? { oldPin, newPin: pin } : { pin };
+  const method = oldPin ? teamPatch : teamPost;
+  await method<void>(`/team/wallet/pin`, body);
 }

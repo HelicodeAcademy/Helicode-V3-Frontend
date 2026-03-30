@@ -28,8 +28,8 @@ export function TeamWithdrawalModal({
             Withdraw Funds
           </DialogTitle>
           <DialogDescription className="text-[#667085] mt-2">
-            Initiate a withdrawal from your wallet to your registered bank
-            account. Your funds will be processed within 1-2 business days.
+            Withdraw funds from your wallet to your registered bank account in
+            local currency.
           </DialogDescription>
         </DialogHeader>
 

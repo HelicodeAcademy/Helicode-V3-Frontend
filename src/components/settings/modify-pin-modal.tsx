@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '../ui/input';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { Button } from '../ui/button';
-import toast from 'react-hot-toast';
-import { setWalletPin } from '@/lib/wallet-service';
-import { useWalletStore } from '@/store/wallet-store';
+} from "@/components/ui/dialog";
+import { Input } from "../ui/input";
+import { Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import toast from "react-hot-toast";
+import { setWalletPin } from "@/lib/team/team-transaction-service";
+import { useWalletStore } from "@/store/wallet-store";
 
 interface ModifyPinModalProps {
   open: boolean;
@@ -20,7 +20,7 @@ interface ModifyPinModalProps {
 }
 
 const PIN_LENGTH = 4;
-const createEmptyPin = () => Array(PIN_LENGTH).fill('');
+const createEmptyPin = () => Array(PIN_LENGTH).fill("");
 
 export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
   const { hasPin, setHasPin } = useWalletStore();
@@ -34,7 +34,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
   const newInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const confirmInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const isComplete = (pin: string[]) => pin.every((digit) => digit !== '');
+  const isComplete = (pin: string[]) => pin.every((digit) => digit !== "");
 
   const resetFields = () => {
     setOldPin(createEmptyPin());
@@ -57,7 +57,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
     setPin: React.Dispatch<React.SetStateAction<string[]>>,
     refs: React.MutableRefObject<(HTMLInputElement | null)[]>,
     index: number,
-    value: string
+    value: string,
   ) => {
     if (!/^\d*$/.test(value)) return;
     const updatedPin = [...pin];
@@ -72,9 +72,9 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
     pin: string[],
     refs: React.MutableRefObject<(HTMLInputElement | null)[]>,
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    if (e.key === 'Backspace' && !pin[index] && index > 0) {
+    if (e.key === "Backspace" && !pin[index] && index > 0) {
       refs.current[index - 1]?.focus();
     }
   };
@@ -83,34 +83,34 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
     e.preventDefault();
 
     if (hasPin && !isComplete(oldPin)) {
-      toast.error('Please enter your current PIN');
+      toast.error("Please enter your current PIN");
       return;
     }
 
     if (!isComplete(newPin) || !isComplete(confirmPin)) {
-      toast.error('Please enter a 4-digit PIN');
+      toast.error("Please enter a 4-digit PIN");
       return;
     }
 
-    const newPinValue = newPin.join('');
-    const confirmValue = confirmPin.join('');
+    const newPinValue = newPin.join("");
+    const confirmValue = confirmPin.join("");
 
     if (newPinValue !== confirmValue) {
-      toast.error('New PIN and confirmation do not match');
+      toast.error("New PIN and confirmation do not match");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      await setWalletPin(newPinValue, hasPin ? oldPin.join('') : undefined);
+      await setWalletPin(newPinValue, hasPin ? oldPin.join("") : undefined);
       setHasPin(true);
-      toast.success('PIN saved successfully!');
+      toast.success("PIN saved successfully!");
       setTimeout(() => onOpenChange(false), 1500);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to save PIN';
+        error instanceof Error ? error.message : "Failed to save PIN";
       toast.error(errorMessage);
-      console.error('Set PIN error:', error);
+      console.error("Set PIN error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -118,10 +118,10 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-75">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold text-[#000000]">
-            {hasPin ? 'Change PIN' : 'Create PIN'}
+            {hasPin ? "Change PIN" : "Create PIN"}
           </DialogTitle>
         </DialogHeader>
 
@@ -152,7 +152,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
                         setOldPin,
                         oldInputRefs,
                         index,
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     onKeyDown={(e) =>
@@ -190,7 +190,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
                       setNewPin,
                       newInputRefs,
                       index,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   onKeyDown={(e) =>
@@ -227,7 +227,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
                       setConfirmPin,
                       confirmInputRefs,
                       index,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   onKeyDown={(e) =>
@@ -244,7 +244,7 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            variant={'primary'}
+            variant={"primary"}
             className="w-31.25 hover:bg-[#101828] text-white mt-8"
           >
             {isSubmitting ? (
@@ -252,9 +252,9 @@ export function ModifyPinModal({ open, onOpenChange }: ModifyPinModalProps) {
                 <Loader2 className="h-4 w-4 animate-spin" />
               </span>
             ) : hasPin ? (
-              'Save changes'
+              "Save changes"
             ) : (
-              'Set PIN'
+              "Set PIN"
             )}
           </Button>
         </form>

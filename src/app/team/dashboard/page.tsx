@@ -102,7 +102,7 @@ export default function TalentDashboardHomePage() {
   const fetchTeamTransactions = async () => {
     try {
       const transactions = await getTeamTransactions();
-      setRecentTransactions(transactions.data);
+      setRecentTransactions(transactions);
     } catch (error) {
       const errorMessage =
         error instanceof Error

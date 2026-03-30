@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import Image from 'next/image';
+} from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface TalentWithdrawFundsModalProps {
   open: boolean;
@@ -38,7 +38,7 @@ export function TalentWithdrawFundsModal({
         <div className="space-y-3">
           <button
             onClick={onSelectCrypto}
-            className="w-full flex items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
+            className="w-full cursor-pointer flex items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
           >
             <Image
               src="/wallet/Coin.svg"
@@ -53,7 +53,7 @@ export function TalentWithdrawFundsModal({
 
           <button
             onClick={onSelectCard}
-            className="w-full flex items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
+            className="w-full flex cursor-pointer items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
           >
             <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
             <span className="text-[#000000] font-normal">

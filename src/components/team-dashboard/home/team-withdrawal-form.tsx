@@ -10,13 +10,6 @@ import {
   WithdrawalData,
 } from "@/lib/team/team-transaction-service";
 import { useTeamKYCStore } from "@/store/team/team-kyc-store";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
 interface TeamWithdrawalFormProps {
@@ -32,10 +25,9 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
     // watch,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<WithdrawalData>({
     defaultValues: {
-      reason: "others",
+      reason: "",
       amount: undefined,
       pin: "",
     },
@@ -63,9 +55,8 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         return;
       }
 
-      const response = await initiateWalletWithdrawal(data);
+      await initiateWalletWithdrawal(data);
       toast.success("Withdrawal initiated successfully!");
-      console.log("[v0] Withdrawal response:", response);
       reset();
       onSuccess?.();
     } catch (error) {
@@ -122,17 +113,15 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         <label className="block text-sm font-medium text-[#101828] mb-1.5">
           Withdrawal Reason
         </label>
-        <Select
-          defaultValue="others"
-          onValueChange={(value) => setValue("reason", value as "others")}
-        >
-          <SelectTrigger className="border-[#d0d5dd]">
-            <SelectValue placeholder="Select reason" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="others">Others</SelectItem>
-          </SelectContent>
-        </Select>
+        <Input
+          placeholder="Enter withdrawal reason"
+          {...register("reason", {
+            required: "Withdrawal reason is required",
+          })}
+        />
+        {errors.reason && (
+          <p className="text-xs text-[#dc2626] mt-1">{errors.reason.message}</p>
+        )}
       </div>
 
       {/* PIN */}
@@ -162,7 +151,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       </div>
 
       {/* Submit Button */}
-      <Button type="submit" disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting} className="mt-6">
         {isSubmitting ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -172,11 +161,6 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
           "Initiate Withdrawal"
         )}
       </Button>
-
-      {/* <p className="text-xs text-[#667085] text-center">
-        Your withdrawal will be processed to your registered bank account within
-        1-2 business days.
-      </p> */}
     </form>
   );
 }

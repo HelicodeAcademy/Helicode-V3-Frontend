@@ -30,22 +30,22 @@ export interface WalletData {
 
 // For managing the table
 export interface Transaction {
-  transactionId: string
-  category: string
-  amount: string
-  type: string
-  currency: string
-  status: 'SUCCESSFUL' | 'PENDING' | 'FAILED'
-  date: string
+  transactionId: string;
+  category: string;
+  amount: string;
+  type: string;
+  currency: string;
+  status: "SUCCESSFUL" | "PENDING" | "FAILED";
+  date: string;
 }
 
 export interface TransactionsResponse {
   meta: {
-    total: number
-    page: number
-    lastPage: number
-  }
-  data: Transaction[]
+    total: number;
+    page: number;
+    lastPage: number;
+  };
+  data: Transaction[];
 }
 
 export interface WalletStore {
