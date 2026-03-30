@@ -1,5 +1,9 @@
 "use client";
-import { ContractsIcon, HomeIcon } from "@/components/icons/icons";
+import {
+  ContractsIcon,
+  HomeIcon,
+  SettingsIcon,
+} from "@/components/icons/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +53,11 @@ const menuItems: Array<{
     icon: ContractsIcon,
     label: "Contracts",
     href: "/team/dashboard/contract",
+  },
+  {
+    icon: SettingsIcon,
+    label: "Settings",
+    href: "/team/dashboard/settings",
   },
 ];
 
