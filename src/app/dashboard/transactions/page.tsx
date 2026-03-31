@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState, useMemo } from 'react';
+import { useContext, useEffect, useState, useMemo, useEffectEvent } from 'react';
 import { PageTitleContext } from '../layout';
 import { TransactionsTable } from '@/components/transactions/transactions-table';
 import { TransactionsFilters } from '@/components/transactions/transactions-filters';
@@ -37,13 +37,22 @@ export default function TransactionsPage() {
   const [status, setStatus] = useState('');
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
-  useEffect(() => {
-    setTitle('Transactions');
-    // eslint-disable-next-line react-hooks/immutability
-    fetchCompanyTransactions();
-  }, [setTitle]);
+  const handleSearchChange = (term: string) => {
+    setCurrentPage(1);
+    setSearchTerm(term);
+  };
 
-  const fetchCompanyTransactions = async () => {
+  const handleWorkerTypeChange = (type: string) => {
+    setCurrentPage(1);
+    setWorkerType(type);
+  };
+
+  const handleStatusChange = (nextStatus: string) => {
+    setCurrentPage(1);
+    setStatus(nextStatus);
+  };
+
+  const fetchCompanyTransactions = useEffectEvent(async () => {
     try {
       const transactions = await getCompanyTransactions();
       setTransactions(Array.isArray(transactions) ? transactions : []);
@@ -53,26 +62,34 @@ export default function TransactionsPage() {
       toast.error(errorMessage);
       console.error('Company transactions fetch error:', error);
     }
-  };
+  });
+
+  useEffect(() => {
+    setTitle('Transactions');
+    fetchCompanyTransactions();
+  }, [setTitle]);
 
   const filteredTransactions = useMemo(() => {
     let filtered = Array.isArray(transactions) ? transactions : [];
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    const hasWorkerTypeFilter = workerType !== '' && workerType !== 'all';
+    const hasStatusFilter = status !== '' && status !== 'all';
 
-    if (searchTerm) {
+    if (normalizedSearch) {
       filtered = filtered.filter(
         (t) =>
-          t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          t.role.toLowerCase().includes(searchTerm.toLowerCase())
+          t.name.toLowerCase().includes(normalizedSearch) ||
+          t.role.toLowerCase().includes(normalizedSearch)
       );
     }
 
-    if (workerType) {
+    if (hasWorkerTypeFilter) {
       filtered = filtered.filter(
         (t) => t.workerType.toLowerCase() === workerType.toLowerCase()
       );
     }
 
-    if (status) {
+    if (hasStatusFilter) {
       filtered = filtered.filter(
         (t) => t.status.toLowerCase() === status.toLowerCase()
       );
@@ -82,7 +99,9 @@ export default function TransactionsPage() {
   }, [transactions, searchTerm, workerType, status]);
 
   const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const safeCurrentPage =
+    totalPages === 0 ? 1 : Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const displayedTransactions = filteredTransactions.slice(
     startIndex,
@@ -93,16 +112,16 @@ export default function TransactionsPage() {
     <div className="space-y-6 border border-[#E4E7EC] rounded-lg bg-white mx-8 my-6 py-5">
       <TransactionsFilters
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={handleSearchChange}
         workerType={workerType}
-        onWorkerTypeChange={setWorkerType}
+        onWorkerTypeChange={handleWorkerTypeChange}
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
       />
 
       <TransactionsTable
         transactions={displayedTransactions}
-        currentPage={currentPage}
+        currentPage={safeCurrentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
       />
