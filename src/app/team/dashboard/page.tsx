@@ -31,10 +31,12 @@ import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-details-modal";
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { useTeamWalletStore } from "@/store/team/team-wallet-store";
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
   const { setHasPin } = useTeamAuthStore();
+  const { setTeamWalletBalance } = useTeamWalletStore();
 
   const [currency, setCurrency] = useState<string>("usd");
   const [showBalance, setShowBalance] = useState<boolean>(false);
@@ -86,6 +88,7 @@ export default function TalentDashboardHomePage() {
       setTeamData(data);
       setTeamMember(data);
       setHasPin(data.hasTransactionPin);
+      setTeamWalletBalance(data.wallet.balance);
 
       // Auto-open KYC if KYC is not approved
       if (!data.kycStatus) {
@@ -305,6 +308,7 @@ export default function TalentDashboardHomePage() {
 
       <PaymentHistory payments={recentTransactions} />
 
+      {/* Handles cypto withdrawals */}
       <SendFundsModal
         open={sendFundsModalOpen}
         onOpenChange={setSendFundsModalOpen}
@@ -329,6 +333,7 @@ export default function TalentDashboardHomePage() {
         onSuccess={() => fetchTeamData()}
       />
 
+      {/* Handles local bank withdrawals */}
       <TeamWithdrawalModal
         open={withdrawalModalOpen}
         onOpenChange={setWithdrawalModalOpen}

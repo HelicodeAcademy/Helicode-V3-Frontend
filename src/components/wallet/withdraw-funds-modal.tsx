@@ -21,7 +21,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { initiateCryptoWithdrawal } from "@/lib/wallet-service";
 
 interface WithdrawFundsModal {
   open: boolean;
@@ -31,6 +33,12 @@ interface WithdrawFundsModal {
 type WithdrawStep = "details" | "pin" | "success";
 
 const PIN_LENGTH = 4;
+
+interface CryptoWithdrawalFormData {
+  walletAddress: string;
+  amount: number;
+  pin: string;
+}
 
 interface WithdrawDetailsStepProps {
   walletAddress: string;
@@ -277,14 +285,21 @@ function WithdrawSuccessStep({ onGoHome }: WithdrawSuccessStepProps) {
 export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const { walletData, setWalletData } = useWalletStore();
   const [step, setStep] = useState<WithdrawStep>("details");
-  const [walletAddress, setWalletAddress] = useState("");
-  const [amount, setAmount] = useState("");
   const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [addressError, setAddressError] = useState("");
   const [amountError, setAmountError] = useState("");
   const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
+    defaultValues: {
+      walletAddress: "",
+      amount: undefined,
+      pin: "",
+    },
+  });
+
+  const walletAddress = watch("walletAddress");
+  const amount = watch("amount");
   const availableBalance = walletData?.balance ?? 0;
   const parsedAmount = Number(amount);
 
@@ -292,13 +307,15 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     if (!open) return;
 
     setStep("details");
-    setWalletAddress("");
-    setAmount("");
+    reset({
+      walletAddress: "",
+      amount: undefined,
+      pin: "",
+    });
     setPin(Array(PIN_LENGTH).fill(""));
-    setAddressError("");
     setAmountError("");
     setIsSubmitting(false);
-  }, [open]);
+  }, [open, reset]);
 
   useEffect(() => {
     if (step !== "pin") return;
@@ -354,7 +371,23 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const pinString = pin.join("");
+
+      if (pinString.length !== PIN_LENGTH) {
+        toast.error("Please enter a complete PIN");
+        return;
+      }
+
+      if (!amount || amount <= 0) {
+        toast.error("Amount must be greater than 0");
+        return;
+      }
+
+      await initiateCryptoWithdrawal({
+        amount: amount.toString(),
+        pin: pinString,
+        toAddress: walletAddress,
+      });
 
       if (walletData) {
         setWalletData({
@@ -366,6 +399,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
         });
       }
 
+      toast.success("Withdrawal initiated successfully!");
       setStep("success");
     } catch (error) {
       toast.error(
@@ -387,20 +421,24 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
         {step === "details" ? (
           <WithdrawDetailsStep
             walletAddress={walletAddress}
-            amount={amount}
+            amount={amount?.toString() || ""}
             availableBalance={availableBalance}
-            addressError={addressError}
+            addressError=""
             amountError={amountError}
             onWalletAddressChange={(value) => {
-              setWalletAddress(value);
-              if (addressError) setAddressError("");
+              setValue("walletAddress", value);
             }}
             onAmountChange={(value) => {
-              setAmount(value);
-
               const nextAmount = Number(value);
+              setValue("amount", nextAmount);
+
               if (!value) {
                 setAmountError("");
+                return;
+              }
+
+              if (nextAmount <= 0) {
+                setAmountError("Amount must be greater than 0.");
                 return;
               }
 

@@ -26,6 +26,6 @@ export interface CompanyDetailsResponse {
 }
 
 export async function getCompanyDetails(): Promise<CompanyDetailsResponse> {
-  const response = await get<CompanyDetailsResponse>(`/companies/me`);
+  const response = await get<CompanyDetailsResponse>(`/company/me`);
   return response.data;
 }

@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { teamGet, teamPatch, teamPost } from "../api-client";
+import {
+  CryptoWithdrawalData,
+  CryptoWithdrawalResponse,
+} from "../wallet-service";
 
 // export interface TeamTransaction {
 //   status: boolean;
@@ -83,6 +87,16 @@ export async function initiateWalletWithdrawal(
 ): Promise<WithdrawalResponse> {
   const response = await teamPost<WithdrawalResponse>(
     "/team/wallet/offramp/fiat",
+    data,
+  );
+  return response.data;
+}
+
+export async function initiateTeamCryptoWithdrawal(
+  data: CryptoWithdrawalData,
+): Promise<CryptoWithdrawalResponse> {
+  const response = await teamPost<CryptoWithdrawalResponse>(
+    `/team/wallet/offramp/crypto`,
     data,
   );
   return response.data;
