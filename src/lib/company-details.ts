@@ -1,4 +1,4 @@
-import { get } from "./api-client";
+import { get } from './api-client';
 
 export interface CompanyDetailsResponse {
   id: string;

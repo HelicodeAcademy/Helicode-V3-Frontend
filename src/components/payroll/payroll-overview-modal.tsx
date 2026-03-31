@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  useState,
+  useRef,
+  useEffect,
+  KeyboardEvent,
+  ClipboardEvent,
+} from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTeamStore } from "@/store/team-store";
 import { apiCall } from "@/lib/api-client";
@@ -111,7 +112,10 @@ export function PayrollOverviewModal({
     }
   };
 
-  const handlePinKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+  const handlePinKeyDown = (
+    index: number,
+    e: KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.key === "Backspace" && !pin[index] && index > 0) {
       pinRefs.current[index - 1]?.focus();
     }
@@ -119,9 +123,14 @@ export function PayrollOverviewModal({
 
   const handlePinPaste = (e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, PIN_LENGTH);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, PIN_LENGTH);
     const newPin = [...pin];
-    [...pasted].forEach((digit, i) => { newPin[i] = digit; });
+    [...pasted].forEach((digit, i) => {
+      newPin[i] = digit;
+    });
     setPin(newPin);
     pinRefs.current[Math.min(pasted.length, PIN_LENGTH - 1)]?.focus();
   };
@@ -139,7 +148,10 @@ export function PayrollOverviewModal({
       });
       setStep("success");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Payment failed. Please try again.";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Payment failed. Please try again.";
       if (message === "Wallet PIN not configured") {
         setPinError(message);
       } else {
@@ -164,7 +176,6 @@ export function PayrollOverviewModal({
         )}
         showCloseButton={step !== "overview"}
       >
-
         {/* ── Overview ── */}
         {step === "overview" && (
           <>
@@ -173,11 +184,14 @@ export function PayrollOverviewModal({
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#0F112A]">Helicode Inc</h2>
+                  <h2 className="text-2xl font-bold text-[#0F112A]">
+                    Helicode Inc
+                  </h2>
                   <p className="text-base text-[#475367]">Payroll overview</p>
                 </div>
                 <span className="text-xs text-[#0052FF] font-medium border border-[#E3ECFF] bg-[#ECF2FF] px-2.5 py-1 rounded-full">
-                  {activeMembers.length} Member{activeMembers.length !== 1 ? "s" : ""}
+                  {activeMembers.length} Member
+                  {activeMembers.length !== 1 ? "s" : ""}
                 </span>
               </div>
 
@@ -206,11 +220,17 @@ export function PayrollOverviewModal({
                           {member.fullName}
                         </p>
                         <p className="text-xs text-[#BEBEBE] truncate">
-                          {member.role ?? member.type.charAt(0) + member.type.slice(1).toLowerCase()}
+                          {member.role ??
+                            member.type.charAt(0) +
+                              member.type.slice(1).toLowerCase()}
                         </p>
                       </div>
                       <div className="text-sm font-semibold text-[#101828] shrink-0 bg-[#F2F2F2] px-2 py-1 rounded-full">
-                        ${member.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        $
+                        {member.amount.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </div>
                     </div>
                   ))}
@@ -222,7 +242,11 @@ export function PayrollOverviewModal({
                 <div>
                   <p className="text-sm text-[#000000] mb-1">Total Payout</p>
                   <h3 className="text-3xl font-bold text-[#000000]">
-                    ${totalPayout.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    $
+                    {totalPayout.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </h3>
                 </div>
                 <button
@@ -258,7 +282,9 @@ export function PayrollOverviewModal({
                 {pin.map((digit, i) => (
                   <input
                     key={i}
-                    ref={(el) => { pinRefs.current[i] = el; }}
+                    ref={(el) => {
+                      pinRefs.current[i] = el;
+                    }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
@@ -273,7 +299,8 @@ export function PayrollOverviewModal({
                         : digit
                           ? "border-[#101928] bg-white shadow-sm"
                           : "border-[#E4E7EC] bg-white",
-                      !pinError && "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
+                      !pinError &&
+                        "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
                     )}
                   />
                 ))}
@@ -284,7 +311,10 @@ export function PayrollOverviewModal({
                 <div className="mb-6 text-center">
                   <p className="text-sm text-red-500 mb-1">{pinError}</p>
                   <button
-                    onClick={() => { onOpenChange(false); router.push("/dashboard/settings"); }}
+                    onClick={() => {
+                      onOpenChange(false);
+                      router.push("/dashboard/settings");
+                    }}
                     className="text-sm text-[#0052FF] underline underline-offset-2 hover:text-[#0041cc] transition-colors"
                   >
                     Set up your PIN in Settings →
@@ -296,11 +326,17 @@ export function PayrollOverviewModal({
 
               <Button
                 variant="primary"
-                className="w-full hover:bg-[#101828]/90"
+                className=""
                 disabled={!pinComplete || isSubmitting}
                 onClick={handleConfirm}
               >
-                {isSubmitting ? "Confirming..." : "Confirm"}
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </div>
+                ) : (
+                  "Confirm"
+                )}
               </Button>
             </div>
           </>
@@ -311,7 +347,11 @@ export function PayrollOverviewModal({
           <>
             <DialogTitle className="sr-only">Payment Sent</DialogTitle>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/payroll/modal-illustration.png" alt="" className="w-full" />
+            <img
+              src="/payroll/modal-illustration.png"
+              alt=""
+              className="w-full"
+            />
             <div className="px-4 pt-6 pb-6">
               <h2 className="text-2xl font-bold text-[#000000] mb-4">
                 Payment Sent!

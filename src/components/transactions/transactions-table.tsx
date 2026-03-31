@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Table,
@@ -7,19 +7,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 interface Transaction {
   id: string;
   name: string;
   role: string;
-  workerType: "Contractor" | "Employee";
+  workerType: 'Contractor' | 'Employee';
   amount: number;
   date: string;
-  status: "Paid" | "Failed" | "Pending";
+  status: 'Paid' | 'Failed' | 'Pending';
 }
 
 interface TransactionsTableProps {
@@ -30,9 +30,9 @@ interface TransactionsTableProps {
 }
 
 const statusStyles = {
-  Paid: "bg-[#ECFDF3] text-[#12B76A] border border-[#CAEFDC]",
-  Failed: "bg-[#FDECEC] text-[#D32828] border boder-[#F0D0D0]",
-  Pending: "bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB]",
+  Paid: 'bg-[#ECFDF3] text-[#12B76A] border border-[#CAEFDC]',
+  Failed: 'bg-[#FDECEC] text-[#D32828] border boder-[#F0D0D0]',
+  Pending: 'bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB]',
 };
 
 export function TransactionsTable({
@@ -66,47 +66,58 @@ export function TransactionsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow
-                key={transaction.id}
-                className="border-b border-[#E4E7EC] hover:bg-[#f9fafb]"
-              >
-                <TableCell className="py-6 px-6">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
-                      <AvatarFallback className="bg-[#FFED94]">
-                        {transaction.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium text-[#101928]">
-                        {transaction.name}
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm font-medium text-[#101928]">
-                  {transaction.role}
-                </TableCell>
-                <TableCell className="text-sm font-medium text-[#101928]">
-                  {transaction.workerType}
-                </TableCell>
-                <TableCell className="text-sm font-medium text-[#101928]">
-                  ${transaction.amount.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-sm text-[#101928] font-medium">
-                  {transaction.date}
-                </TableCell>
-                <TableCell className="px-6 pl-10">
-                  <Badge className={statusStyles[transaction.status]}>
-                    {transaction.status}
-                  </Badge>
+            {transactions.length === 0 ? (
+              <TableRow className="border-b border-[#E4E7EC]">
+                <TableCell
+                  colSpan={6}
+                  className="py-10 px-6 text-center text-sm font-medium text-[#667085]"
+                >
+                  No recent transactions
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              transactions.map((transaction) => (
+                <TableRow
+                  key={transaction.id}
+                  className="border-b border-[#E4E7EC] hover:bg-[#f9fafb]"
+                >
+                  <TableCell className="py-6 px-6">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
+                        <AvatarFallback className="bg-[#FFED94]">
+                          {(transaction.name || 'Unknown')
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-[#101928]">
+                          {transaction.name || 'Unknown'}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm font-medium text-[#101928]">
+                    {transaction.role}
+                  </TableCell>
+                  <TableCell className="text-sm font-medium text-[#101928]">
+                    {transaction.workerType}
+                  </TableCell>
+                  <TableCell className="text-sm font-medium text-[#101928]">
+                    ${transaction.amount.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-sm text-[#101928] font-medium">
+                    {transaction.date}
+                  </TableCell>
+                  <TableCell className="px-6 pl-10">
+                    <Badge className={statusStyles[transaction.status]}>
+                      {transaction.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
@@ -128,7 +139,7 @@ export function TransactionsTable({
           <Button
             variant="outline"
             onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            disabled={transactions.length === 0 || currentPage === totalPages}
             className="border-[#d1d5db]"
           >
             Next
