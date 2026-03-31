@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
+import { useTeamStore } from "@/store/team-store";
 import { isTokenExpired, getTokenTimeRemaining } from "@/lib/auth-utils";
 import toast from "react-hot-toast";
 import { executeTokenRefresh } from "@/lib/token-refresh";
@@ -81,6 +82,8 @@ export function useAuth() {
 
   const logout = () => {
     clearLoginData();
+    // Clear team store so stale members don't persist across accounts
+    useTeamStore.getState().clearMembers();
     router.push("/login");
     toast.success("Logout successful!");
   };

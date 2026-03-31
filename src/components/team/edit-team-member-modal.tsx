@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { TeamMember } from "@/store/team-store";
 import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
+import Image from "next/image";
 
 interface EditTeamMemberModalProps {
     open: boolean;
@@ -65,7 +66,7 @@ export function EditTeamMemberModal({
             setForm({
                 firstName,
                 lastName: rest.join(" "),
-                role: "",
+                role: member.role,
                 startDate: member.dateJoined ?? "",
                 amount: String(member.amount),
             });
@@ -135,11 +136,12 @@ export function EditTeamMemberModal({
                     showCloseButton={false}
                 >
                     <DialogTitle className="sr-only">Team member updated</DialogTitle>
-                    {/* Reuse the same modal illustration pattern */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+
+                    <Image
                         src="/payroll/modal-illustration.png"
-                        alt=""
+                        alt="Success"
+                        width={384}
+                        height={220}
                         className="w-full rounded-md"
                     />
                     <div className="px-4 pt-6 pb-6">

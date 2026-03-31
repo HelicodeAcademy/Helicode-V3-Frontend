@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Lock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTeamStore } from "@/store/team-store";
-import { apiCall } from "@/lib/api-client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // interface PayrollOverviewModalProps {
 //   open: boolean;
@@ -142,10 +142,10 @@ export function PayrollOverviewModal({
     setIsSubmitting(true);
     setPinError("");
     try {
-      await apiCall("/payroll-groups/pay-now/all", {
-        method: "POST",
-        body: JSON.stringify({ pin: pin.join("") }),
-      });
+      // await apiCall("/payroll-groups/pay-now/all", {
+      //   method: "POST",
+      //   body: JSON.stringify({ pin: pin.join("") }),
+      // });
       setStep("success");
     } catch (err: unknown) {
       const message =
@@ -346,23 +346,29 @@ export function PayrollOverviewModal({
         {step === "success" && (
           <>
             <DialogTitle className="sr-only">Payment Sent</DialogTitle>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/payroll/modal-illustration.png"
-              alt=""
-              className="w-full"
-            />
-            <div className="px-4 pt-6 pb-6">
-              <h2 className="text-2xl font-bold text-[#000000] mb-4">
-                Payment Sent!
-              </h2>
-              <Button
-                variant="outline"
-                onClick={handleGoHome}
-                className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
-              >
-                Go back to home
-              </Button>
+
+            <div className="p-2">
+              <Image
+                src="/payroll/modal-illustration.png"
+                alt="Success"
+                width={384}
+                height={220}
+                className="w-full rounded-md"
+              />
+              <div className="px-4 pt-6 pb-6">
+                <h2 className="text-2xl font-bold text-[#000000] mb-8">
+                  Payment Sent!
+                </h2>
+                <Button
+                  variant="primary"
+                  onClick={handleGoHome}
+                  className="hover:bg-[#101828]/90"
+                  // variant="outline"
+                  // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
+                >
+                  Go to home
+                </Button>
+              </div>
             </div>
           </>
         )}

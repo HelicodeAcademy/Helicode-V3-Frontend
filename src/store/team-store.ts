@@ -39,6 +39,7 @@ interface TeamStore {
   setIsSubmitting: (v: boolean) => void;
   setError: (error: string | null) => void;
   resetFilters: () => void;
+  clearMembers: () => void;
 }
 
 const DEFAULT_FILTERS: TeamFilters = {
@@ -66,6 +67,7 @@ export const useTeamStore = create<TeamStore>()(
       setIsSubmitting: (isSubmitting) => set({ isSubmitting }),
       setError: (error) => set({ error }),
       resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+      clearMembers: () => set({ members: [], totalCount: 0 }),
     }),
     {
       name: "team-storage",

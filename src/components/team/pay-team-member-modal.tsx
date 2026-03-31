@@ -15,6 +15,7 @@ import { TeamMember } from "@/store/team-store";
 import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface PayTeamMemberModalProps {
   open: boolean;
@@ -334,15 +335,90 @@ export function PayTeamMemberModal({
           </>
         )}
 
+        {/* ── Step: PIN ── */}
+        {step === "pin" && (
+          <>
+            <DialogTitle className="sr-only">Input Pin</DialogTitle>
+            <div className="px-6 py-8 flex flex-col items-center text-center">
+              {/* Lock icon */}
+              <div className="h-19 w-19 rounded-full bg-[#EEF4FF] flex items-center justify-center mb-8">
+                <Lock className="h-8 w-8 text-[#0052FF]" strokeWidth={1.5} />
+              </div>
+
+              <h2 className="text-2xl font-semibold text-black mb-2">
+                Input Pin
+              </h2>
+              <p className="text-sm text-[#7F7F7F] mb-8">
+                Enter your 4-digit code to proceed
+              </p>
+
+              {/* PIN boxes */}
+              <div className="flex items-center gap-2.5 mb-8">
+                {pin.map((digit, i) => (
+                  <input
+                    key={i}
+                    ref={(el) => {
+                      pinRefs.current[i] = el;
+                    }}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handlePinChange(i, e.target.value)}
+                    onKeyDown={(e) => handlePinKeyDown(i, e)}
+                    onPaste={i === 0 ? handlePinPaste : undefined}
+                    className={cn(
+                      "h-12 w-12 rounded-md border text-center text-lg font-semibold text-[#101928] outline-none transition-all",
+                      pinError
+                        ? "border-red-400 bg-red-50"
+                        : digit
+                          ? "border-[#101928] bg-white shadow-sm"
+                          : "border[#E4E7EC] border-[#D7D7D7] bg-white",
+                      !pinError &&
+                        "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
+                    )}
+                  />
+                ))}
+              </div>
+
+              {/* PIN error with settings CTA */}
+              {pinError && (
+                <div className="mb-6 text-center">
+                  <p className="text-sm text-red-500 mb-1">{pinError}</p>
+                  <button
+                    onClick={handleGoToSettings}
+                    className="cursor-pointer text-sm text-[#0052FF] underline underline-offset-2 hover:text-[#0041cc] transition-colors"
+                  >
+                    Set up your PIN in Settings →
+                  </button>
+                </div>
+              )}
+
+              {!pinError && <div className="mb-6" />}
+
+              <Button
+                variant="primary"
+                className="w-full py-5 hover:bg-[#101828]/90"
+                disabled={!pinComplete || isSubmitting}
+                onClick={handleConfirmPin}
+              >
+                {isSubmitting ? "Confirming..." : "Confirm"}
+              </Button>
+            </div>
+          </>
+        )}
+
         {/* ── Step: Success ── */}
         {step === "success" && (
           <>
             <DialogTitle className="sr-only">Payment Sent</DialogTitle>
+
             <div className="p-2 flexflex-colitems-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src="/payroll/modal-illustration.png"
-                alt=""
+                alt="Success"
+                width={384}
+                height={220}
                 className="w-full rounded-md"
               />
               <div className="px-4 pt-6 pb-6">
