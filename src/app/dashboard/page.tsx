@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useContext, useEffect } from "react";
-import { PageTitleContext } from "./layout";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useContext, useEffect } from 'react';
+import { PageTitleContext } from './layout';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -12,88 +12,64 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronDown, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+} from '@/components/ui/table';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
-import { useWalletStore } from "@/store/wallet-store";
-import { getWalletAddress } from "@/lib/wallet-service";
-import { getCompanyDetails } from "@/lib/company-details";
-import Link from "next/link";
+} from '@/components/ui/select';
+import { KYCStatusCard } from '@/components/dashboard-home/kyc/kyc-status-card';
+import { useWalletStore } from '@/store/wallet-store';
+import { getWalletAddress } from '@/lib/wallet-service';
+import { getCompanyDetails } from '@/lib/company-details';
+import Link from 'next/link';
+import {
+  getCompanyTransactions,
+  TransactionData,
+} from '@/lib/transaction-service';
+import toast from 'react-hot-toast';
 
 const payrollMetrics = [
-  { label: "Total Payroll Processed", value: "$0.00" },
-  { label: "Active Employee", value: "5" },
-];
-
-const recentPayments = [
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
-  {
-    name: "Vandross Idiake",
-    role: "Software Engineer",
-    status: "Paid",
-    amount: "$3,400.00",
-    date: "19 May 07:23 AM",
-  },
+  { label: 'Total Payroll Processed', value: '$0.00' },
+  { label: 'Active Employee', value: '5' },
 ];
 
 export default function DashboardHomePage() {
   const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
-  const [currency, setCurrency] = useState("usd");
-  const [activeMetric] = useState("Last 30 days");
+  const [currency, setCurrency] = useState('usd');
+  const [activeMetric] = useState('Last 30 days');
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const { walletData, setWalletData, setHasPin } = useWalletStore();
+  const [recentTransactions, setRecentTransactions] = useState<
+    TransactionData[]
+  >([]);
 
   useEffect(() => {
-    setTitle("Home");
+    setTitle('Home');
     fetchWalletBalance();
     fetchCompanyDetails();
+    fetchRecentTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
+
+  const fetchRecentTransactions = async () => {
+    try {
+      const transactions = await getCompanyTransactions();
+      setRecentTransactions(Array.isArray(transactions) ? transactions : []);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch transactions';
+      toast.error(errorMessage);
+      console.error('Company transactions fetch error:', error);
+    }
+  };
 
   const fetchWalletBalance = async () => {
     try {
@@ -101,7 +77,7 @@ export default function DashboardHomePage() {
       const data = await getWalletAddress();
       setWalletData(data);
     } catch (error) {
-      console.error("Failed to fetch wallet balance", error);
+      console.error('Failed to fetch wallet balance', error);
     } finally {
       setIsLoadingBalance(false);
     }
@@ -112,11 +88,12 @@ export default function DashboardHomePage() {
       const data = await getCompanyDetails();
       setHasPin(data.hasTransactionPin);
     } catch (error) {
-      console.error("Failed to fetch company details", error);
+      console.error('Failed to fetch company details', error);
     }
   };
 
   const balance = walletData?.balance ?? 0;
+  const previewTransactions = recentTransactions.slice(0, 5);
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -169,7 +146,7 @@ export default function DashboardHomePage() {
                   <div className="flex items-center gap-2">
                     {!isLoadingBalance ? (
                       <div className="text-[2rem] font-bold text-[#1C232D]">
-                        {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
+                        {showBalance ? `$${balance.toFixed(2)}` : '••••••'}
                       </div>
                     ) : (
                       <></>
@@ -232,7 +209,7 @@ export default function DashboardHomePage() {
         <div className="flex gap-3">
           <Button
             className=""
-            onClick={() => router.push("/dashboard/team/add")}
+            onClick={() => router.push('/dashboard/team/add')}
           >
             <Image
               src="/home/plus-sign.svg"
@@ -270,7 +247,7 @@ export default function DashboardHomePage() {
             variant="primary"
             className="text-white hover:bg-[#101828]/90"
           >
-            <Link href={"/dashboard/payroll"}>Run Payroll</Link>
+            <Link href={'/dashboard/payroll'}>Run Payroll</Link>
           </Button>
         </div>
 
@@ -297,7 +274,7 @@ export default function DashboardHomePage() {
               variant="secondary"
               className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
             >
-              <Link href={"/dashboard/transactions"}>View all</Link>
+              <Link href={'/dashboard/transactions'}>View all</Link>
             </Button>
           </div>
 
@@ -321,52 +298,63 @@ export default function DashboardHomePage() {
             </TableHeader>
 
             <TableBody>
-              {recentPayments.map((payment, idx) => {
-                const initials = payment.name
-                  .trim()
-                  .split(/\s+/)
-                  .map((word) => word[0].toUpperCase())
-                  .join("");
-
-                return (
-                  <TableRow
-                    key={idx}
-                    className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+              {previewTransactions.length === 0 ? (
+                <TableRow className="border-b border-[#E4E7EC] last:border-b-0">
+                  <TableCell
+                    colSpan={4}
+                    className="px-6 py-10 text-center text-sm font-medium text-[#667085]"
                   >
-                    <TableCell className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
-                          <AvatarFallback className="bg-[#FFED94]">
-                            {initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium text-[#101828]">
-                            {payment.name}
-                          </p>
-                          <p className="text-xs text-[#475367]">
-                            {payment.role}
-                          </p>
+                    No recent payment
+                  </TableCell>
+                </TableRow>
+              ) : (
+                previewTransactions.map((payment, idx) => {
+                  const initials = payment.name
+                    .trim()
+                    .split(/\s+/)
+                    .map((word) => word[0].toUpperCase())
+                    .join('');
+
+                  return (
+                    <TableRow
+                      key={idx}
+                      className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+                    >
+                      <TableCell className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
+                            <AvatarFallback className="bg-[#FFED94]">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium text-[#101828]">
+                              {payment.name}
+                            </p>
+                            <p className="text-xs text-[#475367]">
+                              {payment.role}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    <TableCell className="px-6 text-sm font-bold text-[#101928]">
-                      {payment.amount}
-                    </TableCell>
+                      <TableCell className="px-6 text-sm font-bold text-[#101928]">
+                        {payment.amount}
+                      </TableCell>
 
-                    <TableCell className="px-6 text-sm text-[#101928]">
-                      {payment.date}
-                    </TableCell>
+                      <TableCell className="px-6 text-sm text-[#101928]">
+                        {payment.date}
+                      </TableCell>
 
-                    <TableCell className="">
-                      <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border border-[#CAEFDC] font-medium">
-                        {payment.status}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      <TableCell className="">
+                        <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border border-[#CAEFDC] font-medium">
+                          {payment.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
             </TableBody>
           </Table>
         </div>

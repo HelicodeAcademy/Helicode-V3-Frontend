@@ -1,6 +1,12 @@
 'use client';
 
-import { useContext, useEffect, useState, useMemo, useEffectEvent } from 'react';
+import {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useEffectEvent,
+} from 'react';
 import { PageTitleContext } from '../layout';
 import { TransactionsTable } from '@/components/transactions/transactions-table';
 import { TransactionsFilters } from '@/components/transactions/transactions-filters';
@@ -9,23 +15,6 @@ import {
   getCompanyTransactions,
   TransactionData,
 } from '@/lib/transaction-service';
-
-// Mock data for transactions
-// const mockTransactions: TransactionData[] = Array.from(
-//   { length: 50 },
-//   (_, i) => ({
-//     id: `trans-${i + 1}`,
-//     name: 'Vandross Idiake',
-//     role: 'Backend Engineer',
-//     workerType: i % 2 === 0 ? 'Contractor' : 'Employee',
-//     amount: 3400.0,
-//     date: 'Dec 4th 2025',
-//     status: ['Paid', 'Failed', 'Pending'][i % 3] as
-//       | 'Paid'
-//       | 'Failed'
-//       | 'Pending',
-//   })
-// );
 
 const ITEMS_PER_PAGE = 10;
 
