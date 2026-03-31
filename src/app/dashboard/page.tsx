@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import {
   Select,
@@ -33,14 +33,27 @@ import {
   TransactionData,
 } from '@/lib/transaction-service';
 import toast from 'react-hot-toast';
-import { getPayrollMetrics, PayrollMetrics } from '@/lib/payroll-service';
+import {
+  getPayrollMetrics,
+  PayrollMetrics,
+  PayrollMetricsRange,
+} from '@/lib/payroll-service';
+
+const PAYROLL_RANGE_OPTIONS: Array<{
+  label: string;
+  value: PayrollMetricsRange;
+}> = [
+  { label: 'Last 30 days', value: '30d' },
+  { label: 'Last 6 months', value: '6months' },
+  { label: 'Last 1 year', value: '1year' },
+];
 
 export default function DashboardHomePage() {
   const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState('usd');
-  const [activeMetric] = useState('Last 30 days');
+  const [activeMetric, setActiveMetric] = useState<PayrollMetricsRange>('30d');
   const [payrollMetrics, setPayrollMetrics] = useState<PayrollMetrics | null>(
     null
   );
@@ -55,13 +68,13 @@ export default function DashboardHomePage() {
     fetchWalletBalance();
     fetchCompanyDetails();
     fetchRecentTransactions();
-    fetchPayrollMetrics();
+    fetchPayrollMetrics(activeMetric);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setTitle]);
+  }, [setTitle, activeMetric]);
 
-  const fetchPayrollMetrics = async () => {
+  const fetchPayrollMetrics = async (range: PayrollMetricsRange) => {
     try {
-      const payrollMetricsData = await getPayrollMetrics();
+      const payrollMetricsData = await getPayrollMetrics(range);
       setPayrollMetrics(payrollMetricsData);
     } catch (error) {
       const errorMessage =
@@ -118,6 +131,9 @@ export default function DashboardHomePage() {
       value: String(payrollMetrics?.activeTeamMembers ?? 0),
     },
   ];
+  const activeMetricLabel =
+    PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
+      ?.label ?? 'Last 30 days';
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -198,14 +214,23 @@ export default function DashboardHomePage() {
 
           <div className="space-y-6">
             <div className="flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-[#D0D5DD] bg-white text-sm text-[#475367] hover:bg-[#f9fafb]"
+              <Select
+                value={activeMetric}
+                onValueChange={(value) =>
+                  setActiveMetric(value as PayrollMetricsRange)
+                }
               >
-                {activeMetric}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
+                <SelectTrigger className="w-40 border-[#D0D5DD] bg-white text-sm text-[#475367] hover:bg-[#f9fafb]">
+                  <SelectValue>{activeMetricLabel}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYROLL_RANGE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="mb-6 grid gap-6 md:grid-cols-2 justify-end place-items-end">

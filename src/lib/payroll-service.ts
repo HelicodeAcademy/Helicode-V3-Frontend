@@ -41,6 +41,8 @@ interface RawPayrollMetrics {
   byCurrency: string[];
 }
 
+export type PayrollMetricsRange = '30d' | '6months' | '1year';
+
 export interface PayrollMetrics {
   range: string;
   from: string;
@@ -71,8 +73,12 @@ function normalizePayrollMetrics(data: RawPayrollMetrics): PayrollMetrics {
   };
 }
 
-export async function getPayrollMetrics(): Promise<PayrollMetrics> {
-  const response = await get<RawPayrollMetrics>(`/payroll-groups/stats`);
+export async function getPayrollMetrics(
+  range: PayrollMetricsRange = '30d'
+): Promise<PayrollMetrics> {
+  const response = await get<RawPayrollMetrics>(
+    `/payroll-groups/stats?range=${range}`
+  );
   return normalizePayrollMetrics(response.data);
 }
 
