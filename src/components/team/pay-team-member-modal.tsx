@@ -9,6 +9,7 @@ import { TeamMember } from "@/store/team-store";
 import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface PayTeamMemberModalProps {
     open: boolean;
@@ -315,11 +316,13 @@ export function PayTeamMemberModal({
                 {step === "success" && (
                     <>
                         <DialogTitle className="sr-only">Payment Sent</DialogTitle>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+
                         <div className="p-2 flexflex-colitems-center">
-                            <img
+                            <Image
                                 src="/payroll/modal-illustration.png"
-                                alt=""
+                                alt="Success"
+                                width={384}
+                                height={220}
                                 className="w-full rounded-md"
                             />
                             <div className="px-4 pt-6 pb-6">
