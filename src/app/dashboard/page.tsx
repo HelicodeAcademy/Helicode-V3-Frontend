@@ -33,11 +33,7 @@ import {
   TransactionData,
 } from '@/lib/transaction-service';
 import toast from 'react-hot-toast';
-
-const payrollMetrics = [
-  { label: 'Total Payroll Processed', value: '$0.00' },
-  { label: 'Active Employee', value: '5' },
-];
+import { getPayrollMetrics, PayrollMetrics } from '@/lib/payroll-service';
 
 export default function DashboardHomePage() {
   const router = useRouter();
@@ -45,6 +41,9 @@ export default function DashboardHomePage() {
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState('usd');
   const [activeMetric] = useState('Last 30 days');
+  const [payrollMetrics, setPayrollMetrics] = useState<PayrollMetrics | null>(
+    null
+  );
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const { walletData, setWalletData, setHasPin } = useWalletStore();
   const [recentTransactions, setRecentTransactions] = useState<
@@ -56,8 +55,23 @@ export default function DashboardHomePage() {
     fetchWalletBalance();
     fetchCompanyDetails();
     fetchRecentTransactions();
+    fetchPayrollMetrics();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
+
+  const fetchPayrollMetrics = async () => {
+    try {
+      const payrollMetricsData = await getPayrollMetrics();
+      setPayrollMetrics(payrollMetricsData);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to fetch payroll metrics';
+      toast.error(errorMessage);
+      console.error('Failed to fetch payroll metrics', error);
+    }
+  };
 
   const fetchRecentTransactions = async () => {
     try {
@@ -94,6 +108,16 @@ export default function DashboardHomePage() {
 
   const balance = walletData?.balance ?? 0;
   const previewTransactions = recentTransactions.slice(0, 5);
+  const metricCards = [
+    {
+      label: 'Total Payroll Processed',
+      value: payrollMetrics?.formattedTotalPayrollProcessed ?? '$0.00',
+    },
+    {
+      label: 'Active Employee',
+      value: String(payrollMetrics?.activeTeamMembers ?? 0),
+    },
+  ];
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -185,7 +209,7 @@ export default function DashboardHomePage() {
             </div>
 
             <div className="mb-6 grid gap-6 md:grid-cols-2 justify-end place-items-end">
-              {payrollMetrics.map((metric) => (
+              {metricCards.map((metric) => (
                 <div key={metric.label}>
                   <div className="font-medium text-[#475367] text-sm text-right">
                     {metric.label}
@@ -304,7 +328,7 @@ export default function DashboardHomePage() {
                     colSpan={4}
                     className="px-6 py-10 text-center text-sm font-medium text-[#667085]"
                   >
-                    No recent payment
+                    No recent payment.
                   </TableCell>
                 </TableRow>
               ) : (
