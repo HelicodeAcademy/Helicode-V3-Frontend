@@ -12,7 +12,7 @@ import { signTeamContract } from "@/lib/team/team-transaction-service";
 export default function ContractPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const [contractData, setContractData] = useState<
-    TeamMeResponse["contract"] | null
+    TeamMeResponse["companies"][0]["contract"] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSigning, setIsSigning] = useState(false);
@@ -27,7 +27,7 @@ export default function ContractPage() {
       setIsLoading(true);
 
       const data = await getTeamMe();
-      setContractData(data.contract);
+      setContractData(data.companies[0].contract);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to fetch contract";
