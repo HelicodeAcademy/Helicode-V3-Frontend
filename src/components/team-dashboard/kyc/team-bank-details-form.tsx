@@ -44,6 +44,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
     watch,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<BankDetailsSubmissionData>({
     defaultValues: {
       accountType: "bank",
@@ -88,7 +89,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
       const country = countries.find((c) => c.code === selectedCountry);
       if (country?.currency) {
         // Auto-set currency when country changes
-        // This will be handled by the form state
+        setValue("currencyCode", country.currency);
         fetchBanks(selectedCountry, country.currency);
       }
     }
@@ -212,17 +213,6 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
           <div className="w-full px-3 py-2 text-sm border border-[#D0D5DD] rounded-md bg-[#F9FAFB] text-[#344054]">
             {selectedCountryData.currency}
           </div>
-          <Controller
-            name="currencyCode"
-            control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="hidden"
-                value={selectedCountryData.currency}
-              />
-            )}
-          />
         </div>
       )}
 
