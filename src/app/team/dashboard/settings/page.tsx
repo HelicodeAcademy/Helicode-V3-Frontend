@@ -13,11 +13,13 @@ import { setWalletPin as setTeamWalletPin } from "@/lib/team/team-transaction-se
 import toast from "react-hot-toast";
 import { KYCIcon } from "@/components/icons/icons";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { BankDetailsModal } from "@/components/settings/bank-details-modal";
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [modifyPinOpen, setModifyPinOpen] = useState(false);
+  const [viewBankDetailsOpen, setViewBankDetailsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { teamMember, setTeamMember } = useTeamKYCStore();
   const { hasPin: teamHasPin } = useTeamAuthStore();
@@ -110,7 +112,10 @@ export default function TeamSettingsPage() {
               <p className="text-base font-medium text-[#475367]">
                 Bank payouts
               </p>
-              <Button className="h-9 min-w-18 bg-[#E9E9E9] text-sm text-[#363636] hover:bg-[#d1d5db]">
+              <Button
+                onClick={() => setViewBankDetailsOpen(true)}
+                className="h-9 min-w-18 bg-[#E9E9E9] text-sm text-[#363636] hover:bg-[#d1d5db]"
+              >
                 View
               </Button>
             </div>
@@ -137,6 +142,11 @@ export default function TeamSettingsPage() {
           </div>
         </div>
       </div>
+
+      <BankDetailsModal
+        open={viewBankDetailsOpen}
+        onOpenChange={setViewBankDetailsOpen}
+      />
 
       <ChangePasswordModal
         open={changePasswordOpen}

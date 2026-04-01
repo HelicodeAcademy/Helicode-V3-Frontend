@@ -17,6 +17,7 @@ import { TeamMember } from "@/store/team-store";
 import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
+import { updateTeamMember } from "@/lib/team-service";
 
 interface EditTeamMemberModalProps {
     open: boolean;
@@ -96,16 +97,12 @@ export function EditTeamMemberModal({
         if (!validate() || !member) return;
         setIsSubmitting(true);
         try {
-            await apiCall(`/teams/${member.id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    firstName: form.firstName,
-                    lastName: form.lastName,
-                    role: form.role,
-                    startDate: form.startDate,
-                    // amount: Number(form.amount),
-                    amount: String(form.amount),
-                }),
+            await updateTeamMember(member.id, {
+                firstName: form.firstName,
+                lastName: form.lastName,
+                role: form.role,
+                startDate: form.startDate,
+                amount: String(form.amount),
             });
             setShowSuccess(true);
         } catch (err: unknown) {

@@ -15,6 +15,8 @@ import { useTeamStore } from "@/store/team-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { apiCall } from "@/lib/api-client";
+import { payAllPayrollGroups } from "@/lib/payroll-service";
 
 // interface PayrollOverviewModalProps {
 //   open: boolean;
@@ -146,6 +148,7 @@ export function PayrollOverviewModal({
       //   method: "POST",
       //   body: JSON.stringify({ pin: pin.join("") }),
       // });
+      await payAllPayrollGroups(pin.join(""));
       setStep("success");
     } catch (err: unknown) {
       const message =
@@ -222,7 +225,7 @@ export function PayrollOverviewModal({
                         <p className="text-xs text-[#BEBEBE] truncate">
                           {member.role ??
                             member.type.charAt(0) +
-                              member.type.slice(1).toLowerCase()}
+                            member.type.slice(1).toLowerCase()}
                         </p>
                       </div>
                       <div className="text-sm font-semibold text-[#101828] shrink-0 bg-[#F2F2F2] px-2 py-1 rounded-full">
@@ -300,7 +303,7 @@ export function PayrollOverviewModal({
                           ? "border-[#101928] bg-white shadow-sm"
                           : "border-[#E4E7EC] bg-white",
                       !pinError &&
-                        "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
+                      "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
                     )}
                   />
                 ))}
@@ -363,8 +366,8 @@ export function PayrollOverviewModal({
                   variant="primary"
                   onClick={handleGoHome}
                   className="hover:bg-[#101828]/90"
-                  // variant="outline"
-                  // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
+                // variant="outline"
+                // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
                 >
                   Go to home
                 </Button>
