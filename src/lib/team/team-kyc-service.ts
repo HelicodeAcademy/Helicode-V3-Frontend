@@ -37,6 +37,7 @@ export interface OffRampEnums {
 }
 
 export interface BankDetailsSubmissionData {
+  accountType: "bank" | "momo";
   country: string;
   currencyCode: string;
   bankName: string;
@@ -58,6 +59,25 @@ export interface BankDetailsResponse {
   updatedAt: string;
 }
 
+export interface SupportCountry {
+  code: string;
+  name: string;
+  currency?: string;
+}
+
+export interface SupportCountriesResponse {
+  countries: SupportCountry[];
+}
+
+export interface SupportBank {
+  code: string;
+  name: string;
+}
+
+export interface SupportBanksResponse {
+  banks: SupportBank[];
+}
+
 // Get supported countries, and Id types for KYC
 // Required for populating from dropdowns
 export async function getOffRampEnums(): Promise<OffRampEnums> {
@@ -70,6 +90,25 @@ export async function submitTeamKYC(
   data: KYCSubmissionData,
 ): Promise<KYCResponse> {
   const response = await teamPost<KYCResponse>("/team/offramp/kyc", data);
+  return response.data;
+}
+
+// Get supported countries for bank details submission (returns codes, names and currencies)
+export async function getSupportedCountries(): Promise<SupportCountriesResponse> {
+  const response =
+    await teamGet<SupportCountriesResponse>("/support/countries");
+  return response.data;
+}
+
+// Get supported banks for bank details submission (returns bank codes and names based on country and currency)
+export async function getSupportedBanks(
+  country: string,
+  currency: string,
+): Promise<SupportBanksResponse> {
+  const params = new URLSearchParams({ country, currency });
+  const response = await teamGet<SupportBanksResponse>(
+    `/support/banks?${params.toString()}`,
+  );
   return response.data;
 }
 

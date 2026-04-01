@@ -16,11 +16,11 @@ import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 import {
   BankDetailsSubmissionData,
   submitTeamBankDetails,
-  getOffRampEnums,
+  getSupportedCountries,
+  getSupportedBanks,
 } from "@/lib/team/team-kyc-service";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
-import { COUNTRY_MAP, CURRENCY_MAP } from "./offrap-countries";
 
 interface TeamBankDetailsFormProps {
   onSuccess?: () => void;
@@ -29,9 +29,10 @@ interface TeamBankDetailsFormProps {
 interface CountryOption {
   code: string;
   name: string;
+  currency?: string;
 }
 
-interface CurrencyOption {
+interface BankOption {
   code: string;
   name: string;
 }
@@ -40,11 +41,12 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
   const {
     control,
     handleSubmit,
-    // watch,
+    watch,
     formState: { errors, isSubmitting },
     reset,
   } = useForm<BankDetailsSubmissionData>({
     defaultValues: {
+      accountType: "bank",
       country: "",
       currencyCode: "",
       bankName: "",
@@ -55,59 +57,56 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
   });
 
   const [countries, setCountries] = useState<CountryOption[]>([]);
-  const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
-  const [loadingEnums, setLoadingEnums] = useState(true);
-  //   const selectedCountry = watch("country");
+  const [banks, setBanks] = useState<BankOption[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+  const [loadingBanks, setLoadingBanks] = useState(true);
+  const selectedCountry = watch("country");
+  const selectedAccountType = watch("accountType");
   const { setTeamMember, teamMember } = useTeamKYCStore();
 
   useEffect(() => {
-    fetchEnums();
+    fetchCountries();
   }, []);
 
-  const fetchEnums = async () => {
+  const fetchCountries = async () => {
     try {
-      setLoadingEnums(true);
-      const enums = await getOffRampEnums();
-
-      if (Array.isArray(enums.countries)) {
-        const countriesArray = enums.countries;
-        if (typeof countriesArray[0] === "string") {
-          setCountries(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            countriesArray.map((c: any) => {
-              if (typeof c === "string") {
-                return {
-                  code: c,
-                  name: COUNTRY_MAP[c] || c,
-                };
-              }
-              return c;
-            }),
-          );
-        } else {
-          // Array of objects
-          setCountries(
-            countriesArray.map((c: string) => ({
-              code: c,
-              name: COUNTRY_MAP[c] || c,
-            })),
-          );
-        }
-      }
-
-      setCurrencies(
-        (enums.fiatCurrencies || []).map((code: string) => ({
-          code,
-          name: CURRENCY_MAP[code] || code,
-        })),
-      );
+      setLoadingCountries(true);
+      const response = await getSupportedCountries();
+      setCountries(response.countries as CountryOption[]);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to load bank options";
+        error instanceof Error ? error.message : "Failed to load countries";
       toast.error(errorMessage);
-      console.error("Error fetching enums:", error);
+      console.error("Error fetching countries:", error);
     } finally {
-      setLoadingEnums(false);
+      setLoadingCountries(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const country = countries.find((c) => c.code === selectedCountry);
+      if (country?.currency) {
+        // Auto-set currency when country changes
+        // This will be handled by the form state
+        fetchBanks(selectedCountry, country.currency);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCountry]);
+
+  const fetchBanks = async (countryCode: string, currencyCode: string) => {
+    try {
+      setLoadingBanks(true);
+      const response = await getSupportedBanks(countryCode, currencyCode);
+      setBanks((response.banks as BankOption[]) || []);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load banks";
+      toast.error(errorMessage);
+      console.error("Error fetching banks:", error);
+    } finally {
+      setLoadingBanks(false);
     }
   };
 
@@ -134,7 +133,9 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
     }
   };
 
-  if (loadingEnums) {
+  const selectedCountryData = countries.find((c) => c.code === selectedCountry);
+
+  if (loadingCountries) {
     return (
       <div className="flex justify-center py-8">
         <Loader2 className="h-6 w-6 text-[#667085] animate-spin" />
@@ -144,6 +145,33 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Account type */}
+      <div>
+        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
+          Account Type <span className="text-[#FF3F3F]">*</span>
+        </label>
+        <Controller
+          name="accountType"
+          control={control}
+          rules={{ required: "Account type is required" }}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full border-[#D0D5DD] focus:border-[#0084FD]">
+                <SelectValue placeholder="Select account type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bank">Bank Account</SelectItem>
+                <SelectItem value="momo">Mobile Money (Momo)</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.accountType && (
+          <p className="text-[#DC2626] text-sm mt-1">
+            {errors.accountType.message}
+          </p>
+        )}
+      </div>
       {/* Country */}
       <div>
         <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
@@ -159,8 +187,8 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
+                {countries.map((country, index) => (
+                  <SelectItem key={index} value={country.code}>
                     {country.name}
                   </SelectItem>
                 ))}
@@ -175,52 +203,83 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
         )}
       </div>
 
-      {/* Currency Code */}
-      <div>
-        <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
-          Currency <span className="text-[#FF3F3F]">*</span>
-        </label>
-        <Controller
-          name="currencyCode"
-          control={control}
-          rules={{ required: "Currency is required" }}
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full border-[#D0D5DD] focus:border-[#0084FD]">
-                <SelectValue placeholder="Select currency" />
-              </SelectTrigger>
-              <SelectContent>
-                {currencies.map((currency) => (
-                  <SelectItem key={currency.code} value={currency.code}>
-                    {currency.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {errors.currencyCode && (
-          <p className="text-[#DC2626] text-sm mt-1">
-            {errors.currencyCode.message}
-          </p>
-        )}
-      </div>
+      {/* Currency Code: Auto populated */}
+      {selectedCountryData?.currency && (
+        <div>
+          <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
+            Currency
+          </label>
+          <div className="w-full px-3 py-2 text-sm border border-[#D0D5DD] rounded-md bg-[#F9FAFB] text-[#344054]">
+            {selectedCountryData.currency}
+          </div>
+          <Controller
+            name="currencyCode"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="hidden"
+                value={selectedCountryData.currency}
+              />
+            )}
+          />
+        </div>
+      )}
 
       {/* Bank Name */}
       <div>
         <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
-          Bank Name <span className="text-[#FF3F3F]">*</span>
+          {selectedAccountType === "momo" ? "Momo Provider" : "Bank Name"}{" "}
+          <span className="text-[#FF3F3F]">*</span>
         </label>
         <Controller
           name="bankName"
           control={control}
-          rules={{ required: "Bank name is required" }}
-          render={({ field }) => (
-            <Input {...field} placeholder="e.g., Access Bank" />
-          )}
+          rules={{
+            required: `${selectedAccountType === "momo" ? "Momo provider" : "Bank name"} is required`,
+          }}
+          render={({ field }) => {
+            // If banks are available and not momo, show dropdown
+            if (
+              banks.length > 0 &&
+              selectedAccountType === "bank" &&
+              !loadingBanks
+            ) {
+              return (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select or type bank name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {banks.map((bank, index) => (
+                      <SelectItem key={index} value={bank.name}>
+                        {bank.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }
+            // Otherwise show text input
+            return (
+              <Input
+                {...field}
+                placeholder={
+                  selectedAccountType === "momo"
+                    ? "e.g., MTN, Vodafone"
+                    : "e.g., Access Bank"
+                }
+                className="border-[#D0D5DD] focus:border-[#0084FD]"
+                disabled={loadingBanks}
+              />
+            );
+          }}
         />
+        {loadingBanks && (
+          <p className="text-[#667085] text-sm mt-1">Loading banks...</p>
+        )}
         {errors.bankName && (
-          <p className="text-[#ED2525] text-sm mt-1">
+          <p className="text-[#DC2626] text-sm mt-1">
             {errors.bankName.message}
           </p>
         )}
@@ -229,18 +288,29 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
       {/* Bank Branch */}
       <div>
         <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
-          Bank Branch <span className="text-[#FF3F3F]">*</span>
+          {selectedAccountType === "momo" ? "Branch/Region" : "Bank Branch"}{" "}
+          <span className="text-[#FF3F3F]">*</span>
         </label>
         <Controller
           name="bankBranch"
           control={control}
-          rules={{ required: "Bank branch is required" }}
+          rules={{
+            required: `${selectedAccountType === "momo" ? "Branch/Region" : "Bank branch"} is required`,
+          }}
           render={({ field }) => (
-            <Input {...field} placeholder="e.g., Ile-Ife" />
+            <Input
+              {...field}
+              placeholder={
+                selectedAccountType === "momo"
+                  ? "e.g., Kigali"
+                  : "e.g., Ile-Ife"
+              }
+              className=""
+            />
           )}
         />
         {errors.bankBranch && (
-          <p className="text-[#ED2525] text-sm mt-1">
+          <p className="text-[#DC2626] text-sm mt-1">
             {errors.bankBranch.message}
           </p>
         )}
