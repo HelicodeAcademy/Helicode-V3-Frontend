@@ -25,6 +25,11 @@ export interface virtualAccount {
 
 export interface WalletData {
   balance: number;
+  actualBalance: number;
+  activeTeamsCount: number;
+  nextPayrollDate?: string;
+  nextPayrollAmount?: number;
+  totalPayoutAmount?: number;
   virtualAccount: virtualAccount;
 }
 

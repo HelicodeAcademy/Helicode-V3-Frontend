@@ -147,14 +147,17 @@ export default function TalentDashboardHomePage() {
     {
       label: "Incoming",
       value: formatIncomingAmount(
-        teamData?.incomingPayrollAmount,
+        teamData?.companies[0]?.incomingPayrollAmount,
         selectedCurrency,
       ),
     },
     {
       label: "Next Payroll",
-      value: teamData?.incomingPayrollDate
-        ? format(new Date(teamData.incomingPayrollDate), "MMM d, yyyy")
+      value: teamData?.companies[0]?.incomingPayrollDate
+        ? format(
+            new Date(teamData.companies[0].incomingPayrollDate),
+            "MMM d, yyyy",
+          )
         : "",
     },
   ];

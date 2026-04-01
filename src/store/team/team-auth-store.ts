@@ -46,33 +46,35 @@ export interface TeamMeResponse {
     id: string;
     balance: number;
   };
-  company: {
-    id: string;
-    name: string;
-    country: string;
-  };
+  companies: {
+    company: {
+      id: string;
+      name: string;
+      country: string;
+    };
 
-  membership: {
-    status: string;
-    department: string;
-    role: string;
-    type: string;
-    startDate: string;
-  };
+    membership: {
+      status: string;
+      department: string;
+      role: string;
+      type: string;
+      startDate: string;
+    };
 
-  payroll: {
-    amount: number;
-    frequency: string;
-    currency: string;
-  };
+    payroll: {
+      amount: number;
+      frequency: string;
+      currency: string;
+    };
 
-  contract: {
-    id: string;
-    document: string;
-    isSigned: boolean;
-  };
-  incomingPayrollAmount: number;
-  incomingPayrollDate: string;
+    contract: {
+      id: string;
+      document: string;
+      isSigned: boolean;
+    };
+    incomingPayrollAmount: number;
+    incomingPayrollDate: string;
+  }[];
 }
 
 interface TeamAuthStore {

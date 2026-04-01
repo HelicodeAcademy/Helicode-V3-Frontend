@@ -6,11 +6,14 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { PayrollOverviewModal } from "./payroll-overview-modal";
+import { useWalletStore } from "@/store/wallet-store";
+import { format } from "date-fns";
 // import { PaymentSuccessModal } from "./payment-success-modal";
 
 export function PayrollMetrics() {
   const [showBalance, setShowBalance] = useState(true);
   const [overviewOpen, setOverviewOpen] = useState(false);
+  const { walletData, isLoading } = useWalletStore();
   // const [successOpen, setSuccessOpen] = useState(false);
 
   // const handlePayEveryone = () => {
@@ -22,6 +25,8 @@ export function PayrollMetrics() {
   //   setSuccessOpen(true);
   // };
 
+  const balance = walletData ? walletData.balance : 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* First column */}
@@ -31,8 +36,12 @@ export function PayrollMetrics() {
             Total Payout Amount
           </p>
           <div className="flex items-center gap-3">
-            <h3 className="text-[2rem] font-bold text-[#1C232D]">
-              {showBalance ? "$0.00" : "••••••"}
+            {/* <h3 className="text-[2rem] font-bold text-[#1C232D]">
+              {showBalance ? (
+                <div>{walletData?.totalPayoutAmount?.toFixed(2)}</div>
+              ) : (
+                "••••••"
+              )}
             </h3>
             <button
               onClick={() => setShowBalance(!showBalance)}
@@ -43,7 +52,29 @@ export function PayrollMetrics() {
               ) : (
                 <EyeOff className="h-5 w-5" />
               )}
-            </button>
+            </button> */}
+            {isLoading ? (
+              <div className="h-12 w-40 animate-pulse rounded bg-gray-200"></div>
+            ) : (
+              <>
+                <div className="text-[1.75rem] font-bold text-[#1C232D] sm:text-[2rem]">
+                  {showBalance
+                    ? `$${walletData?.totalPayoutAmount?.toFixed(2)}`
+                    : "••••••"}
+                </div>
+
+                <button
+                  onClick={() => setShowBalance(!showBalance)}
+                  className="text-[#141B34] transition-colors hover:text-[#667085]"
+                >
+                  {showBalance ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -90,13 +121,20 @@ export function PayrollMetrics() {
             <p className="text-sm text-[#475367] font-medium mb-2">
               Available Balance
             </p>
-            <p className="text-[#1C232D] text-[2rem] font-bold">$0.00</p>
+            <p className="text-[#1C232D] text-[2rem] font-bold">
+              ${balance.toFixed(2)}
+            </p>
           </div>
           <div>
             <p className="text-sm text-[#475367] font-medium">
               Next Payroll Date
             </p>
-            <p className="text-[#1C232D] text-xl font-semibold">Feb 28, 2026</p>
+            {/* <p className="text-[#1C232D] text-xl font-semibold">Feb 28, 2026</p> */}
+            <p className="text-[#1C232D] text-xl font-semibold">
+              {walletData?.nextPayrollDate
+                ? format(new Date(walletData.nextPayrollDate), "MMM dd, yyyy")
+                : "N/A"}
+            </p>
           </div>
         </div>
 
@@ -104,7 +142,9 @@ export function PayrollMetrics() {
           <p className="text-sm text-[#475367] font-medium">
             Total Team Members
           </p>
-          <p className="text-[#1C232D] text-[2rem] font-bold">12</p>
+          <p className="text-[#1C232D] text-[2rem] font-bold">
+            {walletData?.activeTeamsCount}
+          </p>
         </div>
       </div>
 

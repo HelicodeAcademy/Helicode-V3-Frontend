@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useContext, useEffect } from 'react';
-import { PageTitleContext } from './layout';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useContext, useEffect } from "react";
+import { PageTitleContext } from "./layout";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -12,50 +12,50 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { KYCStatusCard } from '@/components/dashboard-home/kyc/kyc-status-card';
-import { useWalletStore } from '@/store/wallet-store';
-import { getWalletAddress } from '@/lib/wallet-service';
-import { getCompanyDetails } from '@/lib/company-details';
-import Link from 'next/link';
+} from "@/components/ui/select";
+import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
+import { useWalletStore } from "@/store/wallet-store";
+import { getWalletAddress } from "@/lib/wallet-service";
+import { getCompanyDetails } from "@/lib/company-details";
+import Link from "next/link";
 import {
   getCompanyTransactions,
   TransactionData,
-} from '@/lib/transaction-service';
-import toast from 'react-hot-toast';
+} from "@/lib/transaction-service";
+import toast from "react-hot-toast";
 import {
   getPayrollMetrics,
   PayrollMetrics,
   PayrollMetricsRange,
-} from '@/lib/payroll-service';
+} from "@/lib/payroll-service";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
   value: PayrollMetricsRange;
 }> = [
-  { label: 'Last 30 days', value: '30d' },
-  { label: 'Last 6 months', value: '6months' },
-  { label: 'Last 1 year', value: '1year' },
+  { label: "Last 30 days", value: "30d" },
+  { label: "Last 6 months", value: "6months" },
+  { label: "Last 1 year", value: "1year" },
 ];
 
 export default function DashboardHomePage() {
   const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
-  const [currency, setCurrency] = useState('usd');
-  const [activeMetric, setActiveMetric] = useState<PayrollMetricsRange>('30d');
+  const [currency, setCurrency] = useState("usd");
+  const [activeMetric, setActiveMetric] = useState<PayrollMetricsRange>("30d");
   const [payrollMetrics, setPayrollMetrics] = useState<PayrollMetrics | null>(
-    null
+    null,
   );
   const [isLoadingBalance, setIsLoadingBalance] = useState(true);
   const { walletData, setWalletData, setHasPin } = useWalletStore();
@@ -64,7 +64,7 @@ export default function DashboardHomePage() {
   >([]);
 
   useEffect(() => {
-    setTitle('Home');
+    setTitle("Home");
     fetchWalletBalance();
     fetchCompanyDetails();
     fetchRecentTransactions();
@@ -80,9 +80,9 @@ export default function DashboardHomePage() {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Failed to fetch payroll metrics';
+          : "Failed to fetch payroll metrics";
       toast.error(errorMessage);
-      console.error('Failed to fetch payroll metrics', error);
+      console.error("Failed to fetch payroll metrics", error);
     }
   };
 
@@ -92,9 +92,9 @@ export default function DashboardHomePage() {
       setRecentTransactions(Array.isArray(transactions) ? transactions : []);
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch transactions';
+        error instanceof Error ? error.message : "Failed to fetch transactions";
       toast.error(errorMessage);
-      console.error('Company transactions fetch error:', error);
+      console.error("Company transactions fetch error:", error);
     }
   };
 
@@ -104,7 +104,7 @@ export default function DashboardHomePage() {
       const data = await getWalletAddress();
       setWalletData(data);
     } catch (error) {
-      console.error('Failed to fetch wallet balance', error);
+      console.error("Failed to fetch wallet balance", error);
     } finally {
       setIsLoadingBalance(false);
     }
@@ -115,7 +115,7 @@ export default function DashboardHomePage() {
       const data = await getCompanyDetails();
       setHasPin(data.hasTransactionPin);
     } catch (error) {
-      console.error('Failed to fetch company details', error);
+      console.error("Failed to fetch company details", error);
     }
   };
 
@@ -123,17 +123,17 @@ export default function DashboardHomePage() {
   const previewTransactions = recentTransactions.slice(0, 5);
   const metricCards = [
     {
-      label: 'Total Payroll Processed',
-      value: payrollMetrics?.formattedTotalPayrollProcessed ?? '$0.00',
+      label: "Total Payroll Processed",
+      value: payrollMetrics?.formattedTotalPayrollProcessed ?? "$0.00",
     },
     {
-      label: 'Active Employee',
+      label: "Active Employee",
       value: String(payrollMetrics?.activeTeamMembers ?? 0),
     },
   ];
   const activeMetricLabel =
     PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
-      ?.label ?? 'Last 30 days';
+      ?.label ?? "Last 30 days";
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -186,10 +186,10 @@ export default function DashboardHomePage() {
                   <div className="flex items-center gap-2">
                     {!isLoadingBalance ? (
                       <div className="text-[2rem] font-bold text-[#1C232D]">
-                        {showBalance ? `$${balance.toFixed(2)}` : '••••••'}
+                        {showBalance ? `$${balance.toFixed(2)}` : "••••••"}
                       </div>
                     ) : (
-                      <></>
+                      <div className="h-12 w-40 animate-pulse rounded bg-gray-200"></div>
                     )}
 
                     <button
@@ -323,7 +323,7 @@ export default function DashboardHomePage() {
               variant="secondary"
               className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
             >
-              <Link href={'/dashboard/transactions'}>View all</Link>
+              <Link href={"/dashboard/transactions"}>View all</Link>
             </Button>
           </div>
 
@@ -362,7 +362,7 @@ export default function DashboardHomePage() {
                     .trim()
                     .split(/\s+/)
                     .map((word) => word[0].toUpperCase())
-                    .join('');
+                    .join("");
 
                   return (
                     <TableRow
