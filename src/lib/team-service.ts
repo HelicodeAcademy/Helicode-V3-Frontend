@@ -1,4 +1,4 @@
-import { get, postFormData, apiCall } from "./api-client";
+import { get, postFormData, apiCall, patch, post } from "./api-client";
 import { TeamMember, TeamFilters } from "@/store/team-store";
 
 type TeamListRaw = TeamMember[] | { data: TeamMember[]; total: number };
@@ -28,6 +28,27 @@ export interface AddTeamMemberPayload {
   frequency: "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
   currency: "USD" | "EUR" | "USDC" | "USDT";
   contract: File;
+}
+
+export interface UpdateTeamMemberPayload {
+  firstName: string;
+  lastName: string;
+  role: string;
+  startDate: string;
+  amount: string;
+}
+
+interface UpdateTeamMemberResponse {
+  message: string;
+}
+
+export interface PaySingleMemberResponse {
+  payrollGroupId: string;
+  ledgerEntryId: string;
+  runId: string;
+  teamId: string;
+  amount: number;
+  date: string;
 }
 
 export async function getTeamMembers(
@@ -76,4 +97,32 @@ export async function addTeamMember(
 
 export async function revokeTeamMember(teamId: string): Promise<void> {
   await apiCall<void>(`/teams/${teamId}/revoke`, { method: "DELETE" });
+}
+
+export async function updateTeamMember(
+  memberId: string,
+  payload: UpdateTeamMemberPayload,
+): Promise<string> {
+  const response = await patch<UpdateTeamMemberResponse>(
+    `/teams/${memberId}`,
+    payload,
+  );
+
+  return response.data.message;
+}
+
+export async function paySingleTeamMember(
+  memberId: string,
+  pin: string,
+  amount: number,
+): Promise<PaySingleMemberResponse> {
+  const response = await post<PaySingleMemberResponse>(
+    `/payroll-groups/pay-now/${memberId}`,
+    {
+      pin,
+      amount,
+    },
+  );
+
+  return response.data;
 }

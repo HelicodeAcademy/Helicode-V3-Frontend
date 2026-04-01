@@ -1,24 +1,66 @@
-import { teamGet, teamPost } from '../api-client';
+import { teamGet, teamPost } from "../api-client";
 import {
   AcceptInviteData,
   AcceptInviteResponse,
   TeamLoginResponse,
   TeamMeResponse,
-} from '@/store/team/team-auth-store';
+} from "@/store/team/team-auth-store";
+
+// ── Offramp profile types
+export interface OfframpKyc {
+  id: string;
+  membershipId: string;
+  customerUID: string;
+  country: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  dob: string;
+  idType: string;
+  idNumber: string;
+  additionalIdType: string;
+  additionalIdNumber: string;
+  tier: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfframpBank {
+  id: string;
+  membershipId: string;
+  country: string;
+  currencyCode: string;
+  channelId: string;
+  networkId: string;
+  bankName: string;
+  bankBranch: string;
+  accountName: string;
+  accountNumber: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfframpProfile {
+  teamId: string;
+  email: string;
+  kyc: OfframpKyc;
+  bank: OfframpBank;
+}
 
 // Accept talent invite
 // Sends otp, email and password to the endpoint
 // completes account setup for invited team
 export async function acceptTeamInvite(
-  data: AcceptInviteData
+  data: AcceptInviteData,
 ): Promise<AcceptInviteResponse> {
   const response = await teamPost<AcceptInviteResponse>(
-    '/teams/accept-invite',
+    "/teams/accept-invite",
     {
       otp: data.otp,
       email: data.email,
       password: data.password,
-    }
+    },
   );
   return response.data;
 }
@@ -28,9 +70,9 @@ export async function acceptTeamInvite(
 // Returns access and refresh tokens
 export async function teamLogin(
   email: string,
-  password: string
+  password: string,
 ): Promise<TeamLoginResponse> {
-  const response = await teamPost<TeamLoginResponse>('/team/login', {
+  const response = await teamPost<TeamLoginResponse>("/team/login", {
     email,
     password,
   });
@@ -47,27 +89,32 @@ export async function acceptTeamInviteExisting(data: {
   email: string;
 }): Promise<AcceptInviteResponse> {
   const response = await teamPost<AcceptInviteResponse>(
-    '/teams/accept-invite',
+    "/teams/accept-invite",
     {
       otp: data.otp,
       email: data.email,
-    }
+    },
   );
 
   return response.data;
 }
 
 export async function getTeamMe(): Promise<TeamMeResponse> {
-  const response = await teamGet<TeamMeResponse>('/team/me');
+  const response = await teamGet<TeamMeResponse>("/team/me");
   return response.data;
 }
 
 export async function changeTeamPassword(
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> {
-  await teamPost<void>('/team/password/change', {
+  await teamPost<void>("/team/password/change", {
     oldPassword,
     newPassword,
   });
+}
+
+export async function getOfframpProfile(): Promise<OfframpProfile> {
+  const response = await teamGet<OfframpProfile>("/team/offramp/profile");
+  return response.data;
 }
