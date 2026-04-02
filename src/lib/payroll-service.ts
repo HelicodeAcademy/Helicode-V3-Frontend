@@ -135,11 +135,11 @@ export async function updatePayrollGroupStatus(
 }
 
 export async function payAllPayrollGroups(
-  pin: string,
+  verificationCode: string,
 ): Promise<PayAllPayrollResponse> {
   const response = await post<PayAllPayrollResponse>(
     "/payroll-groups/pay-now/all",
-    { pin },
+    { verificationCode },
   );
 
   return response.data;

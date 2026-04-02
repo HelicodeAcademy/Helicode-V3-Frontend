@@ -179,10 +179,6 @@ export function TeamTable({
                   </TableCell>
                   <TableCell className="py-4">
                     <span
-                      // className={`border px-2 py-1 text-xs rounded-4xl ${member.status === "Active"
-                      //   ? "border-[#CAEFDC] bg-[#ECFDF3] text-[#12b76a]"
-                      //   : "border-[#F0D0D0] bg-[#FDECEC] text-[#D32828]"
-                      //   }`}
                       className={`border px-2 py-1 text-xs rounded-4xl ${member.status === "Active" ? "border-[#CAEFDC] bg-[#ECFDF3] text-[#12b76a]" : member.status === "Pending" ? "bg-[#FFEFE2] text-[#EE7D1F] border border-[#E5D7CB]" : "border-[#F0D0D0] bg-[#FDECEC] text-[#D32828]"}`}
                     >
                       {member.status}

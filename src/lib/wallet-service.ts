@@ -4,7 +4,7 @@ import { WalletData, TransactionsResponse } from "@/store/wallet-store";
 // Cypto wallet related interfaces
 export interface CryptoWithdrawalData {
   amount: string;
-  pin: string;
+  verificationCode: string;
   toAddress: string;
 }
 

@@ -7,39 +7,62 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   initiateWalletWithdrawal,
-  WithdrawalData,
+  // WithdrawalData,
 } from "@/lib/team/team-transaction-service";
 import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 import { Loader2 } from "lucide-react";
+import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
+import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-verification-service";
 
 interface TeamWithdrawalFormProps {
   onSuccess?: () => void;
 }
 
+type WithdrawalStep = "form" | "verification";
+
+interface WithdrawalFormData {
+  amount: number;
+  reason: string;
+}
+
 export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
+  const [step, setStep] = useState<WithdrawalStep>("form");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
+  const [withdrawalData, setWithdrawalData] =
+    useState<WithdrawalFormData | null>(null);
   const { teamMember } = useTeamKYCStore();
   const {
     register,
     handleSubmit,
-    // watch,
     formState: { errors },
     reset,
-  } = useForm<WithdrawalData>({
+  } = useForm<WithdrawalFormData>({
     defaultValues: {
       reason: "",
       amount: undefined,
-      pin: "",
     },
   });
 
-  //   const amount = watch('amount')
   const walletBalance = teamMember?.wallet?.balance || 0;
 
-  const onSubmit = async (data: WithdrawalData) => {
+  const handleRequestCode = async () => {
     try {
-      setIsSubmitting(true);
+      await requestTeamTransactionVerificationCode("TEAM_WITHDRAWAL_FIAT");
+      toast.success("Verification code sent to your email!");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification code";
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
 
+  const onSubmit = async (data: WithdrawalFormData) => {
+    try {
       if (!data.amount || data.amount <= 0) {
         toast.error("Please enter a valid amount");
         return;
@@ -50,26 +73,87 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         return;
       }
 
-      if (!data.pin || data.pin.length < 4) {
-        toast.error("Please enter a valid PIN");
-        return;
-      }
+      setWithdrawalData(data);
 
-      await initiateWalletWithdrawal(data);
+      // Request verification code before showing verification step
+      setIsSubmitting(true);
+      try {
+        await requestTeamTransactionVerificationCode("TEAM_WITHDRAWAL_FIAT");
+        toast.success("Verification code sent to your email!");
+        setStep("verification");
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to send verification code";
+        toast.error(errorMessage);
+        setWithdrawalData(null);
+      } finally {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to prepare withdrawal";
+      toast.error(errorMessage);
+      console.error("Withdrawal error:", error);
+    }
+  };
+
+  const handleConfirmCode = async (code: string) => {
+    if (!withdrawalData) return;
+    setIsSubmitting(true);
+    setVerificationError("");
+
+    try {
+      await initiateWalletWithdrawal({
+        amount: withdrawalData.amount,
+        verificationCode: code,
+        reason: withdrawalData.reason,
+      });
+
       toast.success("Withdrawal initiated successfully!");
       reset();
+      setStep("form");
+      setWithdrawalData(null);
       onSuccess?.();
     } catch (error) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : "Failed to initiate withdrawal";
-      toast.error(errorMessage);
-      console.error("Withdrawal error:", error);
+      setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (step === "verification") {
+    return (
+      <div className="space-y-4">
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-[#101828] mb-2">
+            Verify Withdrawal
+          </h3>
+          <p className="text-sm text-[#667085]">
+            Amount: ${withdrawalData?.amount.toFixed(2)}
+          </p>
+        </div>
+
+        <EmailVerificationCodeStep
+          onBack={() => {
+            setStep("form");
+            setWithdrawalData(null);
+            setVerificationError("");
+          }}
+          onConfirm={handleConfirmCode}
+          isSubmitting={isSubmitting}
+          error={verificationError}
+          onResendCode={handleRequestCode}
+          isResending={isResending}
+        />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -121,32 +205,6 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         />
         {errors.reason && (
           <p className="text-xs text-[#dc2626] mt-1">{errors.reason.message}</p>
-        )}
-      </div>
-
-      {/* PIN */}
-      <div>
-        <label className="block text-sm font-medium text-[#101828] mb-1.5">
-          Transaction PIN
-        </label>
-        <Input
-          type="password"
-          placeholder="Enter your PIN"
-          maxLength={4}
-          {...register("pin", {
-            required: "PIN is required",
-            minLength: {
-              value: 4,
-              message: "PIN must be at least 4 digits",
-            },
-            pattern: {
-              value: /^[0-9]*$/,
-              message: "PIN must contain only numbers",
-            },
-          })}
-        />
-        {errors.pin && (
-          <p className="text-xs text-[#dc2626] mt-1">{errors.pin.message}</p>
         )}
       </div>
 

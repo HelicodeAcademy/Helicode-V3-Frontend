@@ -12,32 +12,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useWalletStore } from "@/store/wallet-store";
 import Image from "next/image";
-import { Lock } from "lucide-react";
-import {
-  KeyboardEvent,
-  ClipboardEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { initiateCryptoWithdrawal } from "@/lib/wallet-service";
+import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
+import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
+import { Loader2 } from "lucide-react";
 
 interface WithdrawFundsModal {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type WithdrawStep = "details" | "pin" | "success";
-
-const PIN_LENGTH = 4;
+type WithdrawStep = "details" | "verification" | "success";
 
 interface CryptoWithdrawalFormData {
   walletAddress: string;
-  amount: number;
-  pin: string;
+  amount: string;
 }
 
 interface WithdrawDetailsStepProps {
@@ -49,18 +41,7 @@ interface WithdrawDetailsStepProps {
   onWalletAddressChange: (value: string) => void;
   onAmountChange: (value: string) => void;
   onContinue: () => void;
-}
-
-interface WithdrawPinStepProps {
-  pin: string[];
-  parsedAmount: number;
-  isSubmitting: boolean;
-  pinRefs: MutableRefObject<(HTMLInputElement | null)[]>;
-  onPinChange: (index: number, value: string) => void;
-  onPinKeyDown: (index: number, event: KeyboardEvent<HTMLInputElement>) => void;
-  onPinPaste: (event: ClipboardEvent<HTMLInputElement>) => void;
-  onBack: () => void;
-  onConfirm: () => void;
+  isLoading?: boolean;
 }
 
 interface WithdrawSuccessStepProps {
@@ -76,7 +57,10 @@ function WithdrawDetailsStep({
   onWalletAddressChange,
   onAmountChange,
   onContinue,
+  isLoading = false,
 }: WithdrawDetailsStepProps) {
+  const canContinue = walletAddress && amount && !addressError && !amountError;
+
   return (
     <>
       <DialogHeader>
@@ -167,83 +151,22 @@ function WithdrawDetailsStep({
 
         <div className="flex justify-start">
           <Button
-            className="bg-[#000000] px-6 font-medium text-white"
+            className="bg-[#000000] px-6 font-medium text-white disabled:opacity-50"
             onClick={onContinue}
+            disabled={!canContinue || isLoading}
           >
-            Continue
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Procesing...
+              </>
+            ) : (
+              "Continue"
+            )}
           </Button>
         </div>
       </div>
     </>
-  );
-}
-
-function WithdrawPinStep({
-  pin,
-  isSubmitting,
-  pinRefs,
-  onPinChange,
-  onPinKeyDown,
-  onPinPaste,
-  onBack,
-  onConfirm,
-}: WithdrawPinStepProps) {
-  return (
-    <div className="space-y-8 py-4">
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-6 flex h-19 w-19 items-center justify-center rounded-full bg-[#EEF4FF]">
-          <Lock className="h-8 w-8 text-[#0052FF]" strokeWidth={1.5} />
-        </div>
-
-        <DialogTitle className="text-xl font-semibold text-[#101928]">
-          Input Pin
-        </DialogTitle>
-        <DialogDescription className="mt-2 text-sm text-[#475367]">
-          Enter your 4-digit code to confirm this withdrawal
-        </DialogDescription>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-center gap-2.5">
-          {pin.map((digit, index) => (
-            <Input
-              key={index}
-              ref={(element) => {
-                pinRefs.current[index] = element;
-              }}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(event) => onPinChange(index, event.target.value)}
-              onKeyDown={(event) => onPinKeyDown(index, event)}
-              onPaste={index === 0 ? onPinPaste : undefined}
-              className="h-12 w-12 rounded-md border border-[#D7D7D7] text-center text-lg font-semibold text-[#101928]"
-              disabled={isSubmitting}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <Button
-          type="button"
-          variant="outline"
-          className="border-[#D0D5DD]"
-          onClick={onBack}
-          disabled={isSubmitting}
-        >
-          Back
-        </Button>
-        <Button
-          className="bg-[#000000] px-6 font-medium text-white"
-          onClick={onConfirm}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Processing..." : "Confirm"}
-        </Button>
-      </div>
-    </div>
   );
 }
 
@@ -285,16 +208,16 @@ function WithdrawSuccessStep({ onGoHome }: WithdrawSuccessStepProps) {
 export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const { walletData, setWalletData } = useWalletStore();
   const [step, setStep] = useState<WithdrawStep>("details");
-  const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
   const [amountError, setAmountError] = useState("");
-  const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [addressError, setAddressError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
 
   const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
     defaultValues: {
       walletAddress: "",
-      amount: undefined,
-      pin: "",
+      amount: "",
     },
   });
 
@@ -309,83 +232,86 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     setStep("details");
     reset({
       walletAddress: "",
-      amount: undefined,
-      pin: "",
+      amount: " ",
     });
-    setPin(Array(PIN_LENGTH).fill(""));
     setAmountError("");
+    setAddressError("");
     setIsSubmitting(false);
+    setVerificationError("");
   }, [open, reset]);
 
-  useEffect(() => {
-    if (step !== "pin") return;
+  const validateInputs = () => {
+    let isValid = true;
 
-    const timer = setTimeout(() => {
-      pinRefs.current[0]?.focus();
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, [step]);
-
-  const handleContinue = () => {
-    setStep("pin");
-  };
-
-  const handlePinChange = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const nextPin = [...pin];
-    nextPin[index] = digit;
-    setPin(nextPin);
-
-    if (digit && index < PIN_LENGTH - 1) {
-      pinRefs.current[index + 1]?.focus();
+    if (!walletAddress || walletAddress.trim() === "") {
+      setAddressError("Wallet address is required");
+      isValid = false;
+    } else {
+      setAddressError("");
     }
-  };
 
-  const handlePinKeyDown = (
-    index: number,
-    event: KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === "Backspace" && !pin[index] && index > 0) {
-      pinRefs.current[index - 1]?.focus();
+    if (!amount || Number(amount) <= 0) {
+      setAmountError("Amount must be greater than 0");
+      isValid = false;
+    } else if (Number(amount) > availableBalance) {
+      setAmountError("Amount cannot exceed available balance");
+      isValid = false;
+    } else {
+      setAmountError("");
     }
+
+    return isValid;
   };
 
-  const handlePinPaste = (event: ClipboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const pasted = event.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, PIN_LENGTH);
-    const nextPin = [...pin];
+  const handleContinue = async () => {
+    if (!validateInputs()) {
+      return;
+    }
 
-    [...pasted].forEach((digit, index) => {
-      nextPin[index] = digit;
-    });
-
-    setPin(nextPin);
-    pinRefs.current[Math.min(pasted.length, PIN_LENGTH - 1)]?.focus();
-  };
-
-  const handleConfirmPin = async () => {
     setIsSubmitting(true);
 
     try {
-      const pinString = pin.join("");
+      await requestTransactionVerificationCode("COMPANY_WITHDRAWAL_CRYPTO");
+      toast.success("Verification code sent to your email!");
+      setStep("verification");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification code";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-      if (pinString.length !== PIN_LENGTH) {
-        toast.error("Please enter a complete PIN");
-        return;
-      }
+  const handleRequestCode = async () => {
+    try {
+      await requestTransactionVerificationCode("COMPANY_WITHDRAWAL_CRYPTO");
+      toast.success("Verification code sent to your email!");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification code";
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
 
-      if (!amount || amount <= 0) {
+  const handleConfirmCode = async (code: string) => {
+    setIsSubmitting(true);
+    setVerificationError("");
+
+    try {
+      if (!amount || Number(amount) <= 0) {
         toast.error("Amount must be greater than 0");
         return;
       }
 
       await initiateCryptoWithdrawal({
         amount: amount.toString(),
-        pin: pinString,
+        verificationCode: code,
         toAddress: walletAddress,
       });
 
@@ -402,11 +328,11 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
       toast.success("Withdrawal initiated successfully!");
       setStep("success");
     } catch (error) {
-      toast.error(
+      const errorMessage =
         error instanceof Error
           ? error.message
-          : "Withdrawal failed. Please try again.",
-      );
+          : "Withdrawal failed. Please try again.";
+      setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -415,6 +341,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const handleGoHome = () => {
     onOpenChange(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -423,13 +350,14 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
             walletAddress={walletAddress}
             amount={amount?.toString() || ""}
             availableBalance={availableBalance}
-            addressError=""
+            addressError={addressError}
             amountError={amountError}
             onWalletAddressChange={(value) => {
               setValue("walletAddress", value);
+              if (value) setAddressError("");
             }}
             onAmountChange={(value) => {
-              const nextAmount = Number(value);
+              const nextAmount = value;
               setValue("amount", nextAmount);
 
               if (!value) {
@@ -437,12 +365,12 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
                 return;
               }
 
-              if (nextAmount <= 0) {
+              if (Number(nextAmount) <= 0) {
                 setAmountError("Amount must be greater than 0.");
                 return;
               }
 
-              if (nextAmount > availableBalance) {
+              if (Number(nextAmount) > availableBalance) {
                 setAmountError(
                   "Amount cannot be more than your available balance.",
                 );
@@ -452,18 +380,16 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
               setAmountError("");
             }}
             onContinue={handleContinue}
+            isLoading={isSubmitting}
           />
-        ) : step === "pin" ? (
-          <WithdrawPinStep
-            pin={pin}
-            parsedAmount={parsedAmount}
-            isSubmitting={isSubmitting}
-            pinRefs={pinRefs}
-            onPinChange={handlePinChange}
-            onPinKeyDown={handlePinKeyDown}
-            onPinPaste={handlePinPaste}
+        ) : step === "verification" ? (
+          <EmailVerificationCodeStep
             onBack={() => setStep("details")}
-            onConfirm={handleConfirmPin}
+            onConfirm={handleConfirmCode}
+            isSubmitting={isSubmitting}
+            error={verificationError}
+            onResendCode={handleRequestCode}
+            isResending={isResending}
           />
         ) : (
           <WithdrawSuccessStep onGoHome={handleGoHome} />

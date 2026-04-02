@@ -113,13 +113,13 @@ export async function updateTeamMember(
 
 export async function paySingleTeamMember(
   memberId: string,
-  pin: string,
+  verificationCode: string,
   amount: number,
 ): Promise<PaySingleMemberResponse> {
   const response = await post<PaySingleMemberResponse>(
     `/payroll-groups/pay-now/${memberId}`,
     {
-      pin,
+      verificationCode,
       amount,
     },
   );

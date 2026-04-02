@@ -44,7 +44,7 @@ export interface BankDetailsResponse {
 
 export interface WithdrawalData {
   amount: number;
-  pin: string;
+  verificationCode: string;
   reason: string;
 }
 

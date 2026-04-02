@@ -1,36 +1,24 @@
 "use client";
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  KeyboardEvent,
-  ClipboardEvent,
-} from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock, Loader2 } from "lucide-react";
+// import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTeamStore } from "@/store/team-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { apiCall } from "@/lib/api-client";
 import { payAllPayrollGroups } from "@/lib/payroll-service";
+import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
+import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
 
-// interface PayrollOverviewModalProps {
-//   open: boolean;
-//   onOpenChange: (open: boolean) => void;
-//   onPayNow: () => void;
-// }
 interface PayrollOverviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type OverviewStep = "overview" | "pin" | "success";
-
-const PIN_LENGTH = 4;
+type OverviewStep = "overview" | "verification" | "success";
 
 function getInitials(name: string) {
   return name
@@ -57,17 +45,6 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-// const employees = [
-//   { id: 1, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 2, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 3, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 4, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 5, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 6, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 7, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-//   { id: 8, name: "Vandross Idiake", role: "Software Engineer", amount: 2450 },
-// ];
-
 export function PayrollOverviewModal({
   open,
   onOpenChange,
@@ -77,10 +54,9 @@ export function PayrollOverviewModal({
   const router = useRouter();
   const { members } = useTeamStore();
   const [step, setStep] = useState<OverviewStep>("overview");
-  const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(""));
-  const [pinError, setPinError] = useState("");
+  const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const pinRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [isResending] = useState(false);
 
   // Only active members
   const activeMembers = members.filter((m) => m.status === "Active");
@@ -90,76 +66,53 @@ export function PayrollOverviewModal({
   useEffect(() => {
     if (open) {
       setStep("overview");
-      setPin(Array(PIN_LENGTH).fill(""));
-      setPinError("");
+      setVerificationError("");
     }
   }, [open]);
 
-  // Focus first pin box when entering pin step
-  useEffect(() => {
-    if (step === "pin") {
-      setTimeout(() => pinRefs.current[0]?.focus(), 50);
-    }
-  }, [step]);
-
-  // PIN handlers
-  const handlePinChange = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const newPin = [...pin];
-    newPin[index] = digit;
-    setPin(newPin);
-    setPinError("");
-    if (digit && index < PIN_LENGTH - 1) {
-      pinRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handlePinKeyDown = (
-    index: number,
-    e: KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (e.key === "Backspace" && !pin[index] && index > 0) {
-      pinRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePinPaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasted = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, PIN_LENGTH);
-    const newPin = [...pin];
-    [...pasted].forEach((digit, i) => {
-      newPin[i] = digit;
-    });
-    setPin(newPin);
-    pinRefs.current[Math.min(pasted.length, PIN_LENGTH - 1)]?.focus();
-  };
-
-  const pinComplete = pin.every((d) => d !== "");
-
-  const handleConfirm = async () => {
-    if (!pinComplete) return;
-    setIsSubmitting(true);
-    setPinError("");
+  const handleRequestCode = async () => {
     try {
-      // await apiCall("/payroll-groups/pay-now/all", {
-      //   method: "POST",
-      //   body: JSON.stringify({ pin: pin.join("") }),
-      // });
-      await payAllPayrollGroups(pin.join(""));
+      await requestTransactionVerificationCode("COMPANY_PAY_NOW_ALL");
+      toast.success("Verification code sent to your email!");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification code";
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const handlePayNow = async () => {
+    setIsSubmitting(true);
+    try {
+      await requestTransactionVerificationCode("COMPANY_PAY_NOW_ALL");
+      toast.success("Verification code sent to your email!");
+      setStep("verification");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to send verification code";
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConfirmCode = async (code: string) => {
+    setIsSubmitting(true);
+    setVerificationError("");
+    try {
+      await payAllPayrollGroups(code);
       setStep("success");
     } catch (err: unknown) {
       const message =
         err instanceof Error
           ? err.message
           : "Payment failed. Please try again.";
-      if (message === "Wallet PIN not configured") {
-        setPinError(message);
-      } else {
-        toast.error(message);
-      }
+      setVerificationError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -225,7 +178,7 @@ export function PayrollOverviewModal({
                         <p className="text-xs text-[#BEBEBE] truncate">
                           {member.role ??
                             member.type.charAt(0) +
-                            member.type.slice(1).toLowerCase()}
+                              member.type.slice(1).toLowerCase()}
                         </p>
                       </div>
                       <div className="text-sm font-semibold text-[#101828] shrink-0 bg-[#F2F2F2] px-2 py-1 rounded-full">
@@ -253,94 +206,32 @@ export function PayrollOverviewModal({
                   </h3>
                 </div>
                 <button
-                  onClick={() => setStep("pin")}
-                  disabled={activeMembers.length === 0}
+                  onClick={handlePayNow}
+                  disabled={activeMembers.length === 0 || isSubmitting}
                   className="bg-[#363636] text-white hover:bg-[#1f2937]/90 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Pay now
+                  {isSubmitting ? "Sending code..." : "Pay now"}
                 </button>
               </div>
             </div>
           </>
         )}
 
-        {/* ── PIN ── */}
-        {step === "pin" && (
+        {/* ── Verification ── */}
+        {step === "verification" && (
           <>
-            <DialogTitle className="sr-only">Input Pin</DialogTitle>
-            <div className="px-8 py-10 flex flex-col items-center text-center">
-              <div className="h-16 w-16 rounded-full bg-[#EFF4FF] flex items-center justify-center mb-5">
-                <Lock className="h-7 w-7 text-[#2563eb]" strokeWidth={1.5} />
-              </div>
-
-              <h2 className="text-2xl font-bold text-[#101928] mb-1">
-                Input Pin
-              </h2>
-              <p className="text-sm text-[#667085] mb-7">
-                Enter your 4-digit code to proceed
-              </p>
-
-              {/* PIN boxes */}
-              <div className="flex items-center gap-3 mb-3">
-                {pin.map((digit, i) => (
-                  <input
-                    key={i}
-                    ref={(el) => {
-                      pinRefs.current[i] = el;
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handlePinChange(i, e.target.value)}
-                    onKeyDown={(e) => handlePinKeyDown(i, e)}
-                    onPaste={i === 0 ? handlePinPaste : undefined}
-                    className={cn(
-                      "h-13 w-13 rounded-lg border text-center text-xl font-semibold text-[#101928] outline-none transition-all",
-                      pinError
-                        ? "border-red-400 bg-red-50"
-                        : digit
-                          ? "border-[#101928] bg-white shadow-sm"
-                          : "border-[#E4E7EC] bg-white",
-                      !pinError &&
-                      "focus:border-[#101928] focus:ring-2 focus:ring-[#101928]/10",
-                    )}
-                  />
-                ))}
-              </div>
-
-              {/* PIN error */}
-              {pinError ? (
-                <div className="mb-6 text-center">
-                  <p className="text-sm text-red-500 mb-1">{pinError}</p>
-                  <button
-                    onClick={() => {
-                      onOpenChange(false);
-                      router.push("/dashboard/settings");
-                    }}
-                    className="text-sm text-[#0052FF] underline underline-offset-2 hover:text-[#0041cc] transition-colors"
-                  >
-                    Set up your PIN in Settings →
-                  </button>
-                </div>
-              ) : (
-                <div className="mb-6" />
-              )}
-
-              <Button
-                variant="primary"
-                className=""
-                disabled={!pinComplete || isSubmitting}
-                onClick={handleConfirm}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  </div>
-                ) : (
-                  "Confirm"
-                )}
-              </Button>
+            <DialogTitle className="sr-only">
+              Verify with email code
+            </DialogTitle>
+            <div className="px-6 py-8">
+              <EmailVerificationCodeStep
+                onBack={() => setStep("overview")}
+                onConfirm={handleConfirmCode}
+                isSubmitting={isSubmitting}
+                error={verificationError}
+                onResendCode={handleRequestCode}
+                isResending={isResending}
+              />
             </div>
           </>
         )}
@@ -366,8 +257,8 @@ export function PayrollOverviewModal({
                   variant="primary"
                   onClick={handleGoHome}
                   className="hover:bg-[#101828]/90"
-                // variant="outline"
-                // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
+                  // variant="outline"
+                  // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
                 >
                   Go to home
                 </Button>
