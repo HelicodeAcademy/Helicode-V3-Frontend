@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { TeamPublicRoute } from '@/components/team-dashboard/access/public-route';
-import { Toaster } from 'react-hot-toast';
-import { TeamLoginForm } from '@/components/team-dashboard/auth/team-login-form';
-import Image from 'next/image';
+import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
+import { Toaster } from "react-hot-toast";
+import { TeamLoginForm } from "@/components/team-dashboard/auth/team-login-form";
+import Image from "next/image";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
 export default function TeamLoginPage() {
   return (
@@ -14,7 +15,7 @@ export default function TeamLoginPage() {
         {/* Left sidebar with logo */}
         <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
           <div className="relative w-full h-full overflow-hidden">
-            {/* Illustrator wrapper with requested background, rounding and padding */}
+            {/* Illustrator w`r`apper with requested background, rounding and padding */}
             <div className="relative w-full h-full">
               {/* Logo positioned inside the illustrator on the left */}
               <div className="absolute left-6 top-9 z-10">
@@ -28,10 +29,11 @@ export default function TeamLoginPage() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>
@@ -59,7 +61,7 @@ export default function TeamLoginPage() {
               href="/signup"
               className="font-medium hover:underline text-black text-[13px] md:hidden hidden lg:block"
             >
-              Don&apos;t have an account?{' '}
+              Don&apos;t have an account?{" "}
               <span className="font-bold text-[#355587]">Sign up</span>
             </Link>
           </div>

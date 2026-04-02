@@ -1,8 +1,9 @@
-import Link from 'next/link';
-import { LoginForm } from '@/components/auth/login/login-form';
-import Image from 'next/image';
-import { Toaster } from 'react-hot-toast';
-import { PublicRoute } from '@/components/auth/access/public-route';
+import Link from "next/link";
+import { LoginForm } from "@/components/auth/login/login-form";
+import Image from "next/image";
+import { Toaster } from "react-hot-toast";
+import { PublicRoute } from "@/components/auth/access/public-route";
+import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
 
 export default function LoginPage() {
   return (
@@ -25,10 +26,11 @@ export default function LoginPage() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>
@@ -55,7 +57,7 @@ export default function LoginPage() {
               href="/signup"
               className="font-medium hover:underline text-black text-[13px] md:hidden hidden lg:block"
             >
-              Don&apos;t have an account?{' '}
+              Don&apos;t have an account?{" "}
               <span className="font-bold text-[#355587]">Sign up</span>
             </Link>
           </div>

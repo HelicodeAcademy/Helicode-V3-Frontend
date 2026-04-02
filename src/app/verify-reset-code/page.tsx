@@ -5,6 +5,7 @@ import { VerifyResetCodeForm } from "@/components/auth/forgot-password/verify-re
 import { Toaster } from "react-hot-toast";
 import Image from "next/image";
 import { PublicRoute } from "@/components/auth/access/public-route";
+import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
 
 // This is for the forgot password flow
 
@@ -29,10 +30,11 @@ export default function VerifyResetCodePage() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
-                  className="object-cover rounded-2xl"
+                  className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
 
 type UserType = "company" | "talent" | null;
 
@@ -38,10 +39,11 @@ export default function SignupPage() {
 
             <div className="relative w-full h-full">
               <Image
-                src="/signup/Onboarding-Illustration.svg"
+                src={onboardingIllustration}
                 alt="Illustrator"
                 fill
                 className="object-cover"
+                placeholder="blur"
                 priority
               />
             </div>

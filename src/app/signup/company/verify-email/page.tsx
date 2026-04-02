@@ -5,6 +5,7 @@ import Image from "next/image";
 import { VerifyEmailForm } from "@/components/auth/signup/verify-email-form";
 import { useAuthStore } from "@/store/auth-store";
 import { Toaster } from "react-hot-toast";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png";
 
 export default function VerifyEmailPage() {
   const { setCurrentStep } = useAuthStore();
@@ -34,10 +35,11 @@ export default function VerifyEmailPage() {
 
             <div className="relative w-full h-full">
               <Image
-                src="/signup/Onboarding-Illustration.svg"
+                src={onboardingIllustration}
                 alt="Illustrator"
                 fill
                 className="object-cover"
+                placeholder="blur"
                 priority
               />
             </div>

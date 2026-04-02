@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TalentSignupForm } from "@/components/auth/signup/talent-signup-form";
 import Image from "next/image";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
 export default function TalentSignupPage() {
   return (
@@ -22,10 +23,11 @@ export default function TalentSignupPage() {
 
             <div className="relative w-full h-full">
               <Image
-                src="/signup/Onboarding-Illustration.svg"
+                src={onboardingIllustration}
                 alt="Illustrator"
                 fill
                 className="object-cover"
+                placeholder="blur"
                 priority
               />
             </div>

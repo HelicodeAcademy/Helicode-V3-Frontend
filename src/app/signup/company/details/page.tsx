@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CompanyDetailsForm } from "@/components/auth/signup/company-details-form";
 import { useAuthStore } from "@/store/auth-store";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png"; 
 
 export default function CompanyDetailsPage() {
   const router = useRouter();
@@ -33,10 +34,11 @@ export default function CompanyDetailsPage() {
 
             <div className="relative w-full h-full">
               <Image
-                src="/signup/Onboarding-Illustration.svg"
+                src={onboardingIllustration}
                 alt="Illustrator"
                 fill
                 className="object-cover"
+                placeholder="blur"
                 priority
               />
             </div>

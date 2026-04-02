@@ -5,6 +5,7 @@ import { CompanySignupForm } from "@/components/auth/signup/company-signup-form"
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import { PublicRoute } from "@/components/auth/access/public-route";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
 export default function CompanySignupPage() {
   return (
@@ -27,10 +28,11 @@ export default function CompanySignupPage() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>

@@ -5,6 +5,7 @@ import { ForgotPasswordForm } from "@/components/auth/forgot-password/forgot-pas
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import { PublicRoute } from "@/components/auth/access/public-route";
+import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
 
 export default function ForgotPasswordPage() {
   // const Icon = headerContent.icon;
@@ -28,10 +29,11 @@ export default function ForgotPasswordPage() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover rounded-2xl"
+                  placeholder="blur"
                   priority
                 />
               </div>

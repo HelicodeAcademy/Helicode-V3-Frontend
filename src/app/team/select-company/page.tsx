@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { Button } from "@/components/ui/button";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
 export default function SelectCompany() {
   const router = useRouter();
@@ -88,10 +89,11 @@ export default function SelectCompany() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>
