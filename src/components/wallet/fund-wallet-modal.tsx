@@ -50,14 +50,14 @@ export function FundWalletModal({
             <span className="text-[#000000] font-medium">Fund with crypto</span>
           </button>
 
-          {/* Fund with Card or Bank Transfer */}
+          {/* Fund with Bank Transfer */}
           <button
             onClick={onSelectCard}
             className="w-full flex items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
           >
             <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
             <span className="text-[#000000] font-medium">
-              Fund with card or bank transfer
+              Fund with bank transfer
             </span>
           </button>
 

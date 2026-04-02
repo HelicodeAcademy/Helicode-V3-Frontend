@@ -25,10 +25,7 @@ interface HireContractFormComponentProps {
 }
 
 const CURRENCIES: { value: Currency; label: string }[] = [
-  { value: "USD", label: "USD — US Dollar" },
-  { value: "EUR", label: "EUR — Euro" },
   { value: "USDC", label: "USDC — USD Coin" },
-  { value: "USDT", label: "USDT — Tether" },
 ];
 
 const FREQUENCIES: { value: PaymentFrequency; label: string }[] = [
