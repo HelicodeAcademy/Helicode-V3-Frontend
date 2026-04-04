@@ -47,16 +47,34 @@ export interface BankDetailsSubmissionData {
 }
 
 export interface BankDetailsResponse {
-  id: string;
-  country: string;
-  currencyCode: string;
-  channelId: string;
-  networkId: string;
-  bankName: string;
-  bankBranch: string;
-  accountName: string;
-  accountNumber: string;
-  updatedAt: string;
+  bankPayout: {
+    id: string;
+    country: string;
+    currencyCode: string;
+    channelId: string;
+    networkId: string;
+    bankName: string;
+    bankBranch: string;
+    accountName: string;
+    accountNumber: string;
+    updatedAt: string;
+  };
+  bridgeKyc: {
+    kycLink?: string;
+    tosLink?: string;
+    kycStatus: "not_started" | "pending" | "approved" | "rejected";
+    tosStatus: "not_started" | "pending" | "approved" | "rejected";
+  };
+}
+
+export interface BridgeKycStatusResponse {
+  message: string;
+  fullName: string;
+  email: string;
+  toStatus: "not_started" | "pending" | "approved" | "rejected";
+  kycStatus: "not_started" | "pending" | "approved" | "rejected";
+  kycLink: string;
+  tosLink: string;
 }
 
 export interface SupportCountry {
@@ -120,6 +138,13 @@ export async function submitTeamBankDetails(
   const response = await teamPost<BankDetailsResponse>(
     "/team/offramp/bank",
     data,
+  );
+  return response.data;
+}
+
+export async function getBridgeKycStatus(): Promise<BridgeKycStatusResponse> {
+  const response = await teamGet<BridgeKycStatusResponse>(
+    "/team/bridge-kyc/status",
   );
   return response.data;
 }

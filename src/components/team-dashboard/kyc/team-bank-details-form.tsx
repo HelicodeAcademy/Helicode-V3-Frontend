@@ -18,12 +18,13 @@ import {
   submitTeamBankDetails,
   getSupportedCountries,
   getSupportedBanks,
+  BankDetailsResponse,
 } from "@/lib/team/team-kyc-service";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
 interface TeamBankDetailsFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (bankDetails: BankDetailsResponse) => void;
 }
 
 interface CountryOption {
@@ -113,7 +114,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
 
   const onSubmit = async (data: BankDetailsSubmissionData) => {
     try {
-      await submitTeamBankDetails(data);
+      const response = await submitTeamBankDetails(data);
       toast.success("Bank details saved successfully!");
 
       // Update the store if we have team member data
@@ -125,7 +126,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
       }
 
       reset();
-      onSuccess?.();
+      onSuccess?.(response);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save bank details";

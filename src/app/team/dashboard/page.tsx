@@ -32,6 +32,7 @@ import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { useTeamWalletStore } from "@/store/team/team-wallet-store";
+import { TeamBridgeVerificationStatus } from "@/components/team-dashboard/kyc/team-bridge-verification-status";
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
@@ -252,7 +253,13 @@ export default function TalentDashboardHomePage() {
           <Button
             onClick={() => setWithdrawFundsModalOpen(true)}
             className="w-full items-center rounded-lg bg-[#0052FF] font-medium text-white hover:bg-[#0052FF]/90 sm:w-auto"
-            disabled={kycNotApproved || bankDetailsNotAdded || isLoading}
+            disabled={
+              kycNotApproved ||
+              bankDetailsNotAdded ||
+              isLoading ||
+              teamData?.bridgeKycStatus !== "approved" ||
+              teamData?.bridgeTosStatus !== "approved"
+            }
           >
             <Image
               src="/home/arrow-narrow-up-right-white.svg"
@@ -307,6 +314,15 @@ export default function TalentDashboardHomePage() {
             </Button>
           </div>
         )}
+
+        {/* Bridge Verification Status */}
+        {!bankDetailsNotAdded && kycNotApproved === false && (
+          <TeamBridgeVerificationStatus
+            bankPayoutStatus={teamData?.bankPayoutStatus}
+            bridgeKycStatus={teamData?.bridgeKycStatus}
+            bridgeTosStatus={teamData?.bridgeTosStatus}
+          />
+        )}
       </div>
 
       <PaymentHistory payments={recentTransactions} />
@@ -334,6 +350,8 @@ export default function TalentDashboardHomePage() {
         open={bankModalOpen}
         onOpenChange={setBankModalOpen}
         onSuccess={() => fetchTeamData()}
+        kycStatus={teamData?.bridgeKycStatus}
+        tosStatus={teamData?.bridgeTosStatus}
       />
 
       {/* Handles local bank withdrawals */}
