@@ -109,7 +109,7 @@ export function ProductForm() {
       setCurrentStep("verify");
 
       toast.success("Account created! Please verify your email.");
-      router.push("/signup/verify-email");
+      router.push("/signup/company/verify-email");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const errorMessage = error.message || "Failed to create account";
