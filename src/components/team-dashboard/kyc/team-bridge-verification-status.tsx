@@ -23,6 +23,22 @@ export function TeamBridgeVerificationStatus({
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
 
+    const fetchBridgeStatus = async () => {
+    try {
+      setLoading(true);
+      const data = await getBridgeKycStatus();
+      setBridgeData(data);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch Bridge status";
+      console.error("Bridge status error:", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!hasLoaded && bankPayoutStatus) {
       fetchBridgeStatus();
@@ -42,21 +58,7 @@ export function TeamBridgeVerificationStatus({
     return null;
   }
 
-  const fetchBridgeStatus = async () => {
-    try {
-      setLoading(true);
-      const data = await getBridgeKycStatus();
-      setBridgeData(data);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch Bridge status";
-      console.error("Bridge status error:", errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleOpenLink = (link: string | undefined, linkType: string) => {
     if (link) {
