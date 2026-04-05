@@ -36,6 +36,8 @@ interface CountryOption {
 interface BankOption {
   code: string;
   name: string;
+  id: string;
+  channelId: string;
 }
 
 export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
@@ -137,6 +139,11 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
 
   const selectedCountryData = countries.find((c) => c.code === selectedCountry);
 
+  const uniqueCountries = countries.filter(
+    (country, index, self) =>
+      index === self.findIndex((c) => c.name === country.name),
+  );
+
   if (loadingCountries) {
     return (
       <div className="flex justify-center py-8">
@@ -189,8 +196,8 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
-                {countries.map((country, index) => (
-                  <SelectItem key={index} value={country.code}>
+                {uniqueCountries.map((country) => (
+                  <SelectItem key={country.code} value={country.code}>
                     {country.name}
                   </SelectItem>
                 ))}
@@ -243,7 +250,10 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     {banks.map((bank, index) => (
-                      <SelectItem key={index} value={bank.name}>
+                      <SelectItem
+                        key={`${bank.name}-${bank.channelId}-${index}`}
+                        value={`${bank.name}-${index}`}
+                      >
                         {bank.name}
                       </SelectItem>
                     ))}

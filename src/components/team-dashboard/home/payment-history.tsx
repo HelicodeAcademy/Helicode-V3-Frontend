@@ -5,9 +5,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import Image from 'next/image';
-import { TeamTransactionData } from '@/lib/team/team-transaction-service';
+} from "@/components/ui/table";
+import Image from "next/image";
+import { TeamTransactionData } from "@/lib/team/team-transaction-service";
 
 interface PaymentHistoryProps {
   payments?: TeamTransactionData[];
@@ -16,23 +16,23 @@ interface PaymentHistoryProps {
 export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
   const getStatusClasses = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'paid':
-        return 'bg-[#ECFDF3] text-[#4D8F72] border border-[#CAEFDC]';
-      case 'pending':
-        return 'bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]';
-      case 'failed':
-        return 'bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]';
-      case 'processing':
-        return 'bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]';
+      case "paid":
+        return "bg-[#ECFDF3] text-[#4D8F72] border border-[#CAEFDC]";
+      case "pending":
+        return "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]";
+      case "failed":
+        return "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]";
+      case "processing":
+        return "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]";
       default:
-        return 'bg-[#ECFDF3] text-[#4D8F72] border border-[#CAEFDC]';
+        return "bg-[#ECFDF3] text-[#4D8F72] border border-[#CAEFDC]";
     }
   };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
@@ -45,14 +45,16 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
       return date;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true,
     }).format(parsedDate);
   };
+
+  console.log(payments);
 
   return (
     <div className="rounded-2xl border border-[#F2F2F2] bg-white p-4 sm:p-6">
@@ -124,10 +126,10 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                 Currency
               </TableHead>
               <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
-                Status
+                Type
               </TableHead>
               <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#344054]">
-                Payroll Frequency
+                Status
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -166,15 +168,15 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell className="px-6 py-5 text-sm text-[#101928]">
+                    {payment.direction}
+                  </TableCell>
                   <TableCell className="px-6 py-5">
                     <span
                       className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-sm font-medium`}
                     >
                       {payment.status}
                     </span>
-                  </TableCell>
-                  <TableCell className="px-6 py-5 text-sm text-[#101928]">
-                    {payment.frequency}
                   </TableCell>
                 </TableRow>
               ))

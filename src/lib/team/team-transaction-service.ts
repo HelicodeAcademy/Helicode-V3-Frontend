@@ -18,6 +18,7 @@ export interface TeamTransactionData {
   currency: string;
   status: string;
   frequency: string;
+  direction: string;
 }
 
 export interface BankDetailsSubmissionData {
