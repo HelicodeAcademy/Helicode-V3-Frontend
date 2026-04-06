@@ -184,8 +184,10 @@ export async function teamApiCall<T>(
       } catch {
         // refresh failed, redirect to team login
         useTeamAuthStore.getState().clearTeamLoginData();
-        window.location.href = "/team/login";
-        throw new Error("Team session expired. Please log in again.");
+        // window.location.href = "/team/login";
+        throw new Error(
+          "Team session expired. Please log in again. TeamAPICall error",
+        );
       }
     }
     // For public endpoints, throw the backend's actual error message

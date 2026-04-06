@@ -103,8 +103,10 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                   </div>
                 </div>
                 <div>
-                  <p className="text-[#667085]">Frequency</p>
-                  <p className="mt-1 text-[#101928]">{payment.frequency}</p>
+                  <p className="text-[#667085]">Type</p>
+                  <p className="mt-1 text-[#101928] capitalize">
+                    {payment.direction}
+                  </p>
                 </div>
               </div>
             </div>
