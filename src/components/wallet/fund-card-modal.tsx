@@ -136,13 +136,13 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
 
               <div className="bg-[#F6F6F6] rounded-sm p-3">
                 <label className="text-sm text-[#979CA6] block mb-1">
-                  Bank Name
+                  Routing Number
                 </label>
                 <div className="flex items-center justify-between">
                   <p className="text-[#000000] font-medium">
                     {
                       walletData.virtualAccount.fiatDepositInstructions
-                        ?.bank_name
+                        ?.routing_number
                     }
                   </p>
 
@@ -175,6 +175,45 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
 
               <div className="bg-[#F6F6F6] rounded-sm p-3">
                 <label className="text-sm text-[#979CA6] block mb-1">
+                  Bank Name
+                </label>
+                <div className="flex items-center justify-between">
+                  <p className="text-[#000000] font-medium">
+                    {
+                      walletData.virtualAccount.fiatDepositInstructions
+                        ?.bank_name
+                    }
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      handleCopy(
+                        walletData.virtualAccount.fiatDepositInstructions
+                          ?.bank_name,
+                        1,
+                      )
+                    }
+                    className="text-[#667085] hover:text-[#0166f4] transition-colors"
+                    title="Copy to clipboard"
+                  >
+                    {copiedIndex === 1 ? (
+                      <span className="text-xs text-green-600 font-medium">
+                        Copied
+                      </span>
+                    ) : (
+                      <Image
+                        src="/wallet/copy.svg"
+                        alt="copy"
+                        width={16}
+                        height={16}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-[#F6F6F6] rounded-sm p-3">
+                <label className="text-sm text-[#979CA6] block mb-1">
                   Account Number
                 </label>
                 <div className="flex items-center justify-between">
@@ -190,13 +229,13 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       handleCopy(
                         walletData.virtualAccount.fiatDepositInstructions
                           ?.account_number,
-                        1,
+                        2,
                       )
                     }
                     className="text-[#667085] hover:text-[#0166f4] transition-colors"
                     title="Copy to clipboard"
                   >
-                    {copiedIndex === 1 ? (
+                    {copiedIndex === 2 ? (
                       <span className="text-xs text-green-600 font-medium">
                         Copied
                       </span>
@@ -229,13 +268,13 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       handleCopy(
                         walletData.virtualAccount.fiatDepositInstructions
                           ?.bank_address,
-                        2,
+                        3,
                       )
                     }
                     className="text-[#667085] hover:text-[#0166f4] transition-colors"
                     title="Copy to clipboard"
                   >
-                    {copiedIndex === 2 ? (
+                    {copiedIndex === 3 ? (
                       <span className="text-xs text-green-600 font-medium">
                         Copied
                       </span>
@@ -267,13 +306,13 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                       handleCopy(
                         walletData.virtualAccount.fiatDepositInstructions
                           ?.beneficiary,
-                        3,
+                        4,
                       )
                     }
                     className="text-[#667085] hover:text-[#0166f4] transition-colors"
                     title="Copy to clipboard"
                   >
-                    {copiedIndex === 3 ? (
+                    {copiedIndex === 4 ? (
                       <span className="text-xs text-green-600 font-medium">
                         Copied
                       </span>

@@ -168,7 +168,7 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5 text-sm text-[#101928]">
+                  <TableCell className="px-6 py-5 text-sm text-[#101928] capitalize">
                     {payment.direction}
                   </TableCell>
                   <TableCell className="px-6 py-5">
