@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { Button } from "@/components/ui/button";
-import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png";
 
 export default function SelectCompany() {
   const router = useRouter();

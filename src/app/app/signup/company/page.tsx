@@ -1,18 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { VerifyResetCodeForm } from "@/components/auth/forgot-password/verify-reset-code-form";
-import { Toaster } from "react-hot-toast";
+import { CompanySignupForm } from "@/components/auth/signup/company-signup-form";
 import Image from "next/image";
+import { Toaster } from "react-hot-toast";
 import { PublicRoute } from "@/components/auth/access/public-route";
-import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png";
 
-// This is for the forgot password flow
-
-export default function VerifyResetCodePage() {
+export default function CompanySignupPage() {
   return (
     <PublicRoute>
-      <div className="min-h-screen flex items-stretch md:flex-row flex-col">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-white">
         {/* Left sidebar with logo */}
         <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
           <div className="relative w-full h-full overflow-hidden">
@@ -44,7 +42,7 @@ export default function VerifyResetCodePage() {
 
         {/* Right Content Area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
-          {/* Top navigation */}
+          {/* Header Navigation */}
           <div className="flex items-center justify-between w-full">
             <Link
               href="/signup"
@@ -63,16 +61,15 @@ export default function VerifyResetCodePage() {
               className="font-medium hover:underline text-black text-sm"
             >
               Already have an account?{" "}
-              <span className="font-bold text-[#0052FF]">Login</span>
+              <span className="font-bold text-[#355587]">Login</span>
             </Link>
           </div>
 
           {/* Form Container - Centered with max width */}
           <div className="flex-1 flex items-center justify-center">
-            <VerifyResetCodeForm />
+            <CompanySignupForm />
           </div>
         </div>
-
         <Toaster position="top-right" />
       </div>
     </PublicRoute>

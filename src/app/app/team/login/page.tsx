@@ -1,20 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { CompanySignupForm } from "@/components/auth/signup/company-signup-form";
-import Image from "next/image";
-import { Toaster } from "react-hot-toast";
-import { PublicRoute } from "@/components/auth/access/public-route";
-import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
-export default function CompanySignupPage() {
+import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
+import { Toaster } from "react-hot-toast";
+import { TeamLoginForm } from "@/components/team-dashboard/auth/team-login-form";
+import Image from "next/image";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png";
+
+export default function TeamLoginPage() {
   return (
-    <PublicRoute>
-      <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+    <TeamPublicRoute>
+      <div className="min-h-screen flex items-stretch md:flex-row flex-col">
         {/* Left sidebar with logo */}
         <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
           <div className="relative w-full h-full overflow-hidden">
-            {/* Illustrator wrapper with requested background, rounding and padding */}
+            {/* Illustrator w`r`apper with requested background, rounding and padding */}
             <div className="relative w-full h-full">
               {/* Logo positioned inside the illustrator on the left */}
               <div className="absolute left-6 top-9 z-10">
@@ -42,11 +43,11 @@ export default function CompanySignupPage() {
 
         {/* Right Content Area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
-          {/* Header Navigation */}
-          <div className="flex items-center justify-between w-full">
+          {/* Top navigation */}
+          <div className="flex items-center justify-between gap-4 w-full">
             <Link
               href="/signup"
-              className="text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
+              className="text-[13px] mb-4 md:text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
             >
               <Image
                 src="/signup/back-arrow.svg"
@@ -57,21 +58,22 @@ export default function CompanySignupPage() {
               Go back
             </Link>
             <Link
-              href="/login"
-              className="font-medium hover:underline text-black text-sm"
+              href="/signup"
+              className="font-medium hover:underline text-black text-[13px] md:hidden hidden lg:block"
             >
-              Already have an account?{" "}
-              <span className="font-bold text-[#355587]">Login</span>
+              Don&apos;t have an account?{" "}
+              <span className="font-bold text-[#355587]">Sign up</span>
             </Link>
           </div>
 
-          {/* Form Container - Centered with max width */}
+          {/* Form */}
           <div className="flex-1 flex items-center justify-center">
-            <CompanySignupForm />
+            <TeamLoginForm />
           </div>
         </div>
+
         <Toaster position="top-right" />
       </div>
-    </PublicRoute>
+    </TeamPublicRoute>
   );
 }

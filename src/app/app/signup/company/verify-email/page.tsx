@@ -1,20 +1,21 @@
 "use client";
-
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CompanyDetailsForm } from "@/components/auth/signup/company-details-form";
+import Image from "next/image";
+import { VerifyEmailForm } from "@/components/auth/signup/verify-email-form";
 import { useAuthStore } from "@/store/auth-store";
-import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png"; 
+import { Toaster } from "react-hot-toast";
+import onboardingIllustration from "../../../../../../public/signup/Onboarding-Illustration.png";
 
-export default function CompanyDetailsPage() {
-  const router = useRouter();
+export default function VerifyEmailPage() {
   const { setCurrentStep } = useAuthStore();
+  const router = useRouter();
 
-  const handleBack = () => {
-    setCurrentStep("details");
+  const goBack = () => {
+    setCurrentStep("product");
     router.back();
   };
+
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Left sidebar with logo */}
@@ -46,13 +47,12 @@ export default function CompanyDetailsPage() {
         </div>
       </div>
 
-      {/* Right Content */}
       <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
         {/* Header Navigation */}
         <div className="flex justify-between items-center w-full">
           <button
+            onClick={goBack}
             className="text-black font-normal flex items-center text-sm hover:text-primary transition-colors"
-            onClick={handleBack}
           >
             <Image
               src="/signup/back-arrow.svg"
@@ -71,11 +71,13 @@ export default function CompanyDetailsPage() {
           </Link>
         </div>
 
-        {/* Main Form */}
-        <div className="w-full max-w-105.75 mx-auto flex-1 flex items-center justify-center">
-          <CompanyDetailsForm />
+        {/* Main Content */}
+        <div className="w-full max-w-138.75 mx-auto flex-1 flex items-center justify-center">
+          <VerifyEmailForm />
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }
