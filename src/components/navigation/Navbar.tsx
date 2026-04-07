@@ -7,7 +7,7 @@ import AnimatedLogo from "./AnimatedLogo";
 import ProductMegaMenu from "./ProductMegaMenu";
 import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
-import { WaitlistButton } from "../waitlist/WaitlistModal";
+// import { WaitlistButton } from "../waitlist/WaitlistModal";
 import { HireTalentButton } from "../Landing-page/HireTalentModal";
 
 export default function Navbar() {
@@ -42,7 +42,11 @@ export default function Navbar() {
                   Hire Talent
                 </Link> */}
 
-                <HireTalentButton variant="ghost" className="p-0 hover:bg-transparent cursor-pointer text-base text-black/70 font-normal hover:text-black" scheduleCallUrl="https://calendly.com/fiyin-helicode/30min">
+                <HireTalentButton
+                  variant="ghost"
+                  className="p-0 hover:bg-transparent cursor-pointer text-base text-black/70 font-normal hover:text-black"
+                  scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
+                >
                   Hire Talent
                 </HireTalentButton>
 
@@ -68,12 +72,15 @@ export default function Navbar() {
                   </Link>
                 </Button>
 
-                <WaitlistButton
+                {/* <WaitlistButton
                   variant="primary"
                   scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
                 >
-                  Join Waitlist
-                </WaitlistButton>
+                  Get Started
+                </WaitlistButton> */}
+                <Link href="/signup">
+                  <Button>Get Started</Button>
+                </Link>
               </div>
             </div>
 
