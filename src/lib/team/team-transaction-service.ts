@@ -4,6 +4,7 @@ import {
   CryptoWithdrawalData,
   CryptoWithdrawalResponse,
 } from "../wallet-service";
+import { WalletData } from "@/store/wallet-store";
 
 // export interface TeamTransaction {
 //   status: boolean;
@@ -110,4 +111,13 @@ export async function setWalletPin(
   const body = oldPin ? { oldPin, newPin: pin } : { pin };
   const method = oldPin ? teamPatch : teamPost;
   await method<void>(`/team/wallet/pin`, body);
+}
+
+/**
+ * Get team wallet address and deposit instructions
+ * Returns wallet balance, virtual account details and bank information
+ */
+export async function getTeamWalletAddress(): Promise<WalletData> {
+  const response = await teamGet<WalletData>("/team/wallet/details");
+  return response.data;
 }
