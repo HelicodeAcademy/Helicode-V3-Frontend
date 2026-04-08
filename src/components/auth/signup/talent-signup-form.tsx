@@ -29,6 +29,7 @@ export function TalentSignupForm() {
     mode: "onBlur",
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const password = watch("password");
 
   const validatePassword = (value: string) => {

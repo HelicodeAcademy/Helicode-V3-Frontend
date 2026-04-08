@@ -1,12 +1,23 @@
-import Link from "next/link";
-import { TalentSignupForm } from "@/components/auth/signup/talent-signup-form";
-import Image from "next/image";
-import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
+"use client";
 
-export default function TalentSignupPage() {
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { CompanyDetailsForm } from "@/components/auth/signup/company-details-form";
+import { useAuthStore } from "@/store/auth-store";
+import onboardingIllustration from "../../../../../../public/signup/Onboarding-Illustration.png";
+
+export default function CompanyDetailsPage() {
+  const router = useRouter();
+  const { setCurrentStep } = useAuthStore();
+
+  const handleBack = () => {
+    setCurrentStep("details");
+    router.back();
+  };
   return (
-    <div className="min-h-screen flex items-stretch md:flex-row flex-col">
-      {/* Left Sidebar - Hidden on mobile, visible on lg and up */}
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      {/* Left sidebar with logo */}
       <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
         <div className="relative w-full h-full overflow-hidden">
           {/* Illustrator wrapper with requested background, rounding and padding */}
@@ -35,12 +46,13 @@ export default function TalentSignupPage() {
         </div>
       </div>
 
-      {/* Right content area */}
-      <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
-        <div className="flex items-center justify-between w-full">
-          <Link
-            href="/signup"
-            className="text-sm flex items-center text-[#000000] hover:text-[#101828] transition-colors"
+      {/* Right Content */}
+      <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
+        {/* Header Navigation */}
+        <div className="flex justify-between items-center w-full">
+          <button
+            className="text-black font-normal flex items-center text-sm hover:text-primary transition-colors"
+            onClick={handleBack}
           >
             <Image
               src="/signup/back-arrow.svg"
@@ -49,7 +61,7 @@ export default function TalentSignupPage() {
               height={16}
             />
             Go back
-          </Link>
+          </button>
           <Link
             href="/login"
             className="font-medium hover:underline text-black text-sm"
@@ -59,9 +71,9 @@ export default function TalentSignupPage() {
           </Link>
         </div>
 
-        {/* Form Container - Centered with max width */}
-        <div className="flex-1 flex items-center justify-center">
-          <TalentSignupForm />
+        {/* Main Form */}
+        <div className="w-full max-w-105.75 mx-auto flex-1 flex items-center justify-center">
+          <CompanyDetailsForm />
         </div>
       </div>
     </div>

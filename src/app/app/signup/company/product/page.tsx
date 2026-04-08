@@ -6,8 +6,7 @@ import Image from "next/image";
 import { ProductForm } from "@/components/auth/signup/product-form";
 import { useAuthStore } from "@/store/auth-store";
 import { Toaster } from "react-hot-toast";
-import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png"; 
-
+import onboardingIllustration from "../../../../../../public/signup/Onboarding-Illustration.png";
 
 export default function ProductSelectionPage() {
   const router = useRouter();

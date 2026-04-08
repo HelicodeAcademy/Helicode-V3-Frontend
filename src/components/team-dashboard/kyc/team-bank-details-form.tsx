@@ -103,7 +103,13 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
     try {
       setLoadingBanks(true);
       const response = await getSupportedBanks(countryCode, currencyCode);
-      setBanks((response.banks as BankOption[]) || []);
+      const uniqueBanks = Array.from(
+        new Map(response.banks.map((bank) => [bank.name, bank])).values(),
+      );
+      // setBanks(uniqueBanks as BankOption[]) || []);
+      // setBanks((response.banks as BankOption[]) || []);s\\\
+
+      setBanks(uniqueBanks as BankOption[]);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to load banks";
@@ -252,7 +258,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
                     {banks.map((bank, index) => (
                       <SelectItem
                         key={`${bank.name}-${bank.channelId}-${index}`}
-                        value={`${bank.name}-${index}`}
+                        value={`${bank.name}`}
                       >
                         {bank.name}
                       </SelectItem>

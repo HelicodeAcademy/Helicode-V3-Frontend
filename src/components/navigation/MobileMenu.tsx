@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { WaitlistButton } from "../waitlist/WaitlistModal";
+// import { WaitlistButton } from "../waitlist/WaitlistModal";
 import { ChevronDown } from "lucide-react";
 import AnimatedLogo from "./AnimatedLogo";
 import { HireTalentButton } from "../Landing-page/HireTalentModal";
@@ -56,9 +56,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                 className="flex items-center justify-between fontmedium"
               >
                 Products
-                <motion.span
-                  animate={{ rotate: productOpen ? 180 : 0 }}
-                >
+                <motion.span animate={{ rotate: productOpen ? 180 : 0 }}>
                   <ChevronDown size={18} />
                 </motion.span>
               </button>
@@ -89,14 +87,17 @@ export default function MobileMenu({ open, onClose }: Props) {
                 About
               </Link>
 
-              <HireTalentButton variant="ghost" className="w-fit h-fit p-0! hover:bg-transparent cursor-pointer text-base text-black/70hover:text-black font-normal " scheduleCallUrl="https://calendly.com/fiyin-helicode/30min">
+              <HireTalentButton
+                variant="ghost"
+                className="w-fit h-fit p-0! hover:bg-transparent cursor-pointer text-base text-black/70hover:text-black font-normal "
+                scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
+              >
                 Hire Talent
               </HireTalentButton>
 
               <a href="https://learn.helicode.xyz/" onClick={onClose}>
                 Train Talent
               </a>
-
 
               <div className="mt-4 flex flex-col gap-4">
                 <Button
@@ -105,18 +106,25 @@ export default function MobileMenu({ open, onClose }: Props) {
                   // variant="link"
                   size="lg"
                 >
-                  <Link target="_blank" href="https://calendly.com/fiyin-helicode/30min">
+                  <Link
+                    target="_blank"
+                    href="https://calendly.com/fiyin-helicode/30min"
+                  >
                     Book a Demo
                   </Link>
                 </Button>
 
-                <WaitlistButton
+                <Link href="/signup">
+                  <Button>Get Started</Button>
+                </Link>
+
+                {/* <WaitlistButton
                   variant="primary"
-                  scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
+                  // scheduleCallUrl="https://calendly.com/fiyin-helicode/30min"
                   className="px-4 py-2"
                 >
-                  Join Waitlist
-                </WaitlistButton>
+                  Get started
+                </WaitlistButton> */}
               </div>
             </div>
           </motion.div>

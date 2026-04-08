@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
-import { LoginForm } from "@/components/auth/login/login-form";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password/forgot-password-form";
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import { PublicRoute } from "@/components/auth/access/public-route";
-import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
+  // const Icon = headerContent.icon;
   return (
     <PublicRoute>
       <div className="min-h-screen flex items-stretch md:flex-row flex-col">
@@ -29,7 +32,7 @@ export default function LoginPage() {
                   src={onboardingIllustration}
                   alt="Illustrator"
                   fill
-                  className="object-cover"
+                  className="object-cover rounded-2xl"
                   placeholder="blur"
                   priority
                 />
@@ -37,13 +40,14 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
+
         {/* Right content area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Top navigation */}
-          <div className="flex items-center justify-between gap-4 w-full">
+          <div className="flex items-center justify-between w-full">
             <Link
               href="/signup"
-              className="text-[13px] mb-4 md:text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
+              className="text-sm text-[#000000] flex items-center hover:text-[#101828] transition-colors"
             >
               <Image
                 src="/signup/back-arrow.svg"
@@ -54,17 +58,38 @@ export default function LoginPage() {
               Go back
             </Link>
             <Link
-              href="/signup"
-              className="font-medium hover:underline text-black text-[13px] md:hidden hidden lg:block"
+              href="/login"
+              className="font-medium hover:underline text-black text-sm"
             >
-              Don&apos;t have an account?{" "}
-              <span className="font-bold text-[#355587]">Sign up</span>
+              Already have an account?{" "}
+              <span className="font-bold text-[#0052FF]">Login</span>
             </Link>
           </div>
 
-          {/* Form */}
           <div className="flex-1 flex items-center justify-center">
-            <LoginForm />
+            <div className="w-full max-w-105.5">
+              {/* Icon */}
+              <div className="flex mb-2">
+                <Image
+                  src="/signup/lock.svg"
+                  alt="lock"
+                  width={32}
+                  height={32}
+                />
+              </div>
+
+              <div className="mb-8">
+                <h1 className="text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
+                  Forget Password
+                </h1>
+                <p className="text-[#444444] text-sm">
+                  Please enter your email address for resetting your password.
+                </p>
+              </div>
+
+              {/* Form */}
+              <ForgotPasswordForm />
+            </div>
           </div>
         </div>
 

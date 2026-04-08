@@ -2,6 +2,7 @@ import { AcceptInviteExistingForm } from "@/components/team-dashboard/auth/accep
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import { TeamPublicRoute } from "@/components/team-dashboard/access/public-route";
+import onboardingIllustration from "../../../../../public/signup/Onboarding-Illustration.png";
 
 export default function AcceptInviteExisting() {
   return (
@@ -24,10 +25,11 @@ export default function AcceptInviteExisting() {
 
               <div className="relative w-full h-full">
                 <Image
-                  src="/signup/Onboarding-Illustration.svg"
+                  src={onboardingIllustration}
                   alt="Illustrator"
                   fill
                   className="object-cover"
+                  placeholder="blur"
                   priority
                 />
               </div>

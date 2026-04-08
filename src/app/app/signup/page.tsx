@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
 type UserType = "company" | "talent" | null;
 

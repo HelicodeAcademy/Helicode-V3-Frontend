@@ -39,6 +39,9 @@ const helveticaNeue = localFont({
 export const metadata: Metadata = {
   title: "Helicode",
   description: "Stablecoin payroll for global teams",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

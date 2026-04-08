@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ForgotPasswordForm } from "@/components/auth/forgot-password/forgot-password-form";
-import Image from "next/image";
+import { VerifyResetCodeForm } from "@/components/auth/forgot-password/verify-reset-code-form";
 import { Toaster } from "react-hot-toast";
+import Image from "next/image";
 import { PublicRoute } from "@/components/auth/access/public-route";
-import onboardingIllustration from "../../../public/signup/Onboarding-Illustration.png";
+import onboardingIllustration from "../../../../public/signup/Onboarding-Illustration.png";
 
-export default function ForgotPasswordPage() {
-  // const Icon = headerContent.icon;
+// This is for the forgot password flow
+
+export default function VerifyResetCodePage() {
   return (
     <PublicRoute>
       <div className="min-h-screen flex items-stretch md:flex-row flex-col">
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
                   src={onboardingIllustration}
                   alt="Illustrator"
                   fill
-                  className="object-cover rounded-2xl"
+                  className="object-cover"
                   placeholder="blur"
                   priority
                 />
@@ -41,7 +42,7 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
 
-        {/* Right content area */}
+        {/* Right Content Area */}
         <div className="w-full lg:basis-3/5 flex flex-col px-6 lg:px-12 py-8 md:py-12">
           {/* Top navigation */}
           <div className="flex items-center justify-between w-full">
@@ -66,30 +67,9 @@ export default function ForgotPasswordPage() {
             </Link>
           </div>
 
+          {/* Form Container - Centered with max width */}
           <div className="flex-1 flex items-center justify-center">
-            <div className="w-full max-w-105.5">
-              {/* Icon */}
-              <div className="flex mb-2">
-                <Image
-                  src="/signup/lock.svg"
-                  alt="lock"
-                  width={32}
-                  height={32}
-                />
-              </div>
-
-              <div className="mb-8">
-                <h1 className="text-[2rem] font-medium text-[#212121] mb-2 leading-[145%]">
-                  Forget Password
-                </h1>
-                <p className="text-[#444444] text-sm">
-                  Please enter your email address for resetting your password.
-                </p>
-              </div>
-
-              {/* Form */}
-              <ForgotPasswordForm />
-            </div>
+            <VerifyResetCodeForm />
           </div>
         </div>
 
