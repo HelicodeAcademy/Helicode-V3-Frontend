@@ -176,7 +176,7 @@ export default function DashboardLayout({
                 {pageTitle || "Dashboard"}
               </h1>
               <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-                <NotificationPopover />
+                {/* <NotificationPopover /> */}
 
                 <a
                   href="https://chat.whatsapp.com/Jg4apR4zKTiKo07cYGBwYG?mode=gi_t"

@@ -285,7 +285,8 @@ export default function TalentDashboardHomePage() {
           </Button>
           <Button
             onClick={() => setWithdrawFundsModalOpen(true)}
-            className="w-full items-center rounded-lg bg-[#0052FF] font-medium text-white hover:bg-[#0052FF]/90 sm:w-auto"
+            variant="outline"
+            className="w-full items-center sm:w-auto border border-[#0052FF] rounded-lg text-[#0052FF]"
             disabled={
               kycNotApproved ||
               bankDetailsNotAdded ||
@@ -295,9 +296,8 @@ export default function TalentDashboardHomePage() {
             }
           >
             <Image
-              src="/home/arrow-narrow-up-right-white.svg"
-              alt="withdraw"
-              className="rotate-180"
+              src="/wallet/arrow-narrow-up-right-blue.svg"
+              alt="icon"
               width={16}
               height={16}
             />
@@ -379,15 +379,19 @@ export default function TalentDashboardHomePage() {
         onOpenChange={setFundWalletOpen}
         onSelectCrypto={handleFundSelectCrypto}
         onSelectCard={handleFundSelectCard}
-        />
+      />
 
       <TeamFundCryptoModal
         open={fundCryptoOpen}
         onOpenChange={setFundCryptoOpen}
         teamData={teamData}
-        />
+      />
 
-      <TeamFundCardModal open={fundCardOpen} onOpenChange={setFundCardOpen} teamData={teamData} />
+      <TeamFundCardModal
+        open={fundCardOpen}
+        onOpenChange={setFundCardOpen}
+        teamData={teamData}
+      />
 
       <TeamKYCModal
         open={kycModalOpen}

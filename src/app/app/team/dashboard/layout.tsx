@@ -263,14 +263,14 @@ export default function TeamDashboardLayout({
                 </div>
               </div>
               <div className="flex items-center rounded-[40px] border border-[#D2D2D2] px-2 py-1 sm:px-3">
-                <Button variant="ghost" size="icon">
+                {/* <Button variant="ghost" size="icon">
                   <Image
                     src="/header/notification.svg"
                     alt="Notification"
                     width={20}
                     height={20}
                   />
-                </Button>
+                </Button> */}
                 <Button variant="ghost" size="icon">
                   <Image
                     src="/header/nrk_help.svg"
