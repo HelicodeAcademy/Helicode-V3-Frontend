@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/team") ||
     pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/verify-reset-password")
+    pathname.startsWith("/verify-reset-code")
   ) {
     return NextResponse.rewrite(new URL(`/app${pathname}`, request.url));
   }
