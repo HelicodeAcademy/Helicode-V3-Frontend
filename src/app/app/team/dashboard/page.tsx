@@ -140,6 +140,7 @@ export default function TalentDashboardHomePage() {
   };
 
   const balance = teamData?.wallet.balance ?? 0;
+
   const selectedCurrency = currency.toUpperCase();
 
   const getCurrencySymbol = (currencyCode?: string) => {
