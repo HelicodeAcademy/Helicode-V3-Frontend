@@ -63,7 +63,7 @@ function WithdrawDetailsStep({
 
   return (
     <>
-      <DialogHeader>
+      <DialogHeader className="p-4">
         <DialogTitle className="text-xl font-semibold text-[#101928]">
           Withdraw funds
         </DialogTitle>
@@ -72,7 +72,7 @@ function WithdrawDetailsStep({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-6 space-y-6 p-4">
         <div className="flex gap-3">
           <div className="flex-1">
             <Label
@@ -173,33 +173,35 @@ function WithdrawDetailsStep({
 function WithdrawSuccessStep({ onGoHome }: WithdrawSuccessStepProps) {
   return (
     <div className="space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">
-      <div className="flex justify-center">
-        <Image
-          src="/payroll/modal-illustration.png"
-          alt="Success"
-          width={384}
-          height={220}
-          className="mx-auto"
-        />
-      </div>
+      {/* <div className="flex justify-center"> */}
+      <Image
+        src="/payroll/modal-illustration.png"
+        alt="Success"
+        width={394}
+        height={220}
+        className="w-full"
+      />
+      {/* </div> */}
 
-      <div className="space-y-2">
-        <DialogTitle className="text-xl font-semibold text-[#101928]">
-          Withdrawal successful
-        </DialogTitle>
-        <DialogDescription className="text-sm text-[#475367]">
-          Your crypto has been successfully sent to the wallet address you
-          provided
-        </DialogDescription>
-      </div>
+      <div className="px-4 pb-6">
+        <div className="space-y-2 ">
+          <DialogTitle className="text-xl font-semibold text-[#101928]">
+            Withdrawal successful
+          </DialogTitle>
+          <DialogDescription className="text-sm text-[#475367]">
+            Your crypto has been successfully sent to the wallet address you
+            provided
+          </DialogDescription>
+        </div>
 
-      <div className="flex pt-4">
-        <Button
-          className="bg-[#000000] px-6 font-medium text-white"
-          onClick={onGoHome}
-        >
-          Go to home
-        </Button>
+        <div className="flex pt-4">
+          <Button
+            className="bg-[#000000] px-6 font-medium text-white"
+            onClick={onGoHome}
+          >
+            Go to home
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -344,7 +346,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md p-2">
         {step === "details" ? (
           <WithdrawDetailsStep
             walletAddress={walletAddress}
