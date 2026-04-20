@@ -272,6 +272,7 @@ export default function TeamDashboardLayout({
       "mousedown",
       "touchstart",
       "scroll",
+      "click",
     ];
 
     const handleActivity = () => {
