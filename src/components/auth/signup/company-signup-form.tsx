@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useAuthStore } from "@/store/auth-store";
 
@@ -17,14 +15,11 @@ interface CompanySignupFormData {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
 }
 
 export function CompanySignupForm() {
   const router = useRouter();
   const { signupData, setSignupData, setCurrentStep } = useAuthStore();
-
-  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -36,21 +31,9 @@ export function CompanySignupForm() {
       firstName: signupData.firstName || "",
       lastName: signupData.lastName || "",
       email: signupData.email || "",
-      password: signupData.password || "",
     },
     mode: "onBlur",
   });
-
-  // const password = watch("password");
-
-  // const validatePassword = (value: string) => {
-  //   if (value && value.length < 10) {
-  //     setPasswordError("Password required to be at least 10 characters long");
-  //     return false;
-  //   }
-  //   setPasswordError("");
-  //   return true;
-  // };
 
   const onSubmit = async (data: CompanySignupFormData) => {
     // Save from data to store
@@ -148,44 +131,6 @@ export function CompanySignupForm() {
           {errors.email && (
             <p className="text-xs text-[#ED2525] mt-1">
               {errors.email.message}
-            </p>
-          )}
-        </div>
-
-        {/* Password with visibility toggle */}
-        <div>
-          <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
-            Password <span className="text-[#FF3F3F]">*</span>
-          </label>
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              {...register("password", {
-                required: "Password is required",
-              })}
-              // onBlur={() => validatePassword(password)}
-              // className={`pr-10 ${passwordError ? "border-[#FF383C]" : ""}`}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085] hover:text-[#101828] transition-colors"
-              aria-label="Toggle password visibility"
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          {/* {passwordError && (
-            <p className="text-xs text-[#ED2525] mt-1">{passwordError}</p>
-          )} */}
-          {errors.password && (
-            <p className="text-xs text-[#ED2525] mt-1">
-              {errors.password.message}
             </p>
           )}
         </div>
