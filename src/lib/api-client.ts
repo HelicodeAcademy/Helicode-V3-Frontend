@@ -82,10 +82,12 @@ export async function apiCall<T>(
 export async function post<T>(
   endpoint: string,
   body: unknown,
+  customHeaders?: Record<string, string>,
 ): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
     method: "POST",
     body: JSON.stringify(body),
+    headers: customHeaders,
   });
 }
 
@@ -205,10 +207,12 @@ export async function teamApiCall<T>(
 export async function teamPost<T>(
   endpoint: string,
   body: unknown,
+  customHeaders?: Record<string, string>,
 ): Promise<ApiResponse<T>> {
   return teamApiCall<T>(endpoint, {
     method: "POST",
     body: JSON.stringify(body),
+    headers: customHeaders
   });
 }
 
