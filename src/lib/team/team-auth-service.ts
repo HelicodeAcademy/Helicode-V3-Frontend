@@ -48,15 +48,8 @@ export interface OfframpProfile {
   bank: OfframpBank;
 }
 
-export async function requestTeamLoginVerificationCode(email: string) {
-  const response = await teamPost("/team/login/verification-code", {
-    email,
-  });
-  return response.data;
-}
-
 // Accept talent invite
-// Sends otp, email to the endpoint
+// Sends otp, email and password to the endpoint
 // completes account setup for invited team
 export async function acceptTeamInvite(
   data: AcceptInviteData,
@@ -66,21 +59,22 @@ export async function acceptTeamInvite(
     {
       otp: data.otp,
       email: data.email,
+      password: data.password,
     },
   );
   return response.data;
 }
 
 // team login
-// Authenticates user with email
+// Authenticates user with email and password
 // Returns access and refresh tokens
 export async function teamLogin(
   email: string,
-  code: string,
+  password: string,
 ): Promise<TeamLoginResponse> {
   const response = await teamPost<TeamLoginResponse>("/team/login", {
     email,
-    code,
+    password,
   });
 
   return response.data;

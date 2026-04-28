@@ -5,9 +5,10 @@ import { TeamPageTitleContext } from "../layout";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ChangePasswordModal } from "@/components/settings/change-password-modal";
 import { ModifyPinModal } from "@/components/settings/modify-pin-modal";
 import { useTeamKYCStore } from "@/store/team/team-kyc-store";
-import { getTeamMe } from "@/lib/team/team-auth-service";
+import { changeTeamPassword, getTeamMe } from "@/lib/team/team-auth-service";
 import { setWalletPin as setTeamWalletPin } from "@/lib/team/team-transaction-service";
 import toast from "react-hot-toast";
 import { KYCIcon } from "@/components/icons/icons";
@@ -18,6 +19,7 @@ import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [modifyPinOpen, setModifyPinOpen] = useState(false);
   const [viewBankDetailsOpen, setViewBankDetailsOpen] = useState(false);
   const [updateKycModalOpen, setUpdateKycModalOpen] = useState(false);
@@ -136,6 +138,16 @@ export default function TeamSettingsPage() {
               </Button>
             </div>
 
+            <div className="flex items-center justify-between">
+              <p className="text-base font-medium text-[#475367]">Password</p>
+              <Button
+                onClick={() => setChangePasswordOpen(true)}
+                className="h-9 min-w-18 bg-[#E9E9E9] text-sm text-[#363636] hover:bg-[#d1d5db]"
+              >
+                Change
+              </Button>
+            </div>
+
             {/* KYC */}
             <div className="bg-white border border-[#eaeaea] rounded-lg p-6">
               <div className="flex items-start justify-between">
@@ -217,6 +229,11 @@ export default function TeamSettingsPage() {
         onOpenChange={setViewBankDetailsOpen}
       />
 
+      <ChangePasswordModal
+        open={changePasswordOpen}
+        onOpenChange={setChangePasswordOpen}
+        onSubmitPassword={changeTeamPassword}
+      />
       <ModifyPinModal
         open={modifyPinOpen}
         onOpenChange={setModifyPinOpen}

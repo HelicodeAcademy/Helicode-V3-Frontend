@@ -10,18 +10,6 @@ import { useTeamAuthStore } from "../store/team/team-auth-store";
 
 const BASE_URL = "https://helicode-backend.onrender.com";
 
-// Request verification code for login
-export async function requestLoginVerificationCode(
-  email: string,
-  userType: "employer",
-) {
-  const response = await post("/auth/login/verification-code", {
-    email,
-    userType,
-  });
-  return response.data;
-}
-
 // Sign up a new company user
 // Sends user details to /auth/signup endpoint and returns the API response
 // returns userId and companyId to be used for further onboarding steps
@@ -66,16 +54,16 @@ export async function resendVerificationCode(
   return response.data;
 }
 
-// Login using email and code, returns refresh and access tokens and the user data
+// Login using email and password, returns refresh and access tokens and the user data
 // Access token expires in 30 minutes, refresh token used to get new access token
 
 export async function signin(
   email: string,
-  code: string,
+  password: string,
 ): Promise<LoginResponse> {
   const response = await post<LoginResponse>("/auth/signin", {
     email,
-    code,
+    password,
   });
 
   return response.data;
@@ -136,3 +124,51 @@ export async function refreshTeamAccessToken(): Promise<{
 
   return data.data;
 }
+//  Sends email and new password to backend
+//  Backend sends verification code to user's email
+//  Returns userId and token for verification step
+//
+export async function forgotPassword(
+  email: string,
+  newPassword: string,
+): Promise<{ userId: string; token: string }> {
+  const response = await post<{ userId: string; token: string }>(
+    "/auth/password/forgot",
+    {
+      email,
+      newPass: newPassword,
+    },
+  );
+
+  return response.data;
+}
+
+//  Confirm password reset with verification code
+//  Called after user enters the code from their email
+//  Updates the password on the backend
+
+export async function confirmPasswordReset(
+  userId: string,
+  code: string,
+): Promise<void> {
+  await post("/auth/password/confirm-reset", {
+    userId,
+    code,
+  });
+}
+
+// Change user password
+// Requires current password and new password
+// Used in settings to update password
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string,
+): Promise<void> {
+  await post("/auth/password/change", {
+    oldPassword,
+    newPassword,
+  });
+}
+
+//company details
+

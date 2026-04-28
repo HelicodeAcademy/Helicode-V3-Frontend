@@ -5,6 +5,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export interface AcceptInviteData {
   otp: string;
   email: string;
+  password: string;
 }
 
 export interface AcceptInviteResponse {
