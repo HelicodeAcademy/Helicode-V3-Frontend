@@ -59,7 +59,6 @@ export function LoginForm() {
   });
 
   const onSubmitStep1 = async (data: LoginFormStep1Data) => {
-    console.log("Submitting login with data:", data);
     try {
       setIsLoading(true);
       console.log("Submitting login with data:", data);
@@ -75,8 +74,6 @@ export function LoginForm() {
       // Move to OTP step
       setStep("otp");
       toast.success("OTP sent to your email!");
-
-      router.push("/dashboard");
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Login Failed";
