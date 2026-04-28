@@ -59,8 +59,10 @@ export function LoginForm() {
   });
 
   const onSubmitStep1 = async (data: LoginFormStep1Data) => {
+    console.log("Submitting login with data:", data);
     try {
       setIsLoading(true);
+      console.log("Submitting login with data:", data);
 
       // Call the signin API
       const response = await signin(data.email, data.password);
@@ -152,7 +154,9 @@ export function LoginForm() {
       {step === "credentials" && (
         <div>
           <form
-            onSubmit={handleSubmitStep1(onSubmitStep1)}
+            onSubmit={handleSubmitStep1(onSubmitStep1, (error) => {
+              console.log(error);
+            })}
             className="space-y-6"
           >
             {/* Work Email */}
@@ -239,23 +243,23 @@ export function LoginForm() {
                 </Link>
               </div>
             </div>
-          </form>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            variant={"primary"}
-            className="w-20.75 hover:bg-[#101828] text-white mt-8"
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-              </span>
-            ) : (
-              "Log in"
-            )}
-          </Button>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              // disabled={isLoading}
+              variant={"primary"}
+              className="w-20.75 hover:bg-[#101828] text-white "
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </span>
+              ) : (
+                "Log in"
+              )}
+            </Button>
+          </form>
         </div>
       )}
 
