@@ -247,7 +247,7 @@ export function LoginForm() {
             {/* Submit Button */}
             <Button
               type="submit"
-              // disabled={isLoading}
+              disabled={isLoading}
               variant={"primary"}
               className="w-20.75 hover:bg-[#101828] text-white "
             >
