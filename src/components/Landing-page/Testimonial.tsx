@@ -10,8 +10,7 @@ const testimonials = [
     role: "Co-founder & CEO",
     accent: "#0052FF",
     bg: "#EFF4FF",
-    description:
-      "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
+    description: "",
     valid: false,
   },
   {
@@ -28,8 +27,7 @@ const testimonials = [
     role: "Co-founder & CEO",
     accent: "#FF349E",
     bg: "#FFEEF7",
-    description:
-      "Vorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.\nClass aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur tempus urna at turpis condimentum lobortis.",
+    description: "",
     valid: false,
   },
 ];
