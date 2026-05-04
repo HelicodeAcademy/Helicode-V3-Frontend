@@ -38,10 +38,10 @@ const helveticaNeue = localFont({
 
 export const metadata: Metadata = {
   title: "Helicode",
-  description: "Stablecoin payroll for global teams",
+  description: "Stablecoin payroll for global teamss",
   openGraph: {
     title: "Helicode",
-    description: "Stablecoin payroll for global teams",
+    description: "Stablecoin payroll for global teamss",
     url: "https://helicode.xyz",
     siteName: "Helicode",
     images: [
