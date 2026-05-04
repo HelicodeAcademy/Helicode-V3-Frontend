@@ -70,10 +70,6 @@ export default function TalentDashboardHomePage() {
     setWithdrawalModalOpen(true);
   };
 
-  const handleFundWallet = () => {
-    setFundWalletOpen(true);
-  };
-
   const handleFundSelectCrypto = () => {
     setFundWalletOpen(false);
     setFundCryptoOpen(true);

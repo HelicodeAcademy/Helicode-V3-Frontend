@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-verification-service";
-import { initiateTeamCryptoWithdrawal } from "@/lib/team/team-transaction-service";
+import { getTeamTransactions, initiateTeamCryptoWithdrawal } from "@/lib/team/team-transaction-service";
 
 interface SendFundsModalProps {
   open: boolean;
@@ -137,6 +137,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
       });
 
       toast.success("Funds sent successfully!");
+      getTeamTransactions();
       setStep("success");
     } catch (error) {
       const errorMessage =

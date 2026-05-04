@@ -19,7 +19,7 @@ export function TeamFundWalletModal({
   open,
   onOpenChange,
   onSelectCrypto,
-  onSelectCard,
+  // onSelectCard,
 }: TeamFundWalletModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

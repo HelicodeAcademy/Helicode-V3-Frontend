@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  getTeamTransactions,
   initiateWalletWithdrawal,
   // WithdrawalData,
 } from "@/lib/team/team-transaction-service";
@@ -112,6 +113,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       });
 
       toast.success("Withdrawal initiated successfully!");
+      getTeamTransactions();
       reset();
       setStep("form");
       setWithdrawalData(null);

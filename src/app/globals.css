@@ -180,4 +180,8 @@ input::-webkit-inner-spin-button {
 }
 
 
+button {
+  cursor: pointer;
+}
+
 
