@@ -60,12 +60,62 @@ export async function resendVerificationCode(
 export async function signin(
   email: string,
   password: string,
-): Promise<LoginResponse> {
-  const response = await post<LoginResponse>("/auth/signin", {
+): Promise<{
+  authFlowToken: string;
+  requiresVerification: boolean;
+  expiresInMinutes: number;
+  message: string;
+}> {
+  const response = await post<{
+    authFlowToken: string;
+    requiresVerification: boolean;
+    expiresInMinutes: number;
+    message: string;
+  }>("/auth/signin", {
     email,
     password,
   });
 
+  return response.data;
+}
+
+// Verify the signin code
+export async function verifySigninCode(
+  code: string,
+  authFlowToken: string,
+): Promise<LoginResponse> {
+  const response = await post<LoginResponse>(
+    "/auth/signin/verify",
+    {
+      code,
+    },
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
+
+  return response.data;
+}
+
+// Resend signin OTP code for 2FA
+export async function resendSigninCode(
+  authFlowToken: string,
+): Promise<{
+  authFlowToken: string;
+  expiresInMinutes: number;
+  message: string;
+}> {
+  const response = await post<{
+    authFlowToken: string;
+    expiresInMinutes: number;
+    message: string;
+  }>(
+    "/auth/signin/resend-code",
+    {},
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
   return response.data;
 }
 
@@ -170,5 +220,4 @@ export async function changePassword(
   });
 }
 
-//company details
 

@@ -67,15 +67,71 @@ export async function acceptTeamInvite(
 
 // team login
 // Authenticates user with email and password
-// Returns access and refresh tokens
 export async function teamLogin(
   email: string,
   password: string,
-): Promise<TeamLoginResponse> {
-  const response = await teamPost<TeamLoginResponse>("/team/login", {
+): Promise<{
+  authFlowToken: string;
+  requiresVerification: boolean;
+  expiresInMinutes: number;
+  message: string;
+}> {
+  const response = await teamPost<{
+    authFlowToken: string;
+    requiresVerification: boolean;
+    expiresInMinutes: number;
+    message: string;
+  }>("/team/login", {
     email,
     password,
   });
+
+  return response.data;
+}
+
+// Verify team login code
+// Takes the 6-digits code and authFlowToken to complete login
+// Returns access and refresh tokens
+export async function verifyTeamLoginCode(
+  code: string,
+  authFlowToken: string,
+): Promise<TeamLoginResponse> {
+  const response = await teamPost<TeamLoginResponse>(
+    "/team/login/verify",
+    {
+      code,
+    },
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
+
+  return response.data;
+}
+
+/**
+ * Resend team login verification code
+ * Called when OTP expires or user requests new code
+ * Returns new authFlowToken with fresh expiration
+ */
+export async function resendTeamLoginCode(
+  authFlowToken: string,
+): Promise<{
+  authFlowToken: string;
+  expiresInMinutes: number;
+  message: string;
+}> {
+  const response = await teamPost<{
+    authFlowToken: string;
+    expiresInMinutes: number;
+    message: string;
+  }>(
+    "/team/login/resend-code",
+    {},
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
 
   return response.data;
 }

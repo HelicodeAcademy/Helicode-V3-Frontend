@@ -19,6 +19,9 @@ import toast from "react-hot-toast";
 import { getTeamMe } from "@/lib/team/team-auth-service";
 import { TeamMeResponse } from "@/store/team/team-auth-store";
 import { TalentWithdrawFundsModal } from "@/components/team-dashboard/home/withdraw-funds-modal";
+import { TeamFundWalletModal } from "@/components/team-dashboard/home/team-fund-wallet-modal";
+import { TeamFundCryptoModal } from "@/components/team-dashboard/home/team-fund-crypto-modal";
+import { TeamFundCardModal } from "@/components/team-dashboard/home/team-fund-card-modal";
 import {
   getTeamTransactions,
   TeamTransactionData,
@@ -49,6 +52,9 @@ export default function TalentDashboardHomePage() {
   >([]);
   const [withdrawFundsModalOpen, setWithdrawFundsModalOpen] =
     useState<boolean>(false);
+  const [fundWalletOpen, setFundWalletOpen] = useState(false);
+  const [fundCryptoOpen, setFundCryptoOpen] = useState(false);
+  const [fundCardOpen, setFundCardOpen] = useState(false);
 
   const [kycModalOpen, setKycModalOpen] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);
@@ -62,6 +68,16 @@ export default function TalentDashboardHomePage() {
   const handleSelectCard = () => {
     setWithdrawFundsModalOpen(false);
     setWithdrawalModalOpen(true);
+  };
+
+  const handleFundSelectCrypto = () => {
+    setFundWalletOpen(false);
+    setFundCryptoOpen(true);
+  };
+
+  const handleFundSelectCard = () => {
+    setFundWalletOpen(false);
+    setFundCardOpen(true);
   };
 
   useEffect(() => {
@@ -120,6 +136,7 @@ export default function TalentDashboardHomePage() {
   };
 
   const balance = teamData?.wallet.balance ?? 0;
+
   const selectedCurrency = currency.toUpperCase();
 
   const getCurrencySymbol = (currencyCode?: string) => {
@@ -251,8 +268,22 @@ export default function TalentDashboardHomePage() {
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button
-            onClick={() => setWithdrawFundsModalOpen(true)}
+            onClick={() => setFundWalletOpen(true)}
             className="w-full items-center rounded-lg bg-[#0052FF] font-medium text-white hover:bg-[#0052FF]/90 sm:w-auto"
+          >
+            <Image
+              src="/home/arrow-narrow-up-right-white.svg"
+              alt="fund"
+              className="rotate-180"
+              width={16}
+              height={16}
+            />
+            Fund wallet
+          </Button>
+          <Button
+            onClick={() => setWithdrawFundsModalOpen(true)}
+            variant="outline"
+            className="w-full items-center sm:w-auto border border-[#0052FF] rounded-lg text-[#0052FF]"
             disabled={
               kycNotApproved ||
               bankDetailsNotAdded ||
@@ -262,9 +293,8 @@ export default function TalentDashboardHomePage() {
             }
           >
             <Image
-              src="/home/arrow-narrow-up-right-white.svg"
-              alt="withdraw"
-              className="rotate-180"
+              src="/wallet/arrow-narrow-up-right-blue.svg"
+              alt="icon"
               width={16}
               height={16}
             />
@@ -338,6 +368,26 @@ export default function TalentDashboardHomePage() {
         onOpenChange={setWithdrawFundsModalOpen}
         onSelectCrypto={handleSelectCrypto}
         onSelectCard={handleSelectCard}
+      />
+
+      {/* Fund Wallet Modals */}
+      <TeamFundWalletModal
+        open={fundWalletOpen}
+        onOpenChange={setFundWalletOpen}
+        onSelectCrypto={handleFundSelectCrypto}
+        onSelectCard={handleFundSelectCard}
+      />
+
+      <TeamFundCryptoModal
+        open={fundCryptoOpen}
+        onOpenChange={setFundCryptoOpen}
+        teamData={teamData}
+      />
+
+      <TeamFundCardModal
+        open={fundCardOpen}
+        onOpenChange={setFundCardOpen}
+        teamData={teamData}
       />
 
       <TeamKYCModal

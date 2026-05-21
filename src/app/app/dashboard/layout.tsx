@@ -2,7 +2,7 @@
 
 import type React from "react";
 import Image from "next/image";
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -38,7 +38,8 @@ import {
   WalletIcon,
 } from "@/components/icons/icons";
 import { Toaster } from "react-hot-toast";
-import { NotificationPopover } from "@/components/ui/notification-popover";
+import toast from "react-hot-toast";
+// import { NotificationPopover } from "@/components/ui/notification-popover";
 
 export const PageTitleContext = createContext<{
   title: string | null;
@@ -163,6 +164,58 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
+  const { logout } = useAuth();
+  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 10 munutes in milliseconds
+  const INACTIVITY_LIMIT = 10 * 60 * 1000;
+
+  const resetInactivityTimer = () => {
+    // Clear the existing timer
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+
+    // Set a new timer
+    inactivityTimerRef.current = setTimeout(() => {
+      toast.error("Session expired due to inactivity. Logging out...");
+      logout();
+    }, INACTIVITY_LIMIT);
+  };
+
+  useEffect(() => {
+    resetInactivityTimer();
+
+    // Activity listeners
+    const activityEvents = [
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+      "click",
+      "mousemove",
+    ];
+
+    const handleActivity = () => {
+      resetInactivityTimer();
+    };
+
+    // Add event listeners for user activity
+    activityEvents.forEach((event) => {
+      document.addEventListener(event, handleActivity);
+    });
+
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+      activityEvents.forEach((event) => {
+        document.removeEventListener(event, handleActivity);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logout]);
+
   return (
     <ProtectedRoute>
       <PageTitleContext.Provider
@@ -176,7 +229,7 @@ export default function DashboardLayout({
                 {pageTitle || "Dashboard"}
               </h1>
               <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-                <NotificationPopover />
+                {/* <NotificationPopover /> */}
 
                 <a
                   href="https://chat.whatsapp.com/Jg4apR4zKTiKo07cYGBwYG?mode=gi_t"

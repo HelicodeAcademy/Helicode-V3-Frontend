@@ -38,6 +38,8 @@ import {
   PayrollMetrics,
   PayrollMetricsRange,
 } from "@/lib/payroll-service";
+import { getKYCStatus } from "@/lib/kyc-service";
+import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
@@ -63,14 +65,29 @@ export default function DashboardHomePage() {
     TransactionData[]
   >([]);
 
+  const [showKYCModal, setShowKYCModal] = useState(false);
+
   useEffect(() => {
     setTitle("Home");
     fetchWalletBalance();
     fetchCompanyDetails();
     fetchRecentTransactions();
     fetchPayrollMetrics(activeMetric);
+    fetchKycStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle, activeMetric]);
+
+  const fetchKycStatus = async () => {
+    try {
+      const data = await getKYCStatus();
+
+      if (data.kycStatus !== "approved") {
+        setShowKYCModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch KYC status", error);
+    }
+  };
 
   const fetchPayrollMetrics = async (range: PayrollMetricsRange) => {
     try {
@@ -134,6 +151,11 @@ export default function DashboardHomePage() {
   const activeMetricLabel =
     PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
       ?.label ?? "Last 30 days";
+
+  const handleKYCVerificationComplete = () => {
+    setShowKYCModal(false);
+    fetchKycStatus();
+  };
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -418,6 +440,11 @@ export default function DashboardHomePage() {
           </div>
         </div>
       </div>
+
+      <KYCOnboardingModal
+        open={showKYCModal}
+        onVerificationComplete={handleKYCVerificationComplete}
+      />
     </div>
   );
 }

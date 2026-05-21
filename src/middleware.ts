@@ -9,8 +9,6 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/icon.jpg") ||
     pathname.startsWith("/landingpage") ||
     pathname.includes(".") // catches .svg, .png, etc
   ) {
@@ -18,6 +16,10 @@ export function middleware(request: NextRequest) {
   }
 
   //  Handle subdomains
+  if (hostname.startsWith("app.") && pathname === "/") {
+    return NextResponse.redirect(new URL("/signup", request.url));
+  }
+
   if (hostname.startsWith("app.")) {
     return NextResponse.rewrite(new URL(`/app${pathname}`, request.url));
   }
@@ -29,7 +31,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/team") ||
     pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/verify-reset-password")
+    pathname.startsWith("/verify-reset-code")
   ) {
     return NextResponse.rewrite(new URL(`/app${pathname}`, request.url));
   }

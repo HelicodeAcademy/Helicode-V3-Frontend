@@ -177,14 +177,14 @@ export function TalentSignupForm() {
       </div>
 
       {/* Divider */}
-      <div className="flex items-center gap-4 mt-8 mb-6">
+      {/* <div className="flex items-center gap-4 mt-8 mb-6">
         <div className="flex-1 h-px bg-[#DAE0EA]"></div>
         <span className="text-sm text-[#444444]">or sign up with</span>
         <div className="flex-1 h-px bg-[#DAE0EA]"></div>
-      </div>
+      </div> */}
 
       {/* Google Sign Up Button */}
-      <Button
+      {/* <Button
         type="button"
         variant="outline"
         className="relative w-full h-10.5 font-medium border-[#DAE0EA] text-[#212121] hover:bg-[#f4f5f7] bg-transparent flex items-center justify-center"
@@ -198,7 +198,7 @@ export function TalentSignupForm() {
         />
 
         <span>Sign Up Using Google</span>
-      </Button>
+      </Button> */}
 
       {/* Legal Text */}
       <p className="text-xs text-[#444444] my-6 font-medium">
