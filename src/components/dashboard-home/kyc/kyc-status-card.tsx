@@ -110,18 +110,7 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                 <span className="text-sm font-medium text-[#475367]">
                   KYC Status:
                 </span>
-                <p
-                  // className={`text-xs leading-none font-medium px-2 py-1 rounded-full ${
-                  //   kycStatus.kycStatus === "approved"
-                  //     ? "bg-[#E0FFED] text-[#4D8F72] border border-[#CAEFDC]"
-                  //     : kycStatus.kycStatus === "pending"
-                  //       ? "bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5]"
-                  //       : kycStatus.kycStatus === "rejected"
-                  //         ? "bg-[#FFEFEF] text-[#CC4646] border border-[#EEC5C5]"
-                  //         : "bg-[#E9F0FF] text-[#0052FF] border border-[#BED3FF]"
-                  // }`}
-                  className="bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5] text-xs leading-none font-medium px-2 py-1 rounded-full"
-                >
+                <p className="bg-[#FDF4EC] text-[#DB8F3F] border border-[#FFD3A5] text-xs leading-none font-medium px-2 py-1 rounded-full">
                   {kycStatus.kycStatus}
                 </p>
               </div>

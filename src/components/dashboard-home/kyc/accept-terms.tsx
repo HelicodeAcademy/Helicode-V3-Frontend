@@ -25,7 +25,7 @@ export function AcceptTermsModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-130! bg-white w-full rounded-lg p-6 gap-0"
+        className="max-w-sm! bg-white w-full rounded-lg p-6 gap-0"
         showCloseButton={false}
       >
         <div className="flex items-start justify-between mb-6">
