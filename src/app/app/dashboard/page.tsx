@@ -40,6 +40,7 @@ import {
 } from "@/lib/payroll-service";
 import { getKYCStatus } from "@/lib/kyc-service";
 import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
+import { useKYCStore } from "@/store/kyc-store";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
@@ -52,6 +53,7 @@ const PAYROLL_RANGE_OPTIONS: Array<{
 
 export default function DashboardHomePage() {
   const router = useRouter();
+  const { setKYCStatus } = useKYCStore();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState("usd");
@@ -80,6 +82,8 @@ export default function DashboardHomePage() {
   const fetchKycStatus = async () => {
     try {
       const data = await getKYCStatus();
+      // Populate the KYC store with the fetched status
+      setKYCStatus(data);
 
       if (data.kycStatus !== "approved") {
         setShowKYCModal(true);
