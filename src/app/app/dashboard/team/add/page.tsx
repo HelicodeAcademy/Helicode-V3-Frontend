@@ -9,7 +9,7 @@ export default function AddTeamMemberPage() {
   const { setTitle } = useContext(PageTitleContext);
   const router = useRouter();
   const [workerType, setWorkerType] = useState<
-    "employee" | "contractor" | null
+    "employee" | "contractor" | "csv" | null
   >(null);
 
   useEffect(() => {
