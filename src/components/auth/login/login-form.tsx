@@ -61,7 +61,6 @@ export function LoginForm() {
   const onSubmitStep1 = async (data: LoginFormStep1Data) => {
     try {
       setIsLoading(true);
-      console.log("Submitting login with data:", data);
 
       // Call the signin API
       const response = await signin(data.email, data.password);

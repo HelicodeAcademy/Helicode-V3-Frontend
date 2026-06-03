@@ -445,10 +445,10 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      <KYCOnboardingModal
+      {/* <KYCOnboardingModal
         open={showKYCModal}
         onVerificationComplete={handleKYCVerificationComplete}
-      />
+      /> */}
     </div>
   );
 }

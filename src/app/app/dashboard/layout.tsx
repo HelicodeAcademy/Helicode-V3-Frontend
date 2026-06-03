@@ -39,7 +39,9 @@ import {
 } from "@/components/icons/icons";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
-// import { NotificationPopover } from "@/components/ui/notification-popover";
+import { useKYCStore } from "@/store/kyc-store";
+import { getKYCStatus } from "@/lib/kyc-service";
+import { NotificationPopover } from "@/components/ui/notification-popover";
 
 export const PageTitleContext = createContext<{
   title: string | null;
@@ -165,6 +167,7 @@ export default function DashboardLayout({
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
   const { logout } = useAuth();
+  const { setKYCStatus } = useKYCStore();
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 10 munutes in milliseconds
@@ -182,6 +185,20 @@ export default function DashboardLayout({
       logout();
     }, INACTIVITY_LIMIT);
   };
+
+  // Fetch KYC status on layout mount to ensure it's available for all dashboard pages
+  useEffect(() => {
+    const fetchKycStatus = async () => {
+      try {
+        const data = await getKYCStatus();
+        setKYCStatus(data);
+      } catch (error) {
+        console.error("Failed to fetch KYC status", error);
+      }
+    };
+
+    fetchKycStatus();
+  }, [setKYCStatus]);
 
   useEffect(() => {
     resetInactivityTimer();
@@ -229,7 +246,7 @@ export default function DashboardLayout({
                 {pageTitle || "Dashboard"}
               </h1>
               <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-                {/* <NotificationPopover /> */}
+                <NotificationPopover />
 
                 <a
                   href="https://chat.whatsapp.com/Jg4apR4zKTiKo07cYGBwYG?mode=gi_t"

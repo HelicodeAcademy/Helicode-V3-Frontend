@@ -19,6 +19,8 @@ import {
   getSupportedCountries,
   getSupportedBanks,
   BankDetailsResponse,
+  getQuidaxBanks,
+  QuidaxBank,
 } from "@/lib/team/team-kyc-service";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
@@ -39,6 +41,8 @@ interface BankOption {
   id: string;
   channelId: string;
 }
+
+type QuidaxBankOption = QuidaxBank
 
 export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
   const {
@@ -62,11 +66,16 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
 
   const [countries, setCountries] = useState<CountryOption[]>([]);
   const [banks, setBanks] = useState<BankOption[]>([]);
+  const [quidaxBanks, setQuidaxBanks] = useState<QuidaxBankOption[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [loadingBanks, setLoadingBanks] = useState(true);
+  const [selectedBankCode, setSelectedBankCode] = useState<string>("");
   const selectedCountry = watch("country");
   const selectedAccountType = watch("accountType");
   const { setTeamMember, teamMember } = useTeamKYCStore();
+
+  // Check if the country uses Quidax (Nigeria or Ghana)
+  const isQuidaxCountry = selectedCountry === "NG" || selectedCountry === "GH";
 
   useEffect(() => {
     fetchCountries();
@@ -102,19 +111,30 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
   const fetchBanks = async (countryCode: string, currencyCode: string) => {
     try {
       setLoadingBanks(true);
-      const response = await getSupportedBanks(countryCode, currencyCode);
-      const uniqueBanks = Array.from(
-        new Map(response.banks.map((bank) => [bank.name, bank])).values(),
-      );
-      // setBanks(uniqueBanks as BankOption[]) || []);
-      // setBanks((response.banks as BankOption[]) || []);s\\\
+      // Use Quidax for Nigeria and Ghana
+      if (countryCode === "NG" || countryCode === "GH") {
+        const response = await getQuidaxBanks(countryCode, "bank");
+        setQuidaxBanks(response.banks || []);
+        setBanks([]);
+      } else {
+        const response = await getSupportedBanks(countryCode, currencyCode);
+        const uniqueBanks = Array.from(
+          new Map(response.banks.map((bank) => [bank.name, bank])).values(),
+        );
+        // setBanks(uniqueBanks as BankOption[]) || []);
+        // setBanks((response.banks as BankOption[]) || []);s\\\
 
-      setBanks(uniqueBanks as BankOption[]);
+        setBanks(uniqueBanks as BankOption[]);
+        setQuidaxBanks([]);
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to load banks";
       toast.error(errorMessage);
       console.error("Error fetching banks:", error);
+
+      setBanks([]);
+      setQuidaxBanks([]);
     } finally {
       setLoadingBanks(false);
     }
@@ -122,7 +142,13 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
 
   const onSubmit = async (data: BankDetailsSubmissionData) => {
     try {
-      const response = await submitTeamBankDetails(data);
+      // Add bank code if using Qidax
+      const submitData = {
+        ...data,
+        ...(isQuidaxCountry &&
+          selectedBankCode && { bankCode: selectedBankCode }),
+      };
+      const response = await submitTeamBankDetails(submitData);
       toast.success("Bank details saved successfully!");
 
       // Update the store if we have team member data
@@ -134,6 +160,7 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
       }
 
       reset();
+      setSelectedBankCode("");
       onSuccess?.(response);
     } catch (error) {
       const errorMessage =
@@ -243,7 +270,40 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
             required: `${selectedAccountType === "momo" ? "Momo provider" : "Bank name"} is required`,
           }}
           render={({ field }) => {
-            // If banks are available and not momo, show dropdown
+            // If Quidax banks are available (Nigeria/Ghana), show Quidax dropdown
+            if (
+              quidaxBanks.length > 0 &&
+              selectedAccountType === "bank" &&
+              !loadingBanks
+            ) {
+              return (
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    // Auto-populate bank code when bank is selected
+                    const selectedBank = quidaxBanks.find(
+                      (b) => b.name === value,
+                    );
+                    if (selectedBank) {
+                      setSelectedBankCode(selectedBank.code);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select bank" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {quidaxBanks.map((bank) => (
+                      <SelectItem key={bank.public_id} value={bank.name}>
+                        {bank.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }
+            // If standard banks are available, show standard dropdown
             if (
               banks.length > 0 &&
               selectedAccountType === "bank" &&
@@ -255,11 +315,8 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
                     <SelectValue placeholder="Select or type bank name" />
                   </SelectTrigger>
                   <SelectContent>
-                    {banks.map((bank, index) => (
-                      <SelectItem
-                        key={`${bank.name}-${bank.channelId}-${index}`}
-                        value={`${bank.name}`}
-                      >
+                    {banks.map((bank) => (
+                      <SelectItem key={bank.code} value={bank.name}>
                         {bank.name}
                       </SelectItem>
                     ))}
@@ -292,6 +349,20 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
         )}
       </div>
 
+      {/* Bank Code - Auto populated for Quidax */}
+      {isQuidaxCountry && selectedBankCode && (
+        <div>
+          <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
+            Bank Code
+          </label>
+          <div className="w-full px-3 py-2 text-sm border border-[#D0D5DD] rounded-md bg-[#F9FAFB] text-[#344054]">
+            {selectedBankCode}
+          </div>
+          <p className="text-[#667085] text-xs mt-1">
+            Auto-populated from bank selection
+          </p>
+        </div>
+      )}
       {/* Bank Branch */}
       <div>
         <label className="block text-sm font-medium text-[#0F112A] mb-2.5">

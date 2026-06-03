@@ -1,4 +1,4 @@
-import { get, postFormData, apiCall, patch, post } from "./api-client";
+import { get, postFormData, apiCall, patch, post, getFile } from "./api-client";
 import { TeamMember, TeamFilters } from "@/store/team-store";
 
 type TeamListRaw = TeamMember[] | { data: TeamMember[]; total: number };
@@ -49,6 +49,38 @@ export interface PaySingleMemberResponse {
   teamId: string;
   amount: number;
   date: string;
+}
+
+export interface BulkUploadSuccessfulMember {
+  message: string;
+  email: string;
+  otp: string;
+  membershipId: string;
+  memberType: "EMPLOYEE" | "CONTRACTOR";
+  memberRole: string;
+  memberFirstName: string;
+  memberLastName: string;
+}
+
+export interface BulkUploadResult {
+  message: string;
+  successful: BulkUploadSuccessfulMember[];
+  failed: Array<{
+    email: string;
+    error: string;
+  }>;
+}
+
+export interface BulkUploadResponse {
+  headers: string[];
+  parsedCount: number;
+  acceptedCount: number;
+  rejectedCount: number;
+  rejected: Array<{
+    row: number;
+    error: string;
+  }>;
+  result: BulkUploadResult;
 }
 
 export async function getTeamMembers(
@@ -125,4 +157,36 @@ export async function paySingleTeamMember(
   );
 
   return response.data;
+}
+
+// Bulk upload team members from CSV
+// Sends CSV file to backend for processing
+
+export async function bulkUploadTeamMembersFromCSV(
+  file: File,
+): Promise<BulkUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await postFormData<BulkUploadResponse>(
+    "/teams/bulk-upload-csv",
+    formData,
+  );
+
+  if (!response.data) {
+    throw new Error("Bulk upload failed");
+  }
+  return response.data;
+}
+
+export async function downloadSampleCSV(): Promise<void> {
+  const blob = await getFile("/teams/bulk-upload-csv/sample");
+
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "sample-team-members.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
 }

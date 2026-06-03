@@ -61,6 +61,21 @@ export interface PayAllPayrollResponse {
   date: string;
 }
 
+export interface PayslipMember {
+  name: string;
+  role: string;
+  department: string;
+  amount: number;
+  currency: string;
+}
+
+export interface PayslipData {
+  generatedAt: string;
+  paymentDate: string;
+  totalAmount: number;
+  members: PayslipMember[];
+}
+
 function normalizePayrollMetrics(data: RawPayrollMetrics): PayrollMetrics {
   const totalPayrollProcessed =
     typeof data.totalPayrollProcessed === "number"
@@ -142,5 +157,11 @@ export async function payAllPayrollGroups(
     { verificationCode },
   );
 
+  return response.data;
+}
+
+// Generate payslip for specific payroll group
+export async function generatePayslip(id: string): Promise<PayslipData> {
+  const response = await get<PayslipData>(`/payroll-groups/${id}/payslips`);
   return response.data;
 }

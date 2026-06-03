@@ -44,6 +44,7 @@ export interface BankDetailsSubmissionData {
   bankBranch: string;
   accountName: string;
   accountNumber: string;
+  bankCode?: string;
 }
 
 export interface BankDetailsResponse {
@@ -96,6 +97,22 @@ export interface SupportBanksResponse {
   banks: SupportBank[];
 }
 
+export interface QuidaxBank {
+  public_id: string;
+  code: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuidaxBanksResponse {
+  banks: QuidaxBank[];
+}
+
+export interface BankDetailsSubmissionDataWithQuidax extends BankDetailsSubmissionData {
+  bankCode: string; // Make bankCode required for Quidax
+}
+
 // Get supported countries, and Id types for KYC
 // Required for populating from dropdowns
 export async function getOffRampEnums(): Promise<OffRampEnums> {
@@ -126,6 +143,23 @@ export async function getSupportedBanks(
   const params = new URLSearchParams({ country, currency });
   const response = await teamGet<SupportBanksResponse>(
     `/support/banks?${params.toString()}`,
+  );
+  return response.data;
+}
+
+// Get Quidax banks for Nigeria and Ghana off-ramp
+export async function getQuidaxBanks(
+  country: string,
+  payoutType: "bank" | "momo" = "bank",
+  search?: string,
+): Promise<QuidaxBanksResponse> {
+  const params = new URLSearchParams({
+    country,
+    payoutType,
+    ...(search && { search }),
+  });
+  const response = await teamGet<QuidaxBanksResponse>(
+    `/team/offramp/quidax/banks?${params.toString()}`,
   );
   return response.data;
 }

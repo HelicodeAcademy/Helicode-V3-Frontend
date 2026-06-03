@@ -1,11 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getPayrollGroups, PayrollGroup } from "@/lib/payroll-service";
+import {
+  getPayrollGroups,
+  PayrollGroup,
+  generatePayslip as generatePayslipService,
+} from "@/lib/payroll-service";
 import toast from "react-hot-toast";
 import { EditPayrollModal } from "./edit-payroll-modal";
 import { format } from "date-fns";
 import { PayrollStatusModal } from "./payroll-status-modal";
+// import html2pdf from "html2pdf.js";
+import { Download, Loader2 } from "lucide-react";
+import { jsPDF } from "jspdf";
 
 export function ScheduledPayrolls() {
   const [payrolls, setPayrolls] = useState<PayrollGroup[]>([]);
@@ -16,6 +23,9 @@ export function ScheduledPayrolls() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [statusPayroll, setStatusPayroll] = useState<PayrollGroup | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [generatingPayslipId, setGeneratingPayslipId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchPayrollGroups();
@@ -58,6 +68,75 @@ export function ScheduledPayrolls() {
     setShowStatusModal(false);
     setStatusPayroll(null);
     fetchPayrollGroups();
+  };
+
+  // Generate payslip for specific payroll group
+
+  const generatePayslip = async (payrollId: string, payrollName: string) => {
+    try {
+      setGeneratingPayslipId(payrollId);
+
+      const payslipData = await generatePayslipService(payrollId);
+
+      const pdf = new jsPDF();
+
+      pdf.setFontSize(20);
+      pdf.text("Payslip", 20, 20);
+
+      pdf.setFontSize(12);
+      pdf.text(`Payroll: ${payrollName}`, 20, 35);
+
+      pdf.text(
+        `Payment Date: ${new Date(
+          payslipData.paymentDate,
+        ).toLocaleDateString()}`,
+        20,
+        45,
+      );
+
+      pdf.text(
+        `Generated At: ${new Date(
+          payslipData.generatedAt,
+        ).toLocaleDateString()}`,
+        20,
+        55,
+      );
+
+      let y = 80;
+
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Name", 20, y);
+      pdf.text("Role", 80, y);
+      pdf.text("Amount", 130, y);
+      pdf.text("Currency", 170, y);
+
+      pdf.setFont("helvetica", "normal");
+
+      y += 10;
+
+      payslipData.members.forEach((member) => {
+        pdf.text(member.name, 20, y);
+        pdf.text(member.role, 80, y);
+        pdf.text(member.amount.toLocaleString(), 130, y);
+        pdf.text(member.currency, 170, y);
+
+        y += 10;
+      });
+
+      y += 10;
+
+      pdf.setFont("helvetica", "bold");
+      pdf.text(`Total: ${payslipData.totalAmount.toLocaleString()}`, 130, y);
+
+      pdf.save(`payslip-${payrollName}.pdf`);
+
+      toast.success("Payslip generated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate payslip");
+    } finally {
+      setGeneratingPayslipId(null);
+    }
   };
 
   if (isLoading) {
@@ -123,15 +202,31 @@ export function ScheduledPayrolls() {
 
                     <div className="flex items-center justify-between">
                       {/* Amount */}
-                      {/* <div className="text-2xl font-bold">{payroll.}</div> */}
                       <div></div>
-
                       {/* Actions */}
                       <div className="flex items-center gap-2">
                         <Button
+                          onClick={() =>
+                            generatePayslip(payroll.id, payroll.name)
+                          }
+                          size="sm"
+                          disabled={generatingPayslipId === payroll.id}
+                        >
+                          {generatingPayslipId === payroll.id ? (
+                            <>
+                              <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Download className="h-3.5 w-3.5 mr-1" />
+                              Generate Payslip
+                            </>
+                          )}
+                        </Button>
+                        <Button
                           onClick={() => handleEditClick(payroll)}
                           size="sm"
-                          className="bg-[#1f2937] text-white hover:bg-[#1f2937]/90 h-9 px-3 py-2"
                         >
                           Edit
                         </Button>

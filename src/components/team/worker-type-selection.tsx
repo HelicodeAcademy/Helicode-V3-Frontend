@@ -1,18 +1,52 @@
 "use client";
-
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Upload, ArrowLeft } from "lucide-react";
+import { BulkUploadResponse } from "@/lib/team-service";
+import { BulkUploadCSV } from "./bulk-upload-csv";
 
 interface WorkerTypeSelectionProps {
-  selectedType: "employee" | "contractor" | null;
-  onSelect: (type: "employee" | "contractor") => void;
+  selectedType: "employee" | "contractor" | "csv" | null;
+  onSelect: (type: "employee" | "contractor" | "csv") => void;
   onProceed: () => void;
+  onBulkUploadSuccess?: (data: BulkUploadResponse) => void;
 }
 
 export function WorkerTypeSelection({
   selectedType,
   onSelect,
   onProceed,
+  onBulkUploadSuccess,
 }: WorkerTypeSelectionProps) {
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+
+  const handleBulkUploadSuccess = (data: BulkUploadResponse) => {
+    onBulkUploadSuccess?.(data);
+  };
+
+  if (showBulkUpload) {
+    return (
+      <div className="p-6 md:p-10 max-w-2xl mx-auto">
+        <div className="mb-6">
+          <Button
+            onClick={() => setShowBulkUpload(false)}
+            variant="ghost"
+            className="mb-4"
+          >
+            <ArrowLeft /> Back
+          </Button>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mb-2">
+            Bulk Upload Team Members
+          </h1>
+          <p className="text-[#667085] text-sm">
+            Upload multiple team members at once using a CSV file.
+          </p>
+        </div>
+        <BulkUploadCSV onSuccess={handleBulkUploadSuccess} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-center min-h-full">
       <div className="max-w-112.5 w-full">
@@ -85,12 +119,38 @@ export function WorkerTypeSelection({
               </div>
             </div>
           </button>
+
+          {/* Bulk upload option */}
+          <button
+            type="button"
+            onClick={() => setShowBulkUpload(true)}
+            className={`w-full text-left p-6 rounded-lg border transition-all ${
+              selectedType === "csv"
+                ? "border-[#0166f4] bg-[#f0f6ff]"
+                : "border-[#E4E7EC] hover:border-[#d0d5dd]"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className="mt-1 flex items-center justify-center">
+                <Upload
+                  className={`h-4 w-4 ${selectedType === "csv" ? "text-[#0166f4]" : "text-[#667085]"}`}
+                />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[#101828]">Upload CSV</h3>
+                <p className="text-sm text-[#667085] mt-1">
+                  Bulk upload multiple team members at once using a CSV file.
+                  Perfect for importing from your existing team data.
+                </p>
+              </div>
+            </div>
+          </button>
         </div>
 
         <div className="mt-10 flex justify-end">
           <Button
             onClick={onProceed}
-            disabled={!selectedType}
+            disabled={!selectedType || selectedType === "csv"}
             variant={"primary"}
             className="hover:bg-[#101828]/90"
           >

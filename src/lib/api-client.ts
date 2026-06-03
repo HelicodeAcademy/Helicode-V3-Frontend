@@ -145,6 +145,34 @@ export async function postFormData<T>(
   return data as ApiResponse<T>;
 }
 
+// GET request helper for file downloads (returns Blob)
+export async function getFile(endpoint: string): Promise<Blob> {
+  const url = `${BASE_URL}${endpoint}`;
+  const { accessToken, companyId } = useAuthStore.getState();
+
+  const headers: Record<string, string> = {};
+
+  // Include Authorization header if token is available
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  if (companyId) {
+    headers["x-company-id"] = companyId;
+  }
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to download file: ${response.status}`);
+  }
+
+  return response.blob();
+}
+
 // This will handle for all teams related api calls
 export async function teamApiCall<T>(
   endpoint: string,
@@ -212,7 +240,7 @@ export async function teamPost<T>(
   return teamApiCall<T>(endpoint, {
     method: "POST",
     body: JSON.stringify(body),
-    headers: customHeaders
+    headers: customHeaders,
   });
 }
 
