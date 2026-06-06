@@ -41,7 +41,7 @@ import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import { useKYCStore } from "@/store/kyc-store";
 import { getKYCStatus } from "@/lib/kyc-service";
-import { NotificationPopover } from "@/components/ui/notification-popover";
+// import { NotificationPopover } from "@/components/ui/notification-popover";
 
 export const PageTitleContext = createContext<{
   title: string | null;
@@ -246,7 +246,7 @@ export default function DashboardLayout({
                 {pageTitle || "Dashboard"}
               </h1>
               <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
-                <NotificationPopover />
+                {/* <NotificationPopover /> */}
 
                 <a
                   href="https://chat.whatsapp.com/Jg4apR4zKTiKo07cYGBwYG?mode=gi_t"
