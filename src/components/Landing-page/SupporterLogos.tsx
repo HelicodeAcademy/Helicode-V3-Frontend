@@ -105,6 +105,12 @@ const logos = [
     width: 146,
     height: 26,
   },
+  {
+    src: "/landingpage/Quidax.svg",
+    alt: "Quidax logo",
+    width: 146,
+    height: 26,
+  },
 ];
 
 export default function SupporterLogos() {
