@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { PayrollOverviewModal } from "./payroll-overview-modal";
+import { OneTimePaymentModal } from "./one-time-payment-modal";
 import { useWalletStore } from "@/store/wallet-store";
 import { format } from "date-fns";
 // import { PaymentSuccessModal } from "./payment-success-modal";
@@ -13,6 +14,7 @@ import { format } from "date-fns";
 export function PayrollMetrics() {
   const [showBalance, setShowBalance] = useState(true);
   const [overviewOpen, setOverviewOpen] = useState(false);
+  const [oneTimePaymentOpen, setOneTimePaymentOpen] = useState(false);
   const { walletData, isLoading } = useWalletStore();
   // const [successOpen, setSuccessOpen] = useState(false);
 
@@ -30,7 +32,7 @@ export function PayrollMetrics() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* First column */}
-      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2xl h-49.75">
+      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2xl h-auto">
         <div>
           <p className="text-sm text-[#475367] font-medium mb-2">
             Total Payout Amount
@@ -82,7 +84,7 @@ export function PayrollMetrics() {
 
         {/* Action buttons */}
         <div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Link href="/dashboard/payroll/schedule">
               <Button
                 variant="outline"
@@ -110,12 +112,24 @@ export function PayrollMetrics() {
               />
               Pay Everyone
             </Button>
+            <Button
+              onClick={() => setOneTimePaymentOpen(true)}
+              className="bg-transparent border border-[#0052FF] text-[#0052FF] text-sm font-medium flex items-center hover:bg-[#f3f4f6]"
+            >
+              <Image
+                src="/payroll/arrow-narrow-up-right.svg"
+                alt="calendar"
+                width={16}
+                height={16}
+              />
+              Make a one time payment
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Second Column */}
-      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2x flex justify-between rounded-2xl h-49.75">
+      <div className="bg-white p-6 border border-[#F2F2F2] rounded-2x flex justify-between rounded-2xl h-auto">
         <div className="space-y-9">
           <div>
             <p className="text-sm text-[#475367] font-medium mb-2">
@@ -151,6 +165,11 @@ export function PayrollMetrics() {
       <PayrollOverviewModal
         open={overviewOpen}
         onOpenChange={setOverviewOpen}
+      />
+
+      <OneTimePaymentModal
+        open={oneTimePaymentOpen}
+        onOpenChange={setOneTimePaymentOpen}
       />
 
       {/* <PayrollOverviewModal
