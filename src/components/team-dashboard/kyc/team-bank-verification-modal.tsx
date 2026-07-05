@@ -47,7 +47,7 @@ export function TeamBankVerificationModal({
           </DialogTitle>
           <DialogDescription className="text-[#667085] mt-2">
             Your bank details have been saved successfully. To complete the
-            setup, please verify your identity through Bridge.
+            setup, please verify your identity.
           </DialogDescription>
         </DialogHeader>
 
