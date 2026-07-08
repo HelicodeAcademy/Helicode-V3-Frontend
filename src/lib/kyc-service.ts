@@ -1,4 +1,4 @@
-import { get, postFormData, post } from "./api-client";
+import { get, postFormData, teamPost } from "./api-client";
 import { FullKYCStatus } from "@/store/kyc-store";
 
 // Stage 1: Company KYC Data
@@ -34,8 +34,14 @@ export interface CompanyKYCResponse {
 }
 
 export interface EmployerDocumentsResponse {
-  message: string
-  employerKycStatus: 'pending' | 'not_started' | 'in_progress' | 'submitted' | 'approved' | 'rejected'
+  message: string;
+  employerKycStatus:
+    | "pending"
+    | "not_started"
+    | "in_progress"
+    | "submitted"
+    | "approved"
+    | "rejected";
 }
 
 // Off-ramp Quote Response
@@ -81,7 +87,7 @@ export async function submitEmployerDocuments(
 export async function getOffRampQuote(
   amount: number,
 ): Promise<OffRampQuoteResponse> {
-  const response = await post<OffRampQuoteResponse>(
+  const response = await teamPost<OffRampQuoteResponse>(
     "/team/wallet/offramp/fiat/quote",
     {
       amount,
