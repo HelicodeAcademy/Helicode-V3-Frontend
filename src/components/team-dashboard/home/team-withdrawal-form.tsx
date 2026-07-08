@@ -25,7 +25,7 @@ type WithdrawalStep = "form" | "verification";
 
 interface WithdrawalFormData {
   amount: number;
-  reason: string;
+  // reason: string;
 }
 
 export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
@@ -47,7 +47,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
     reset,
   } = useForm<WithdrawalFormData>({
     defaultValues: {
-      reason: "",
+      // reason: "",
       amount: undefined,
     },
   });
@@ -152,7 +152,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       await initiateWalletWithdrawal({
         amount: withdrawalData.amount,
         verificationCode: code,
-        reason: withdrawalData.reason,
+        // reason: withdrawalData.reason,
       });
 
       toast.success("Withdrawal initiated successfully!");
@@ -242,7 +242,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
               <div className="flex justify-between">
                 <span className="text-[#667085]">Exchange Rate</span>
                 <span className="font-medium text-[#101828]">
-                  1 USDC = {quote.rate.toFixed(4)} {quote.currency}
+                  1 USD = {quote.rate.toFixed(4)} {quote.currency}
                 </span>
               </div>
               <div className="flex justify-between border-t border-[#eaeaea] pt-2">
@@ -266,7 +266,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       </div>
 
       {/* Reason */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-[#101828] mb-1.5">
           Withdrawal Reason
         </label>
@@ -279,7 +279,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         {errors.reason && (
           <p className="text-xs text-[#dc2626] mt-1">{errors.reason.message}</p>
         )}
-      </div>
+      </div> */}
 
       {/* Submit Button */}
       <Button type="submit" disabled={isSubmitting} className="mt-6">
