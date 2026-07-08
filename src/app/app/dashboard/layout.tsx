@@ -200,38 +200,38 @@ export default function DashboardLayout({
     fetchKycStatus();
   }, [setKYCStatus]);
 
-  useEffect(() => {
-    resetInactivityTimer();
+  // useEffect(() => {
+  //   resetInactivityTimer();
 
-    // Activity listeners
-    const activityEvents = [
-      "mousedown",
-      "keydown",
-      "touchstart",
-      "scroll",
-      "click",
-      "mousemove",
-    ];
+  //   // Activity listeners
+  //   const activityEvents = [
+  //     "mousedown",
+  //     "keydown",
+  //     "touchstart",
+  //     "scroll",
+  //     "click",
+  //     "mousemove",
+  //   ];
 
-    const handleActivity = () => {
-      resetInactivityTimer();
-    };
+  //   const handleActivity = () => {
+  //     resetInactivityTimer();
+  //   };
 
-    // Add event listeners for user activity
-    activityEvents.forEach((event) => {
-      document.addEventListener(event, handleActivity);
-    });
+  //   // Add event listeners for user activity
+  //   activityEvents.forEach((event) => {
+  //     document.addEventListener(event, handleActivity);
+  //   });
 
-    return () => {
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-      activityEvents.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [logout]);
+  //   return () => {
+  //     if (inactivityTimerRef.current) {
+  //       clearTimeout(inactivityTimerRef.current);
+  //     }
+  //     activityEvents.forEach((event) => {
+  //       document.removeEventListener(event, handleActivity);
+  //     });
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [logout]);
 
   return (
     <ProtectedRoute>

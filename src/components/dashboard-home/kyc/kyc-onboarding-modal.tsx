@@ -15,24 +15,30 @@ import { useKYCStore } from "@/store/kyc-store";
 
 interface KYCOnboardingModalProps {
   open: boolean;
-  kycStatus?: string;
-  tosStatus?: string;
-  kycLink?: string;
-  tosLink?: string;
-  onVerificationComplete: () => void;
+  onVerificationComplete?: () => void;
 }
 
-type ModalStep = "kyc-form" | "bridge-verification";
+// interface KYCOnboardingModalProps {
+//   open: boolean;
+//   kycStatus?: string;
+//   tosStatus?: string;
+//   kycLink?: string;
+//   tosLink?: string;
+//   onVerificationComplete: () => void;
+// }
+
+type ModalStep = "company-kyc" | "bridge-verification";
 
 export function KYCOnboardingModal({
   open,
   onVerificationComplete,
 }: KYCOnboardingModalProps) {
   const { kycStatus } = useKYCStore();
-  const step: ModalStep =
-    kycStatus?.kycLink || kycStatus?.tosLink
-      ? "bridge-verification"
-      : "kyc-form";
+
+  // Derive step directly from store state to prevent flashing
+  // Show bridge verification if kycLink or tost exist from company KYC
+
+const step: ModalStep = (kycStatus?.kycLink && kycStatus?.companyKycStatus === 'submitted') ? 'bridge-verification' : 'company-kyc'
 
   const handleBridgeVerificationComplete = () => {
     onVerificationComplete?.();
@@ -44,16 +50,18 @@ export function KYCOnboardingModal({
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
         showCloseButton={false}
       >
-        {step === "kyc-form" && (
+        {step === "company-kyc" && (
           <>
             <>
               <DialogHeader>
                 <DialogTitle className="text-2xl text-[#101828]">
-                  Complete Your KYC
+                  Company Information
                 </DialogTitle>
                 <DialogDescription className="text-[#667085] mt-2">
-                  We need to verify your information before you can access all
-                  features. This is a one-time process.
+                  {/* We need to verify your information before you can access all
+                  features. This is a one-time process. */}
+                  Let&apos;s start by collecting your company details. This
+                  helps us verify your business information.
                 </DialogDescription>
               </DialogHeader>
 
@@ -61,8 +69,10 @@ export function KYCOnboardingModal({
               <div className="bg-[#FEF3C7] border border-[#FCD34D] rounded-lg p-4 flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-[#F59E0B] shrink-0 mt-0.5" />
                 <p className="text-sm text-[#92400E]">
-                  You must complete KYC verification to continue using the
-                  platform. This won&apos;t take long.
+                  {/* You must complete KYC verification to continue using the
+                  platform. This won&apos;t take long. */}
+                  This is Stage 1 of 2. After submitting your company details,
+                  you&apos;ll proceed to identity verification.
                 </p>
               </div>
 

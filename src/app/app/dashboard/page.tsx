@@ -39,7 +39,7 @@ import {
   PayrollMetricsRange,
 } from "@/lib/payroll-service";
 import { getKYCStatus } from "@/lib/kyc-service";
-import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
+// import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
 import { useKYCStore } from "@/store/kyc-store";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
@@ -67,7 +67,7 @@ export default function DashboardHomePage() {
     TransactionData[]
   >([]);
 
-  const [showKYCModal, setShowKYCModal] = useState(false);
+  // const [showKYCModal, setShowKYCModal] = useState(false);
 
   useEffect(() => {
     setTitle("Home");
@@ -83,11 +83,23 @@ export default function DashboardHomePage() {
     try {
       const data = await getKYCStatus();
       // Populate the KYC store with the fetched status
-      setKYCStatus(data);
+      // setKYCStatus(data);
 
-      if (data.kycStatus !== "approved") {
-        setShowKYCModal(true);
-      }
+      // Populate company KYC store so modal has data immediately
+      setKYCStatus({
+        companyKycStatus: data.companyKycStatus,
+        employerKycStatus: data.employerKycStatus,
+        tosStatus: data.tosStatus,
+        kycStatus: data.kycStatus,
+        kycLink: data.kycLink,
+        tosLink: data.tosLink,
+        message: data.message,
+        rejectionReason: data.rejectionReason,
+      });
+
+      // if (data.companyKycStatus !== "submitted") {
+      //   setShowKYCModal(true);
+      // }
     } catch (error) {
       console.error("Failed to fetch KYC status", error);
     }
@@ -156,10 +168,10 @@ export default function DashboardHomePage() {
     PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
       ?.label ?? "Last 30 days";
 
-  const handleKYCVerificationComplete = () => {
-    setShowKYCModal(false);
-    fetchKycStatus();
-  };
+  // const handleKYCVerificationComplete = () => {
+  //   setShowKYCModal(false);
+  //   fetchKycStatus();
+  // };
 
   return (
     <div className="py-4 px-8 space-y-6">

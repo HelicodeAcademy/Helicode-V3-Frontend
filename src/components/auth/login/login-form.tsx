@@ -151,7 +151,7 @@ export function LoginForm() {
         <div>
           <form
             onSubmit={handleSubmitStep1(onSubmitStep1, (error) => {
-              console.log(error);
+              console.error(error);
             })}
             className="space-y-6"
           >

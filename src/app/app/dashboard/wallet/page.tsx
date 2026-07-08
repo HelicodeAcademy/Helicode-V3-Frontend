@@ -10,8 +10,10 @@ import { FundCardModal } from "@/components/wallet/fund-card-modal";
 import { WalletFundedModal } from "@/components/wallet/wallet-funded-modal";
 import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 import { useKYCStore } from "@/store/kyc-store";
-import Link from "next/link";
+// import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { KYCStage2Modal } from "@/components/dashboard-home/kyc/kyc-stage2-modal";
+import { AlertCircle } from "lucide-react";
 
 export default function WalletPage() {
   const { setTitle } = useContext(PageTitleContext);
@@ -22,6 +24,7 @@ export default function WalletPage() {
   const [fundCardOpen, setFundCardOpen] = useState(false);
   const [fundedSuccessOpen, setFundedSuccessOpen] = useState(false);
   const [withdrawFundsOpen, setWithdrawFundsOpen] = useState(false);
+  const [stage2ModalOpen, setStage2ModalOpen] = useState(false);
 
   useEffect(() => {
     setTitle("Wallet");
@@ -45,22 +48,35 @@ export default function WalletPage() {
     setFundCardOpen(true);
   };
 
-  if (kycStatus?.kycStatus !== "approved") {
-    return (
-      <div className="space-y-6 py-4 px-8 mt-10">
-        <div className="rounded-lg border border-[#eaeaea] bg-[#f9fafb] p-6 text-center">
-          <h2 className="text-lg font-semibold">KYC Verification Required</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Please complete your KYC verification to access payroll features.
-          </p>
+  const isEmployerKycPending =
+    !kycStatus || kycStatus.employerKycStatus !== "submitted";
 
-          {kycStatus?.kycStatus === "pending" && !kycStatus.kycLink && (
-            <Link href="/dashboard/setup-account">
-              <Button className="mt-3 bg-[#0166f4] text-white text-xs h-7 hover:bg-[#0166f4]/90">
-                Start KYC
-              </Button>
-            </Link>
-          )}
+  if (isEmployerKycPending) {
+    return (
+      <div className="max-w-2xl">
+        <div className="border border-[#FCD34D] rounded-lg p-6 bg-[#FFFBEB] space-y-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-6 w-6 text-[#F59E0B] shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-[#101828] text-lg">
+                Complete Your Verification
+              </h3>
+              <p className="text-[#667085] mt-2">
+                To access payroll features, you need to complete your employer
+                verification. This helps us ensure compliance and security.
+              </p>
+              <p className="text-sm text-[#92400E] mt-3">
+                Your company information has already been verified. We just need
+                a few personal details to complete the process.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => setStage2ModalOpen(true)}
+            className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90 mt-4"
+          >
+            Complete Employer Verification
+          </Button>
         </div>
       </div>
     );
@@ -97,6 +113,14 @@ export default function WalletPage() {
       <WithdrawFundsModal
         open={withdrawFundsOpen}
         onOpenChange={setWithdrawFundsOpen}
+      />
+
+      <KYCStage2Modal
+        open={stage2ModalOpen}
+        onOpenChange={setStage2ModalOpen}
+        onSuccess={() => {
+          setStage2ModalOpen(false);
+        }}
       />
     </div>
   );

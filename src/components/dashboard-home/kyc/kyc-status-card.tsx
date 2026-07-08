@@ -5,7 +5,7 @@ import { getKYCStatus } from "@/lib/kyc-service";
 import { useKYCStore } from "@/store/kyc-store";
 import toast from "react-hot-toast";
 import { AlertCircle, Clock, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 
 interface KYCStatusCardProps {
   onStatusChange?: () => void;
@@ -13,8 +13,8 @@ interface KYCStatusCardProps {
 
 export function KYCStatusCard({}: KYCStatusCardProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { kycStatus, setKYCStatus } = useKYCStore();
+  // const [error, setError] = useState<string | null>(null);
+  const { kycStatus, setKYCStatus, error, setError } = useKYCStore();
 
   useEffect(() => {
     fetchKYCStatus();
@@ -26,8 +26,19 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
       setIsLoading(true);
       setError(null);
       const status = await getKYCStatus();
-
-      setKYCStatus(status);
+      if (status.kycLink && status.tosLink) {
+        setKYCStatus({
+          companyKycStatus: status.companyKycStatus,
+          employerKycStatus: status.employerKycStatus,
+          tosStatus: status.tosStatus,
+          kycStatus: status.kycStatus,
+          kycLink: status.kycLink,
+          tosLink: status.tosLink,
+          message: status.message,
+          rejectionReason: status.rejectionReason,
+        });
+      }
+      // setKYCStatus(status);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
@@ -84,7 +95,8 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
     return null;
   }
 
-  const statusIcon = kycStatus.kycStatus === "pending" ? Clock : CheckCircle2;
+  const statusIcon =
+    kycStatus.companyKycStatus === "pending" ? Clock : CheckCircle2;
   const StatusIcon = statusIcon;
 
   return (
@@ -102,8 +114,67 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
             your company details.
           </p>
 
+          <div className="flex-1 min-w-0">
+            {/* <p className="font-medium text-[#101828] text-sm">
+              Company KYC Status
+            </p>
+            <p className="text-xs text-[#667085] mt-1 capitalize">
+              {companyKYCStatus.companyKycStatus}
+            </p> */}
+
+            {/* Company KYC Status with Continue Button */}
+            {/* <div className="mt-2 flex items-center justify-between">
+              <span className="text-xs text-[#667085]">
+                Company KYC: {companyKYCStatus.companyKycStatus}
+              </span>
+              {companyKYCStatus.companyKycStatus === "not_started" &&
+                companyKYCStatus.kycLink && (
+                  <Button
+                    onClick={() =>
+                      handleContinue(companyKYCStatus.kycLink!, "kyc")
+                    }
+                    size="sm"
+                    className="h-6 px-2 text-xs bg-[#0166f4] text-white hover:bg-[#0166f4]/90"
+                  >
+                    Continue
+                  </Button>
+                )}
+            </div> */}
+
+            {/* TOS Status with Continue Button (if available) */}
+            {/* {companyKYCStatus.tosStatus && (
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-xs text-[#667085]">
+                  TOS: {companyKYCStatus.tosStatus}
+                </span>
+                {companyKYCStatus.tosStatus === "pending" &&
+                  companyKYCStatus.tosLink && (
+                    <Button
+                      onClick={() =>
+                        handleContinue(companyKYCStatus.tosLink!, "tos")
+                      }
+                      size="sm"
+                      className="h-6 px-2 text-xs bg-[#0166f4] text-white hover:bg-[#0166f4]/90"
+                    >
+                      Continue
+                    </Button>
+                  )}
+              </div>
+            )} */}
+
+            {/* Start KYC Button for not_started status */}
+            {/* {companyKYCStatus.companyKycStatus === "not_started" &&
+              !companyKYCStatus.kycLink && (
+                <a href="/dashboard/setup-account">
+                  <Button className="mt-3 bg-[#0166f4] text-white text-xs h-7 hover:bg-[#0166f4]/90">
+                    Start KYC
+                  </Button>
+                </a>
+              )} */}
+          </div>
+
           {/* Only shows for Pending KYC and when there is no kyc link and tosLink */}
-          {kycStatus.kycStatus === "pending" &&
+          {/* {kycStatus.kycStatus === "pending" &&
             !kycStatus.kycLink &&
             !kycStatus.tosLink && (
               <div className="mt-4 flex items-center gap-4">
@@ -114,11 +185,11 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                   {kycStatus.kycStatus}
                 </p>
               </div>
-            )}
+            )} */}
 
           {/* KYC Status with Continue Button */}
           {/* only show when there is a kyc link */}
-          {kycStatus.kycLink && (
+          {/* {kycStatus.kycLink && (
             <div className="mt-4 flex items-center justify-between">
               <span className="text-xs text-[#667085]">
                 KYC Status:{" "}
@@ -146,10 +217,10 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                 </Button>
               )}
             </div>
-          )}
+          )} */}
 
           {/* TOS Status with Continue Button (if available) */}
-          {kycStatus.tosStatus && (
+          {/* {kycStatus.tosStatus && (
             <div className="mt-4 flex items-center justify-between">
               <span className="text-xs text-[#667085]">
                 TOS Status:{" "}
@@ -178,16 +249,105 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                 </Button>
               )}
             </div>
-          )}
+          )} */}
 
           {/* Start KYC Button for pending status */}
-          {kycStatus.kycStatus === "pending" && !kycStatus.kycLink && (
+          {/* {kycStatus.kycStatus === "pending" && !kycStatus.kycLink && (
             <Link href="/dashboard/setup-account">
               <Button className="mt-3 bg-[#0166f4] text-white text-xs h-7 hover:bg-[#0166f4]/90">
                 Start KYC
               </Button>
             </Link>
-          )}
+          )} */}
+
+          {/* <Link href="/dashboard/setup-account">
+            <Button className="mt-3 bg-[#0166f4] text-white text-xs h-7 hover:bg-[#0166f4]/90">
+              Start KYC
+            </Button>
+          </Link> */}
+
+          <div className="space-y-3">
+            {/* Company KYC Status */}
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`h-2 w-2 rounded-full ${kycStatus.companyKycStatus === "submitted" ? "bg-[#219d53]" : "bg-[#f04438]"}`}
+                />
+                <span className="text-xs text-[#667085]">
+                  Company KYC:{" "}
+                  <span className="font-medium capitalize">
+                    {kycStatus.companyKycStatus}
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            {/* Bridge Verification (KYC + TOS) Status - Only shows if company KYC is submitted */}
+            {kycStatus.companyKycStatus === "submitted" && (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2 w-2 rounded-full ${kycStatus.kycStatus === "approved" ? "bg-[#219d53]" : "bg-[#f59e0b]"}`}
+                    />
+                    <span className="text-xs text-[#667085]">
+                      KYC Verification:{" "}
+                      <span className="font-medium capitalize">
+                        {kycStatus.kycStatus}
+                      </span>
+                    </span>
+                  </div>
+                  {kycStatus.kycStatus !== "approved" && kycStatus.kycLink && (
+                    <Button
+                      onClick={() => handleContinue(kycStatus.kycLink!, "kyc")}
+                      size="sm"
+                      className="h-6 px-2 text-xs bg-[#0166f4] text-white hover:bg-[#0166f4]/90"
+                    >
+                      Continue
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2 w-2 rounded-full ${kycStatus.tosStatus === "accepted" ? "bg-[#219d53]" : "bg-[#f59e0b]"}`}
+                    />
+                    <span className="text-xs text-[#667085]">
+                      Terms of Service:{" "}
+                      <span className="font-medium capitalize">
+                        {kycStatus.tosStatus}
+                      </span>
+                    </span>
+                  </div>
+                  {kycStatus.tosStatus !== "accepted" && kycStatus.tosLink && (
+                    <Button
+                      onClick={() => handleContinue(kycStatus.tosLink!, "tos")}
+                      size="sm"
+                      className="h-6 px-2 text-xs bg-[#0166f4] text-white hover:bg-[#0166f4]/90"
+                    >
+                      Continue
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Employer KYC (Stage 2) Status */}
+            <div className="flex items-center justify-between pt-2 border-t border-[#eaeaea]">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`h-2 w-2 rounded-full ${kycStatus.employerKycStatus === "submitted" ? "bg-[#219d53]" : "bg-[#f04438]"}`}
+                />
+                <span className="text-xs text-[#667085]">
+                  Employer Documents:{" "}
+                  <span className="font-medium capitalize">
+                    {kycStatus.employerKycStatus}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

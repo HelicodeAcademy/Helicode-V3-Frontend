@@ -57,7 +57,7 @@ export function KYCBridgeVerification({
     const pollInterval = setInterval(async () => {
       try {
         const updatedStatus = await getKYCStatus();
-        console.log("Polled KYC Status:", updatedStatus);
+
         setKYCStatus(updatedStatus);
       } catch (error) {
         console.error("Error polling KYC status:", error);

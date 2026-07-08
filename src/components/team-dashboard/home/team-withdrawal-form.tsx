@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 import { Loader2 } from "lucide-react";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-verification-service";
+import { getOffRampQuote, type OffRampQuoteResponse } from "@/lib/kyc-service";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface TeamWithdrawalFormProps {
   onSuccess?: () => void;
@@ -33,10 +35,14 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
   const [verificationError, setVerificationError] = useState("");
   const [withdrawalData, setWithdrawalData] =
     useState<WithdrawalFormData | null>(null);
+  const [quote, setQuote] = useState<OffRampQuoteResponse | null>(null);
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
   const { teamMember } = useTeamKYCStore();
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
     reset,
   } = useForm<WithdrawalFormData>({
@@ -47,6 +53,43 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
   });
 
   const walletBalance = teamMember?.wallet?.balance || 0;
+  const requestedAmount = watch("amount");
+  const debouncedAmount = useDebounce(requestedAmount, 500);
+
+  useEffect(() => {
+    const amount = Number(debouncedAmount);
+
+    if (!debouncedAmount || Number.isNaN(amount) || amount <= 0) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    if (amount > walletBalance) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    const fetchQuote = async () => {
+      setIsQuoteLoading(true);
+      setQuoteError("");
+
+      try {
+        const quoteResponse = await getOffRampQuote(amount);
+        setQuote(quoteResponse);
+      } catch (error) {
+        setQuote(null);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unable to load quote";
+        setQuoteError(errorMessage);
+      } finally {
+        setIsQuoteLoading(false);
+      }
+    };
+
+    void fetchQuote();
+  }, [debouncedAmount, walletBalance]);
 
   const handleRequestCode = async () => {
     try {
@@ -189,6 +232,34 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         <p className="text-xs text-[#667085] mt-2">
           Available balance: ${walletBalance.toFixed(2)}
         </p>
+        {isQuoteLoading && (
+          <p className="text-xs text-[#667085] mt-2">Loading quote...</p>
+        )}
+        {quote && !quoteError && (
+          <div className="mt-3 rounded-lg border border-[#e0e0e0] bg-[#f9fafb] p-4 space-y-3">
+            <p className="text-sm font-medium text-[#101828]">Quote Summary</p>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[#667085]">Exchange Rate</span>
+                <span className="font-medium text-[#101828]">
+                  1 USDC = {quote.rate.toFixed(4)} {quote.currency}
+                </span>
+              </div>
+              <div className="flex justify-between border-t border-[#eaeaea] pt-2">
+                <span className="text-[#667085]">You&apos;ll Receive</span>
+                <span className="text-base font-bold text-[#0166f4]">
+                  {quote.amountReceived.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}{" "}
+                  {quote.currency}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+        {quoteError && (
+          <p className="text-xs text-[#dc2626] mt-2">{quoteError}</p>
+        )}
         {errors.amount && (
           <p className="text-xs text-[#dc2626] mt-1">{errors.amount.message}</p>
         )}
