@@ -51,69 +51,72 @@ export default function WalletPage() {
   const isEmployerKycPending =
     !kycStatus || kycStatus.employerKycStatus !== "submitted";
 
-  if (isEmployerKycPending) {
-    return (
-      <div className="max-w-2xl">
-        <div className="border border-[#FCD34D] rounded-lg p-6 bg-[#FFFBEB] space-y-4">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="h-6 w-6 text-[#F59E0B] shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-[#101828] text-lg">
-                Complete Your Verification
-              </h3>
-              <p className="text-[#667085] mt-2">
-                To access payroll features, you need to complete your employer
-                verification. This helps us ensure compliance and security.
-              </p>
-              <p className="text-sm text-[#92400E] mt-3">
-                Your company information has already been verified. We just need
-                a few personal details to complete the process.
-              </p>
-            </div>
-          </div>
-          <Button
-            onClick={() => setStage2ModalOpen(true)}
-            className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90 mt-4"
-          >
-            Complete Employer Verification
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6 px-6 md:px-12 mt-6">
-      {/* Balance Card and Actions */}
-      <WalletBalanceCard
-        onFundWallet={handleFundWallet}
-        onWithdraw={handleWithdraw}
-      />
+    <>
+      {isEmployerKycPending ? (
+        <div className="max-w-2xl mx-auto">
+          <div className="border border-[#FCD34D] rounded-lg p-6 bg-[#FFFBEB] space-y-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-6 w-6 text-[#F59E0B] shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-[#101828] text-lg">
+                  Complete Your Verification
+                </h3>
+                <p className="text-[#667085] mt-2">
+                  To access payroll features, you need to complete your employer
+                  verification. This helps us ensure compliance and security.
+                </p>
+                {/* <p className="text-sm text-[#92400E] mt-3">
+                  Your company information has already been verified. We just
+                  need a few personal details to complete the process.
+                </p> */}
+              </div>
+            </div>
+            <Button
+              onClick={() => setStage2ModalOpen(true)}
+              className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90 mt-4"
+            >
+              Complete Employer Verification
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6 px-6 md:px-12 mt-6">
+          {/* Balance Card and Actions */}
+          <WalletBalanceCard
+            onFundWallet={handleFundWallet}
+            onWithdraw={handleWithdraw}
+          />
 
-      {/* Transactions Table */}
-      <TransactionsTable />
+          {/* Transactions Table */}
+          <TransactionsTable />
 
-      {/* Modals */}
-      <FundWalletModal
-        open={fundWalletOpen}
-        onOpenChange={setFundWalletOpen}
-        onSelectCrypto={handleSelectCrypto}
-        onSelectCard={handleSelectCard}
-      />
+          {/* Modals */}
+          <FundWalletModal
+            open={fundWalletOpen}
+            onOpenChange={setFundWalletOpen}
+            onSelectCrypto={handleSelectCrypto}
+            onSelectCard={handleSelectCard}
+          />
 
-      <FundCryptoModal open={fundCryptoOpen} onOpenChange={setFundCryptoOpen} />
+          <FundCryptoModal
+            open={fundCryptoOpen}
+            onOpenChange={setFundCryptoOpen}
+          />
 
-      <FundCardModal open={fundCardOpen} onOpenChange={setFundCardOpen} />
+          <FundCardModal open={fundCardOpen} onOpenChange={setFundCardOpen} />
 
-      <WalletFundedModal
-        open={fundedSuccessOpen}
-        onOpenChange={setFundedSuccessOpen}
-      />
+          <WalletFundedModal
+            open={fundedSuccessOpen}
+            onOpenChange={setFundedSuccessOpen}
+          />
 
-      <WithdrawFundsModal
-        open={withdrawFundsOpen}
-        onOpenChange={setWithdrawFundsOpen}
-      />
+          <WithdrawFundsModal
+            open={withdrawFundsOpen}
+            onOpenChange={setWithdrawFundsOpen}
+          />
+        </div>
+      )}
 
       <KYCStage2Modal
         open={stage2ModalOpen}
@@ -122,6 +125,6 @@ export default function WalletPage() {
           setStage2ModalOpen(false);
         }}
       />
-    </div>
+    </>
   );
 }

@@ -16,6 +16,7 @@ import { useKYCStore } from "@/store/kyc-store";
 interface KYCOnboardingModalProps {
   open: boolean;
   onVerificationComplete?: () => void;
+  onClose: () => void;
 }
 
 // interface KYCOnboardingModalProps {
@@ -32,23 +33,28 @@ type ModalStep = "company-kyc" | "bridge-verification";
 export function KYCOnboardingModal({
   open,
   onVerificationComplete,
+  onClose
 }: KYCOnboardingModalProps) {
   const { kycStatus } = useKYCStore();
 
   // Derive step directly from store state to prevent flashing
   // Show bridge verification if kycLink or tost exist from company KYC
 
-const step: ModalStep = (kycStatus?.kycLink && kycStatus?.companyKycStatus === 'submitted') ? 'bridge-verification' : 'company-kyc'
+  const step: ModalStep =
+    kycStatus?.kycLink && kycStatus?.companyKycStatus === "submitted"
+      ? "bridge-verification"
+      : "company-kyc";
 
   const handleBridgeVerificationComplete = () => {
     onVerificationComplete?.();
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    // <Dialog open={open} onOpenChange={() => {}}> // This is a hack to prevent the dialog from closing but we want to close it for now
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
-        showCloseButton={false}
+        // showCloseButton={false}
       >
         {step === "company-kyc" && (
           <>

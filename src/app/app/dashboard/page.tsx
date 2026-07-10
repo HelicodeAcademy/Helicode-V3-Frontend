@@ -39,7 +39,7 @@ import {
   PayrollMetricsRange,
 } from "@/lib/payroll-service";
 import { getKYCStatus } from "@/lib/kyc-service";
-// import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
+import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
 import { useKYCStore } from "@/store/kyc-store";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
@@ -66,8 +66,7 @@ export default function DashboardHomePage() {
   const [recentTransactions, setRecentTransactions] = useState<
     TransactionData[]
   >([]);
-
-  // const [showKYCModal, setShowKYCModal] = useState(false);
+  const [showKYCModal, setShowKYCModal] = useState(false);
 
   useEffect(() => {
     setTitle("Home");
@@ -168,10 +167,10 @@ export default function DashboardHomePage() {
     PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
       ?.label ?? "Last 30 days";
 
-  // const handleKYCVerificationComplete = () => {
-  //   setShowKYCModal(false);
-  //   fetchKycStatus();
-  // };
+  const handleKYCVerificationComplete = () => {
+    setShowKYCModal(false);
+    fetchKycStatus();
+  };
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -452,15 +451,16 @@ export default function DashboardHomePage() {
             Quick Actions
           </h3>
           <div className="space-y-4">
-            <KYCStatusCard />
+            <KYCStatusCard onStartStage1={() => setShowKYCModal(true)} />
           </div>
         </div>
       </div>
 
-      {/* <KYCOnboardingModal
+      <KYCOnboardingModal
         open={showKYCModal}
         onVerificationComplete={handleKYCVerificationComplete}
-      /> */}
+        onClose={() => setShowKYCModal(false)}
+      />
     </div>
   );
 }

@@ -4,14 +4,20 @@ import { Button } from "@/components/ui/button";
 import { getKYCStatus } from "@/lib/kyc-service";
 import { useKYCStore } from "@/store/kyc-store";
 import toast from "react-hot-toast";
-import { AlertCircle, Clock, CheckCircle2 } from "lucide-react";
-// import Link from "next/link";
+import {
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  // ArrowRight,
+} from "lucide-react";
+import Link from "next/link";
 
 interface KYCStatusCardProps {
   onStatusChange?: () => void;
+  onStartStage1?: () => void; // Callback for starting Stage 1 KYC
 }
 
-export function KYCStatusCard({}: KYCStatusCardProps) {
+export function KYCStatusCard({ onStartStage1 }: KYCStatusCardProps) {
   const [isLoading, setIsLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
   const { kycStatus, setKYCStatus, error, setError } = useKYCStore();
@@ -280,6 +286,16 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                   </span>
                 </span>
               </div>
+
+              {kycStatus.companyKycStatus === "pending" && (
+                <Button
+                  onClick={onStartStage1}
+                  size="sm"
+                  className="h-6 px-2 text-xs bg-[#0166f4] text-white hover:bg-[#0166f4]/90"
+                >
+                  Start
+                </Button>
+              )}
             </div>
 
             {/* Bridge Verification (KYC + TOS) Status - Only shows if company KYC is submitted */}
@@ -346,6 +362,18 @@ export function KYCStatusCard({}: KYCStatusCardProps) {
                   </span>
                 </span>
               </div>
+
+              {kycStatus.employerKycStatus === "pending" && (
+                <Link href="/dashboard/payroll">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-6 px-2 text-xs border-[#0166f4] text-[#0166f4] hover:bg-[#f0f4ff]"
+                  >
+                    Start
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
