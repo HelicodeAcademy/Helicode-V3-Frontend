@@ -21,21 +21,9 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAddHireStore } from "@/store/add-hire-store";
 import { HireDetailsForm } from "@/store/add-hire-store";
-import { getAllCountries, getFlagEmoji } from "@/lib/countries";
+import { getAllCountries } from "@/lib/countries";
 
 const COUNTRIES = getAllCountries();
-
-// const COUNTRIES = [
-//     "United States",
-//     "United Kingdom",
-//     "Nigeria",
-//     "Rwanda",
-//     "Kenya",
-//     "Ghana",
-//     "Singapore",
-//     "South Africa",
-//     "Namibia",
-// ];
 
 interface HireDetailsFormComponentProps {
   title: string;
@@ -157,13 +145,7 @@ export function HireDetailsFormComponent({
               >
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
-              {/* <SelectContent>
-                                {COUNTRIES.map((c) => (
-                                    <SelectItem key={c} value={c}>
-                                        {c}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent> */}
+
               <SelectContent className="max-h-64">
                 {COUNTRIES.map(({ code, name }) => (
                   <SelectItem key={code} value={name}>
@@ -233,7 +215,10 @@ export function HireDetailsFormComponent({
                       setCalendarOpen(false);
                     }
                   }}
-                  initialFocus
+                  // startMonth={new Date(1900, 0)}
+                  // endMonth={new Date()}
+                  captionLayout="dropdown-years"
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>

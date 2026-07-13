@@ -12,7 +12,7 @@ import { executeTeamTokenRefresh } from "@/lib/token-refresh-team";
 // Clear team session on logout
 // Redirecting based on team auth status
 
-const REFRESH_THRESHOLD_SECONDS = 5 * 60; // 5 minutes
+const REFRESH_THRESHOLD_SECONDS = 10 * 60; // 10 minutes
 const CHECK_INTERVAL_MS = 60_000; // 1 minute
 
 export function useTeamAuth() {
