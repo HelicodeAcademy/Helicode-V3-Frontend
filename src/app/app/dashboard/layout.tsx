@@ -33,6 +33,7 @@ import {
   HiringIcon,
   PayrollIcon,
   SettingsIcon,
+  TaxComplianceIcon,
   TeamsIcon,
   TransactionsIcon,
   WalletIcon,
@@ -62,6 +63,11 @@ const menuItems = [
   { icon: HiringIcon, label: "Hiring", href: "/dashboard/hiring" },
   { icon: WalletIcon, label: "Wallet", href: "/dashboard/wallet" },
   { icon: PayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
+  {
+    icon: TaxComplianceIcon,
+    label: "Tax & Compliance",
+    href: "/dashboard/tax-compliance",
+  },
   { icon: SettingsIcon, label: "Settings", href: "/dashboard/settings" },
 ];
 

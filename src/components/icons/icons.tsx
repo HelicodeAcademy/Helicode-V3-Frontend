@@ -221,3 +221,31 @@ export function KYCIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function TaxComplianceIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M10.0003 2.08334L16.6673 4.58334V9.16668C16.6673 13.1907 13.8422 16.9366 10.0003 17.9167C6.15845 16.9366 3.33333 13.1907 3.33333 9.16668V4.58334L10.0003 2.08334Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.5 9.79167L9.16667 11.4583L12.5 8.125"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
