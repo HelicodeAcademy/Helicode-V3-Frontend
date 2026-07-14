@@ -150,7 +150,7 @@ export default function TeamSettingsPage() {
 
             {/* KYC */}
             <div className="bg-white border border-[#eaeaea] rounded-lg p-6">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start flex-wrap space-y-4 justify-between">
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-[#101828] mb-2">
                     KYC Information
@@ -185,7 +185,7 @@ export default function TeamSettingsPage() {
 
             {/* Bank details */}
             <div className="bg-white border border-[#eaeaea] rounded-lg p-6">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start flex-wrap space-y-4 justify-between">
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-[#101828] mb-2">
                     Bank Details
