@@ -150,7 +150,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                     onClick={() =>
                       handleCopy(
                         walletData.virtualAccount.fiatDepositInstructions
-                          ?.bank_name,
+                          ?.routing_number,
                         0,
                       )
                     }

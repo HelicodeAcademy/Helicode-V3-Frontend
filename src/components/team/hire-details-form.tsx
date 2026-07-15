@@ -10,14 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Mail } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAddHireStore } from "@/store/add-hire-store";
 import { HireDetailsForm } from "@/store/add-hire-store";
@@ -40,7 +33,6 @@ export function HireDetailsFormComponent({
   const [errors, setErrors] = useState<
     Partial<Record<keyof HireDetailsForm, string>>
   >({});
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof HireDetailsForm, string>> = {};
@@ -182,46 +174,20 @@ export function HireDetailsFormComponent({
             )}
           </div>
 
-          {/* Start Date — calendar picker */}
+          {/* Start Date */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Start date <span className="text-[#FF3F3F]">*</span>
             </label>
-            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "flex h-10 w-full items-center gap-3 rounded-md border bg-white px-3 text-sm text-left",
-                    details.startDate ? "text-[#101928]" : "text-[#667085]",
-                    errors.startDate ? "border-red-400" : "border-[#E4E7EC]",
-                  )}
-                >
-                  <CalendarIcon className="h-4 w-4 shrink-0 text-[#667085]" />
-                  {details.startDate
-                    ? format(parseISO(details.startDate), "MMM d, yyyy")
-                    : "Pick a date"}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={
-                    details.startDate ? parseISO(details.startDate) : undefined
-                  }
-                  onSelect={(date) => {
-                    if (date) {
-                      setDetails({ startDate: format(date, "yyyy-MM-dd") });
-                      setCalendarOpen(false);
-                    }
-                  }}
-                  // startMonth={new Date(1900, 0)}
-                  // endMonth={new Date()}
-                  captionLayout="dropdown-years"
-                  autoFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Input
+              type="date"
+              value={details.startDate}
+              onChange={(e) => setDetails({ startDate: e.target.value })}
+              className={cn(
+                errors.startDate ? "border-red-400" : "",
+                details.startDate ? "text-[#101928]" : "text-[#667085]",
+              )}
+            />
             {errors.startDate && (
               <p className="text-xs text-red-500 mt-1">{errors.startDate}</p>
             )}
