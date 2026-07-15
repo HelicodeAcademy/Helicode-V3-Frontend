@@ -170,7 +170,7 @@ export default function DashboardLayout({
   const { setKYCStatus } = useKYCStore();
   const inactivityTimerRef = useRef<number | null>(null);
 
-  const INACTIVITY_LIMIT = 5 * 60 * 1000;
+  const INACTIVITY_LIMIT = 20 * 60 * 1000;
 
   const resetInactivityTimer = useCallback(() => {
     if (inactivityTimerRef.current !== null) {

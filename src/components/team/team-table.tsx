@@ -28,24 +28,11 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { TeamMember } from "@/store/team-store";
-import { revokeTeamMember } from "@/lib/team-service";
+import { revokeTeamMember, resendTeamMemberInvite } from "@/lib/team-service";
 import { toast } from "react-hot-toast";
 import { getFlagEmoji } from "@/lib/countries";
 import { EditTeamMemberModal } from "./edit-team-member-modal";
 import { PayTeamMemberModal } from "./pay-team-member-modal";
-
-// Country flags mapping
-// const countryFlags: Record<string, string> = {
-//   Kenya: "🇰🇪",
-//   Singapore: "🇸🇬",
-//   Rwanda: "🇷🇼",
-//   "United States": "🇺🇸",
-//   Namibia: "🇳🇦",
-//   Ghana: "🇬🇭",
-//   "United Kingdom": "🇬🇧",
-//   Nigeria: "🇳🇬",
-//   "South Africa": "🇿🇦",
-// };
 
 interface TeamTableProps {
   members: TeamMember[];
@@ -80,6 +67,7 @@ export function TeamTable({
   const [isRevoking, setIsRevoking] = useState(false);
   const [editTarget, setEditTarget] = useState<TeamMember | null>(null);
   const [payTarget, setPayTarget] = useState<TeamMember | null>(null);
+  const [resendTargetId, setResendTargetId] = useState<string | null>(null);
 
   const handleRevoke = async () => {
     if (!revokeTarget) return;
@@ -95,6 +83,21 @@ export function TeamTable({
     } finally {
       setIsRevoking(false);
       setRevokeTarget(null);
+    }
+  };
+
+  const handleResendInvite = async (member: TeamMember) => {
+    setResendTargetId(member.id);
+
+    try {
+      const message = await resendTeamMemberInvite(member.id);
+      toast.success(message || `Invite resent successfully.`);
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to resend invite.",
+      );
+    } finally {
+      setResendTargetId(null);
     }
   };
 
@@ -194,6 +197,15 @@ export function TeamTable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => setEditTarget(member)}>
                           Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleResendInvite(member)}
+                          disabled={member.status === "Active"}
+                          className="disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          {resendTargetId === member.id
+                            ? "Resending..."
+                            : "Resend"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setPayTarget(member)}

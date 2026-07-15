@@ -245,8 +245,8 @@ export default function TeamDashboardLayout({
 
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 10 munutes in milliseconds
-  const INACTIVITY_LIMIT = 10 * 60 * 1000;
+  // 20 minutes in milliseconds
+  const INACTIVITY_LIMIT = 20 * 60 * 1000;
 
   const resetInactivityTimer = () => {
     // Clear the existing timer
