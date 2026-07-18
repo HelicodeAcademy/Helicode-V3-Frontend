@@ -97,7 +97,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
         ) : (
           <>
             {/* Fee and Time Info */}
-            <div className="flex gap-3.5 mt-4 pb-4">
+            {/* <div className="flex gap-3.5 mt-4 pb-4">
               <div className="flex items-center gap-2 bg-[#F1F5FF] px-2 py-1 rounded-sm">
                 <Image
                   src="/wallet/coins-02.svg"
@@ -121,7 +121,7 @@ export function FundCardModal({ open, onOpenChange }: FundCardModalProps) {
                   2 min
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* Bank Details */}
             <div className="space-y-2">

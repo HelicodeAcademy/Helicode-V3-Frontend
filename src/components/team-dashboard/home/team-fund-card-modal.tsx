@@ -64,7 +64,7 @@ export function TeamFundCardModal({
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const hasKYCApproved = teamData?.kycStatus
+  const hasKYCApproved = teamData?.kycStatus;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,7 +105,7 @@ export function TeamFundCardModal({
         ) : (
           <>
             {/* Fee and Time Info */}
-            <div className="flex gap-3.5 mt-4 pb-4">
+            {/* <div className="flex gap-3.5 mt-4 pb-4">
               <div className="flex items-center gap-2 bg-[#F1F5FF] px-2 py-1 rounded-sm">
                 <Image
                   src="/wallet/coins-02.svg"
@@ -129,7 +129,7 @@ export function TeamFundCardModal({
                   2 min
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* Bank Details */}
             <div className="space-y-2">
@@ -214,7 +214,7 @@ export function TeamFundCardModal({
                         src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
-                        height={16}                        
+                        height={16}
                         className="cursor-pointer"
                       />
                     )}
@@ -254,7 +254,7 @@ export function TeamFundCardModal({
                         src="/wallet/copy.svg"
                         alt="copy"
                         width={16}
-                        height={16}                        
+                        height={16}
                         className="cursor-pointer"
                       />
                     )}

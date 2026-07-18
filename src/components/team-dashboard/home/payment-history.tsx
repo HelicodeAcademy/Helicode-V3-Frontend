@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
 import { TeamTransactionData } from "@/lib/team/team-transaction-service";
 
 interface PaymentHistoryProps {
