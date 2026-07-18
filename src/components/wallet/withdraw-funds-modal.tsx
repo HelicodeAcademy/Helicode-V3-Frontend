@@ -114,7 +114,7 @@ function WithdrawDetailsStep({
                   width={16}
                   height={16}
                 />
-                <span className="text-sm font-medium text-[#344054]">USD</span>
+                <span className="text-sm font-medium text-[#344054]">USDC</span>
               </div>
             </div>
             <span className="mt-1 block text-xs text-[#667085]">

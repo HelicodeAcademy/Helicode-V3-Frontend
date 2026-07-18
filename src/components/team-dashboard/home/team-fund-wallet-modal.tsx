@@ -47,7 +47,9 @@ export function TeamFundWalletModal({
               width={25.57}
               height={19.49}
             />
-            <span className="text-[#000000] font-medium">Fund with crypto</span>
+            <span className="text-[#000000] font-medium">
+              Fund with stablecoin
+            </span>
           </button>
         </div>
       </DialogContent>

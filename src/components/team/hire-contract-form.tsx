@@ -25,7 +25,7 @@ interface HireContractFormComponentProps {
 }
 
 const CURRENCIES: { value: Currency; label: string }[] = [
-  { value: "USDC", label: "USDC — USD Coin" },
+  { value: "USD", label: "USD" },
 ];
 
 const FREQUENCIES: { value: PaymentFrequency; label: string }[] = [
