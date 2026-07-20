@@ -13,7 +13,7 @@ import { executeTokenRefresh } from "@/lib/token-refresh";
 // Clear session on logout
 // Redrecting based on auth status
 
-const REFRESH_THRESHOLD_SECONDS = 5 * 60; // 5 minutes
+const REFRESH_THRESHOLD_SECONDS = 10 * 60; // 10 minutes
 const CHECK_INTERVAL_MS = 60_000; // 1 minute
 
 export function useAuth() {
@@ -80,13 +80,13 @@ export function useAuth() {
     };
   }, [accessToken, refreshTokenIfNeeded]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     clearLoginData();
     // Clear team store so stale members don't persist across accounts
     useTeamStore.getState().clearMembers();
     router.push("/login");
     toast.success("Logout successful!");
-  };
+  }, [clearLoginData, router]);
 
   return {
     isAuthenticated,

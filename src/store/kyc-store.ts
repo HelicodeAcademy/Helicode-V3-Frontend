@@ -136,7 +136,7 @@ export interface FullKYCStatus {
     | "submitted"
     | "approved"
     | "rejected";
-  tosStatus: "pending" | "not_started" | "accepted" | "rejected";
+  tosStatus: "pending" | "not_started" | "accepted" | "rejected" | "approved";
   kycStatus:
     | "pending"
     | "not_started"

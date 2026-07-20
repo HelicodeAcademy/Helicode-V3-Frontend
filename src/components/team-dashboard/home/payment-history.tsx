@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
 import { TeamTransactionData } from "@/lib/team/team-transaction-service";
 
 interface PaymentHistoryProps {
@@ -57,7 +56,7 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
   return (
     <div className="rounded-2xl border border-[#F2F2F2] bg-white p-4 sm:p-6">
       <h2 className="p-2 text-[14px] font-semibold text-[#101928] sm:p-4">
-        Payment history
+        Payment historys
       </h2>
 
       <div className="space-y-3 md:hidden">
@@ -81,9 +80,11 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                   </p>
                 </div>
                 <span
-                  className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-xs font-medium`}
+                  className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-xs font-medium capitalize`}
                 >
-                  {payment.status}
+                  {payment.status === "crypto confirmed"
+                    ? "Success"
+                    : payment.status}
                 </span>
               </div>
 
@@ -91,13 +92,9 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                 <div>
                   <p className="text-[#667085]">Currency</p>
                   <div className="mt-1 flex items-center gap-1">
-                    <Image
-                      src="/wallet/usdc.svg"
-                      alt={payment.currency}
-                      width={16}
-                      height={16}
-                    />
-                    <span className="text-[#101928]">{payment.currency}</span>
+                    <span className="text-[#101928]">
+                      {payment.currency === "USDC" ? "USD" : payment.currency}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -157,14 +154,8 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <div className="flex flex-row items-center space-x-1">
-                      <Image
-                        src="/wallet/usdc.svg"
-                        alt={payment.currency}
-                        width={16}
-                        height={16}
-                      />
                       <span className="text-sm text-[#101928]">
-                        {payment.currency}
+                        {payment.currency === "USDC" ? "USD" : payment.currency}
                       </span>
                     </div>
                   </TableCell>
@@ -173,9 +164,11 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <span
-                      className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-sm font-medium`}
+                      className={`${getStatusClasses(payment.status)} rounded-full px-2 py-1 text-sm font-medium capitalize`}
                     >
-                      {payment.status}
+                      {payment.status === "crypto confirmed"
+                        ? "Success"
+                        : payment.status}
                     </span>
                   </TableCell>
                 </TableRow>

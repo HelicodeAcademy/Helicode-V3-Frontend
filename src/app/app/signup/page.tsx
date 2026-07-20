@@ -14,9 +14,14 @@ export default function SignupPage() {
   const router = useRouter();
 
   const handleContinue = () => {
-    if (selectedType) {
-      router.push(`/signup/${selectedType}`);
+    if (!selectedType) return;
+
+    if (selectedType === "talent") {
+      router.push("/team/login");
+      return;
     }
+
+    router.push(`/signup/${selectedType}`);
   };
 
   return (
@@ -131,7 +136,6 @@ export default function SignupPage() {
               {/* Talent option */}
               <button
                 onClick={() => setSelectedType("talent")}
-                disabled={selectedType === "company"}
                 className={`p-6 rounded-lg border transition-all ${
                   selectedType === "talent"
                     ? "border-[#0052FF]"

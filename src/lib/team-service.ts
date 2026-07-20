@@ -131,6 +131,24 @@ export async function revokeTeamMember(teamId: string): Promise<void> {
   await apiCall<void>(`/teams/${teamId}/revoke`, { method: "DELETE" });
 }
 
+export interface ResendTeamInviteResponse {
+  message: string;
+  data: {
+    message: string;
+  };
+}
+
+export async function resendTeamMemberInvite(
+  memberId: string,
+): Promise<string> {
+  const response = await post<ResendTeamInviteResponse>(
+    `/teams/${memberId}/resend-invite`,
+    { id: memberId },
+  );
+
+  return response.message || response.data.message;
+}
+
 export async function updateTeamMember(
   memberId: string,
   payload: UpdateTeamMemberPayload,

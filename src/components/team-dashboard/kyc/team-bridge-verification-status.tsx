@@ -23,6 +23,11 @@ export function TeamBridgeVerificationStatus({
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
 
+  // Stablecoin-only members start Bridge KYC without ever adding bank details
+  const bridgeStarted =
+    (bridgeKycStatus && bridgeKycStatus !== "not_started") ||
+    (bridgeTosStatus && bridgeTosStatus !== "not_started");
+
     const fetchBridgeStatus = async () => {
     try {
       setLoading(true);
@@ -40,14 +45,14 @@ export function TeamBridgeVerificationStatus({
   };
 
   useEffect(() => {
-    if (!hasLoaded && bankPayoutStatus) {
+    if (!hasLoaded && (bankPayoutStatus || bridgeStarted)) {
       fetchBridgeStatus();
       setHasLoaded(true);
     }
-  }, [bankPayoutStatus, hasLoaded]);
+  }, [bankPayoutStatus, bridgeStarted, hasLoaded]);
 
-  // Only show if bank details have been added
-  if (!bankPayoutStatus) {
+  // Only show if bank details have been added or Bridge KYC has been initiated
+  if (!bankPayoutStatus && !bridgeStarted) {
     return null;
   }
 

@@ -2,7 +2,7 @@
 
 import type React from "react";
 import Image from "next/image";
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useState, useEffect, useRef, useCallback } from "react";
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -174,23 +174,20 @@ export default function DashboardLayout({
   const [pageTitle, setPageTitle] = useState<string | null>(null);
   const { logout } = useAuth();
   const { setKYCStatus } = useKYCStore();
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const inactivityTimerRef = useRef<number | null>(null);
 
-  // 10 munutes in milliseconds
-  const INACTIVITY_LIMIT = 10 * 60 * 1000;
+  const INACTIVITY_LIMIT = 20 * 60 * 1000;
 
-  const resetInactivityTimer = () => {
-    // Clear the existing timer
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityTimerRef.current !== null) {
+      window.clearTimeout(inactivityTimerRef.current);
     }
 
-    // Set a new timer
-    inactivityTimerRef.current = setTimeout(() => {
+    inactivityTimerRef.current = window.setTimeout(() => {
       toast.error("Session expired due to inactivity. Logging out...");
       logout();
     }, INACTIVITY_LIMIT);
-  };
+  }, [INACTIVITY_LIMIT, logout]);
 
   // Fetch KYC status on layout mount to ensure it's available for all dashboard pages
   useEffect(() => {
@@ -206,38 +203,50 @@ export default function DashboardLayout({
     fetchKycStatus();
   }, [setKYCStatus]);
 
-  // useEffect(() => {
-  //   resetInactivityTimer();
+  useEffect(() => {
+    const handleActivity = () => {
+      resetInactivityTimer();
+    };
 
-  //   // Activity listeners
-  //   const activityEvents = [
-  //     "mousedown",
-  //     "keydown",
-  //     "touchstart",
-  //     "scroll",
-  //     "click",
-  //     "mousemove",
-  //   ];
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") {
+        return;
+      }
 
-  //   const handleActivity = () => {
-  //     resetInactivityTimer();
-  //   };
+      resetInactivityTimer();
+    };
 
-  //   // Add event listeners for user activity
-  //   activityEvents.forEach((event) => {
-  //     document.addEventListener(event, handleActivity);
-  //   });
+    const activityEvents = [
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+      "click",
+      "mousemove",
+      "pointerdown",
+      "wheel",
+    ];
 
-  //   return () => {
-  //     if (inactivityTimerRef.current) {
-  //       clearTimeout(inactivityTimerRef.current);
-  //     }
-  //     activityEvents.forEach((event) => {
-  //       document.removeEventListener(event, handleActivity);
-  //     });
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [logout]);
+    resetInactivityTimer();
+
+    activityEvents.forEach((event) => {
+      document.addEventListener(event, handleActivity, { passive: true });
+    });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleActivity);
+
+    return () => {
+      if (inactivityTimerRef.current !== null) {
+        window.clearTimeout(inactivityTimerRef.current);
+      }
+
+      activityEvents.forEach((event) => {
+        document.removeEventListener(event, handleActivity);
+      });
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleActivity);
+    };
+  }, [INACTIVITY_LIMIT, logout, resetInactivityTimer]);
 
   return (
     <ProtectedRoute>

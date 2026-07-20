@@ -176,6 +176,22 @@ export async function submitTeamBankDetails(
   return response.data;
 }
 
+export interface BridgeKycInitResponse {
+  message?: string;
+  kycLink: string;
+  tosLink: string;
+}
+
+// Initiate Bridge KYC for stablecoin-only payouts
+// (team members in countries not supported by local-currency offramp partners)
+export async function initiateBridgeKyc(): Promise<BridgeKycInitResponse> {
+  const response = await teamPost<BridgeKycInitResponse>(
+    "/team/bridge-kyc",
+    {},
+  );
+  return response.data;
+}
+
 export async function getBridgeKycStatus(): Promise<BridgeKycStatusResponse> {
   const response = await teamGet<BridgeKycStatusResponse>(
     "/team/bridge-kyc/status",

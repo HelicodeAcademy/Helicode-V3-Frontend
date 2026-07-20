@@ -107,8 +107,12 @@ export default function TalentDashboardHomePage() {
       setHasPin(data.hasTransactionPin);
       setTeamWalletBalance(data.wallet.balance);
 
-      // Auto-open KYC if KYC is not approved
-      if (!data.kycStatus) {
+      // Auto-open KYC if KYC is not approved and the member hasn't opted
+      // into the stablecoin-only (Bridge) flow
+      const memberBridgeStarted =
+        (data.bridgeKycStatus && data.bridgeKycStatus !== "not_started") ||
+        (data.bridgeTosStatus && data.bridgeTosStatus !== "not_started");
+      if (!data.kycStatus && !memberBridgeStarted) {
         setKycModalOpen(true);
       }
     } catch (error) {
@@ -182,6 +186,16 @@ export default function TalentDashboardHomePage() {
 
   const kycNotApproved = !teamData?.kycStatus;
   const bankDetailsNotAdded = !teamData?.bankPayoutStatus;
+  // Stablecoin-only members (unsupported offramp countries) go straight to
+  // Bridge KYC and never complete local KYC or add bank details
+  const bridgeStarted = Boolean(
+    (teamData?.bridgeKycStatus &&
+      teamData.bridgeKycStatus !== "not_started") ||
+      (teamData?.bridgeTosStatus && teamData.bridgeTosStatus !== "not_started"),
+  );
+  const bridgeApproved =
+    teamData?.bridgeKycStatus === "approved" &&
+    teamData?.bridgeTosStatus === "approved";
 
   return (
     <div className="space-y-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -284,13 +298,7 @@ export default function TalentDashboardHomePage() {
             onClick={() => setWithdrawFundsModalOpen(true)}
             variant="outline"
             className="w-full items-center sm:w-auto border border-[#0052FF] rounded-lg text-[#0052FF]"
-            disabled={
-              kycNotApproved ||
-              bankDetailsNotAdded ||
-              isLoading ||
-              teamData?.bridgeKycStatus !== "approved" ||
-              teamData?.bridgeTosStatus !== "approved"
-            }
+            disabled={isLoading || !bridgeApproved}
           >
             <Image
               src="/wallet/arrow-narrow-up-right-blue.svg"
@@ -302,7 +310,7 @@ export default function TalentDashboardHomePage() {
           </Button>
         </div>
 
-        {kycNotApproved && !isLoading && (
+        {kycNotApproved && !bridgeStarted && !isLoading && (
           <div className="bg-[#FEF3C7] border border-[#F59E0B] rounded-lg p-4 flex items-start gap-3 mt-10">
             <AlertCircle className="h-5 w-5 text-[#F59E0B] shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -346,7 +354,8 @@ export default function TalentDashboardHomePage() {
         )}
 
         {/* Bridge Verification Status */}
-        {!bankDetailsNotAdded && kycNotApproved === false && (
+        {((!bankDetailsNotAdded && kycNotApproved === false) ||
+          bridgeStarted) && (
           <TeamBridgeVerificationStatus
             bankPayoutStatus={teamData?.bankPayoutStatus}
             bridgeKycStatus={teamData?.bridgeKycStatus}
@@ -368,6 +377,7 @@ export default function TalentDashboardHomePage() {
         onOpenChange={setWithdrawFundsModalOpen}
         onSelectCrypto={handleSelectCrypto}
         onSelectCard={handleSelectCard}
+        showLocalOption={!bankDetailsNotAdded}
       />
 
       {/* Fund Wallet Modals */}

@@ -13,6 +13,7 @@ interface TalentWithdrawFundsModalProps {
   onOpenChange: (open: boolean) => void;
   onSelectCrypto: () => void;
   onSelectCard?: () => void;
+  showLocalOption?: boolean;
 }
 
 export function TalentWithdrawFundsModal({
@@ -20,6 +21,7 @@ export function TalentWithdrawFundsModal({
   onOpenChange,
   onSelectCrypto,
   onSelectCard,
+  showLocalOption = true,
 }: TalentWithdrawFundsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -51,15 +53,17 @@ export function TalentWithdrawFundsModal({
             </span>
           </button>
 
-          <button
-            onClick={onSelectCard}
-            className="w-full flex cursor-pointer items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
-          >
-            <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
-            <span className="text-[#000000] font-normal">
-              Withdraw to local account
-            </span>
-          </button>
+          {showLocalOption && (
+            <button
+              onClick={onSelectCard}
+              className="w-full flex cursor-pointer items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
+            >
+              <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
+              <span className="text-[#000000] font-normal">
+                Withdraw to local account
+              </span>
+            </button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

@@ -327,7 +327,7 @@ export function KYCStatusCard({ onStartStage1 }: KYCStatusCardProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`h-2 w-2 rounded-full ${kycStatus.tosStatus === "accepted" ? "bg-[#219d53]" : "bg-[#f59e0b]"}`}
+                      className={`h-2 w-2 rounded-full ${kycStatus.tosStatus === "approved" ? "bg-[#219d53]" : "bg-[#f59e0b]"}`}
                     />
                     <span className="text-xs text-[#667085]">
                       Terms of Service:{" "}
@@ -336,7 +336,7 @@ export function KYCStatusCard({ onStartStage1 }: KYCStatusCardProps) {
                       </span>
                     </span>
                   </div>
-                  {kycStatus.tosStatus !== "accepted" && kycStatus.tosLink && (
+                  {kycStatus.tosStatus !== "approved" && kycStatus.tosLink && (
                     <Button
                       onClick={() => handleContinue(kycStatus.tosLink!, "tos")}
                       size="sm"
