@@ -199,16 +199,16 @@ export default function DashboardHomePage() {
                       <span className="mt-1">US Dollars (USD)</span>
                     </span>
                   </SelectItem>
-                  <SelectItem value="eur">
+                  {/* <SelectItem value="eur">
                     <span className="flex items-center gap-2">
                       🇪🇺 Euro (EUR)
                     </span>
-                  </SelectItem>
-                  <SelectItem value="gbp">
+                  </SelectItem> */}
+                  {/* <SelectItem value="gbp">
                     <span className="flex items-center gap-2">
                       🇬🇧 British Pound (GBP)
                     </span>
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectContent>
               </Select>
             </div>

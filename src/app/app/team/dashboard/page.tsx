@@ -189,9 +189,8 @@ export default function TalentDashboardHomePage() {
   // Stablecoin-only members (unsupported offramp countries) go straight to
   // Bridge KYC and never complete local KYC or add bank details
   const bridgeStarted = Boolean(
-    (teamData?.bridgeKycStatus &&
-      teamData.bridgeKycStatus !== "not_started") ||
-      (teamData?.bridgeTosStatus && teamData.bridgeTosStatus !== "not_started"),
+    (teamData?.bridgeKycStatus && teamData.bridgeKycStatus !== "not_started") ||
+    (teamData?.bridgeTosStatus && teamData.bridgeTosStatus !== "not_started"),
   );
   const bridgeApproved =
     teamData?.bridgeKycStatus === "approved" &&
@@ -221,21 +220,21 @@ export default function TalentDashboardHomePage() {
                       <span className="mt-1">US Dollars (USD)</span>
                     </span>
                   </SelectItem>
-                  <SelectItem value="eur">
+                  {/* <SelectItem value="eur">
                     <span className="flex items-center gap-2">Euro (EUR)</span>
-                  </SelectItem>
-                  <SelectItem value="gbp">
+                  </SelectItem> */}
+                  {/* <SelectItem value="gbp">
                     <span className="flex items-center gap-2">
                       British Pound (GBP)
                     </span>
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
               <p className="mb-2 text-sm font-medium text-[#475367]">
-                Available Balance
+                Available Balances
               </p>
               <div className="flex items-center gap-2">
                 {isLoading ? (
