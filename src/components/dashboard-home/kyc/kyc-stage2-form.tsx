@@ -153,7 +153,8 @@ export function KYCStage2Form({ onSuccess }: KYCStage2FormProps) {
                   disabled={(date) =>
                     date > new Date() || date < new Date("1900-01-01")
                   }
-                  initialFocus
+                  autoFocus
+                  captionLayout="dropdown-years"
                 />
               </PopoverContent>
             </Popover>
