@@ -22,8 +22,14 @@ interface VerifyEmailInputs {
 
 export function VerifyEmailForm() {
   const router = useRouter();
-  const { userId, signupData, setCurrentStep, setVerifiedUser, setIsLoading } =
-    useAuthStore();
+  const {
+    userId,
+    signupData,
+    setCurrentStep,
+    setVerifiedUser,
+    setPendingVerification,
+    setIsLoading,
+  } = useAuthStore();
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -96,11 +102,30 @@ export function VerifyEmailForm() {
       // store verified user data
       setVerifiedUser(verifiedUserData);
 
+      // Persist KYC/TOS links from verify-email for the next onboarding step
+      setPendingVerification({
+        kycLink: verifiedUserData.kycLink,
+        tosLink: verifiedUserData.tosLink,
+        kycStatus: verifiedUserData.kycStatus,
+        tosStatus: verifiedUserData.tosStatus,
+      });
+
       toast.success("Email verified successfully!");
 
-      // Redirect to dashboard
       setCurrentStep("verify");
-      router.push("/dashboard");
+
+      // New flow returns KYC links; always send them through verification
+      // before sign-in (even if links are temporarily missing).
+      if (
+        verifiedUserData.kycLink ||
+        verifiedUserData.tosLink ||
+        verifiedUserData.kycStatus
+      ) {
+        router.push("/signup/company/verification");
+      } else {
+        // Legacy / fallback: no KYC payload — go to login
+        router.push("/login");
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";

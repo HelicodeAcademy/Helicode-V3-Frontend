@@ -37,7 +37,7 @@ const STEP_COPY: Record<KYCStep, { title: string; description: string }> = {
       "To access full features and process withdrawals, please complete your Know Your Customer (KYC) verification.",
   },
   bridge: {
-    title: "Complete Bridge Verification",
+    title: "Complete Verification",
     description:
       "Complete the two steps below to enable stablecoin payouts to your crypto wallet.",
   },

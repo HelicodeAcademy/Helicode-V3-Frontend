@@ -37,11 +37,9 @@ export function KYCOnboardingModal({
 }: KYCOnboardingModalProps) {
   const { kycStatus } = useKYCStore();
 
-  // Derive step directly from store state to prevent flashing
-  // Show bridge verification if kycLink or tost exist from company KYC
-
+  // Prefer verification links from verify-email / company KYC when available
   const step: ModalStep =
-    kycStatus?.kycLink && kycStatus?.companyKycStatus === "submitted"
+    kycStatus?.kycLink || kycStatus?.tosLink
       ? "bridge-verification"
       : "company-kyc";
 
@@ -96,8 +94,7 @@ export function KYCOnboardingModal({
                 Complete Verification
               </DialogTitle>
               <DialogDescription className="text-[#667085] mt-2">
-                We need you to complete verification through our partner. Click
-                the links below to proceed.
+                Complete the steps below to finish account verification.
               </DialogDescription>
             </DialogHeader>
 

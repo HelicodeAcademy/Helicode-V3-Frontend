@@ -1,19 +1,25 @@
-'use client';
+"use client";
 
-import { useContext, useEffect, useEffectEvent, useState } from 'react';
-import { PageTitleContext } from '../layout';
-import { SettingsCard } from '@/components/settings/settings-card';
-import { Button } from '@/components/ui/button';
-import { ChangePasswordModal } from '@/components/settings/change-password-modal';
-import { ModifyPinModal } from '@/components/settings/modify-pin-modal';
-import { changePassword } from '@/lib/auth-service';
-import { setWalletPin } from '@/lib/wallet-service';
-import { useWalletStore } from '@/store/wallet-store';
+import { useContext, useEffect, useEffectEvent, useState } from "react";
+import { PageTitleContext } from "../layout";
+import { SettingsCard } from "@/components/settings/settings-card";
+import { Button } from "@/components/ui/button";
+import { ChangePasswordModal } from "@/components/settings/change-password-modal";
+import { ModifyPinModal } from "@/components/settings/modify-pin-modal";
+import { changePassword } from "@/lib/auth-service";
+import { setWalletPin } from "@/lib/wallet-service";
+import { useWalletStore } from "@/store/wallet-store";
 import {
   CompanyDetailsResponse,
   getCompanyDetails,
-} from '@/lib/company-details';
-import toast from 'react-hot-toast';
+} from "@/lib/company-details";
+import toast from "react-hot-toast";
+import {
+  formatKycStatusLabel,
+  isKycFullyApproved,
+  useKYCStore,
+} from "@/store/kyc-store";
+import { getKYCStatus } from "@/lib/kyc-service";
 
 interface SettingsItem {
   id: string;
@@ -30,6 +36,7 @@ export default function SettingsPage() {
   const [companyDetails, setCompanyDetails] =
     useState<CompanyDetailsResponse | null>(null);
   const hasPin = useWalletStore((state) => state.hasPin);
+  const { kycStatus, setKYCStatus } = useKYCStore();
 
   const fetchCompanyDetails = useEffectEvent(async () => {
     try {
@@ -39,55 +46,77 @@ export default function SettingsPage() {
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Failed to fetch company details';
+          : "Failed to fetch company details";
       toast.error(errorMessage);
-      console.error('Failed to fetch company details', error);
+      console.error("Failed to fetch company details", error);
+    }
+  });
+
+  const fetchKyc = useEffectEvent(async () => {
+    try {
+      const status = await getKYCStatus();
+      setKYCStatus(status);
+    } catch (error) {
+      console.error("Failed to fetch KYC status", error);
     }
   });
 
   useEffect(() => {
-    setTitle('Settings');
+    setTitle("Settings");
     fetchCompanyDetails();
+    fetchKyc();
   }, [setTitle]);
+
+  const companyKyc = companyDetails?.kyc;
+  const fullyApproved =
+    isKycFullyApproved(kycStatus) ||
+    (companyKyc?.bridgeKycStatus === "approved" &&
+      companyKyc?.bridgeTosStatus === "approved");
+
+  const statusValue = fullyApproved
+    ? "Verified"
+    : formatKycStatusLabel(
+        kycStatus?.kycStatus ?? companyKyc?.bridgeKycStatus,
+      );
 
   const settingsData: SettingsItem[] = [
     {
-      id: 'company_name',
-      label: 'Company Name',
-      value: companyDetails?.name ?? 'N/A',
+      id: "company_name",
+      label: "Company Name",
+      value: companyDetails?.name ?? "N/A",
       isEditable: false,
     },
     {
-      id: 'payroll_settings',
-      label: 'Payroll Settings',
-      value: 'Monthly',
+      id: "payroll_settings",
+      label: "Payroll Settings",
+      value: "Monthly",
       isEditable: false,
     },
     {
-      id: 'admin_name',
-      label: 'Admin Name',
+      id: "admin_name",
+      label: "Admin Name",
       value: companyDetails
         ? `${companyDetails.employer.firstName} ${companyDetails.employer.lastName}`.trim()
-        : 'N/A',
+        : "N/A",
       isEditable: false,
     },
     {
-      id: 'title',
-      label: 'Title',
-      value: companyDetails?.employer.role ?? 'N/A',
+      id: "title",
+      label: "Title",
+      value: companyDetails?.employer.role ?? "N/A",
       isEditable: false,
     },
     {
-      id: 'status',
-      label: 'Status',
-      value: 'Active',
+      id: "status",
+      label: "Status",
+      value: statusValue,
       isStatus: true,
       isEditable: false,
     },
     {
-      id: 'currency',
-      label: 'Currency',
-      value: companyDetails?.invoiceCurrency ?? 'N/A',
+      id: "currency",
+      label: "Currency",
+      value: companyDetails?.invoiceCurrency ?? "N/A",
       isEditable: false,
     },
   ];
@@ -121,14 +150,13 @@ export default function SettingsPage() {
                 onClick={() => setCreatePinOpen(!createPinOpen)}
                 className="bg-[#E9E9E9] text-[#363636] text-sm hover:bg-[#d1d5db] w-16.25 h-9"
               >
-                {hasPin ? 'Change' : 'Set up'}
+                {hasPin ? "Change" : "Set up"}
               </Button>
             </div>
           </div>
         </SettingsCard>
       </div>
 
-      {/* Modals */}
       <ChangePasswordModal
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}

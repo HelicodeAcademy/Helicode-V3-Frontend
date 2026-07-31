@@ -47,13 +47,23 @@ export function SettingsCard({
           //     {value}
           //   </Badge>
           <div className=" text-[#12B76A] text-xs font-medium">
-            <span className="bg-[#ECFDF3] flex items-center gap-1 rounded-3xl py-1 px-2 w-fit">
-              <Image
-                src="/settings/award-03.svg"
-                alt="award"
-                width={18}
-                height={18}
-              />
+            <span
+              className={`flex items-center gap-1 rounded-3xl py-1 px-2 w-fit ${
+                value === "Verified"
+                  ? "bg-[#ECFDF3] text-[#12B76A]"
+                  : value === "Rejected"
+                    ? "bg-[#FEF2F2] text-[#B91C1C]"
+                    : "bg-[#FFFBEB] text-[#B45309]"
+              }`}
+            >
+              {value === "Verified" && (
+                <Image
+                  src="/settings/award-03.svg"
+                  alt="award"
+                  width={18}
+                  height={18}
+                />
+              )}
               {value}
             </span>
           </div>

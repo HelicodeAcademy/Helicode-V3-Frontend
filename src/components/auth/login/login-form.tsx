@@ -26,7 +26,7 @@ interface LoginFormStep2Data {
 
 export function LoginForm() {
   const router = useRouter();
-  const { setLoginData } = useAuthStore();
+  const { setLoginData, setPendingVerification } = useAuthStore();
 
   const [step, setStep] = useState<LoginStep>("credentials");
   const [showPassword, setShowPassword] = useState(false);
@@ -96,6 +96,7 @@ export function LoginForm() {
 
       // Store tokens and user data in store
       setLoginData(loginResponse);
+      setPendingVerification(null);
 
       toast.success("Login successful!");
       router.push("/dashboard");

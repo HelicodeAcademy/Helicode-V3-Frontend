@@ -18,6 +18,7 @@ export interface ApiResponse<T> {
   statusCode: number;
   message: string;
   data: T;
+  error?: string;
 }
 
 // Track in-flight refresh to prevent multiple simultaneous refresh calls
@@ -68,12 +69,14 @@ export async function apiCall<T>(
       }
     }
     // For public endpoints, throw the backend's actual error message
-    throw new Error(data.message || "Unauthorized");
+    throw new Error(data.message || data.error || "Unauthorized");
   }
 
   // Handles succesful and error responses uniformly
   if (!response.ok) {
-    throw new Error(data.message || `API Error: ${response.status}`);
+    throw new Error(
+      data.message || data.error || `API Error: ${response.status}`,
+    );
   }
   return data as ApiResponse<T>;
 }

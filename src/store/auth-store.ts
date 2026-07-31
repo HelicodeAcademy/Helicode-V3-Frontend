@@ -8,8 +8,7 @@ export interface SignupData {
   email: string;
   password: string;
   companyName: string;
-  teamSize: number;
-  country: string;
+  country?: string;
   product?: string;
 }
 
@@ -19,19 +18,52 @@ export interface SignupResponse {
   message: string;
 }
 
+export type BridgeKycStatus =
+  | "pending"
+  | "not_started"
+  | "incomplete"
+  | "awaiting_questionnaire"
+  | "awaiting_ubo"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "paused"
+  | "offboarded"
+  | "in_progress"
+  | "submitted";
+
+export type BridgeTosStatus =
+  | "pending"
+  | "approved"
+  | "not_started"
+  | "accepted"
+  | "rejected";
+
 export interface VerifyEmailResponse {
   id: string;
   companyId: string;
   firstName: string;
   lastName: string;
   email: string;
-  fullName: string | null;
-  country: string | null;
-  dob: string | null;
-  proofOfAddress: string | null;
+  fullName?: string | null;
+  country?: string | null;
+  dob?: string | null;
+  proofOfAddress?: string | null;
   status: string;
-  phone: string | null;
-  idDocument: string | null;
+  phone?: string | null;
+  idDocument?: string | null;
+  message?: string;
+  kycLink?: string | null;
+  tosLink?: string | null;
+  kycStatus?: BridgeKycStatus;
+  tosStatus?: BridgeTosStatus;
+}
+
+export interface PendingVerificationLinks {
+  kycLink?: string | null;
+  tosLink?: string | null;
+  kycStatus?: BridgeKycStatus | null;
+  tosStatus?: BridgeTosStatus | null;
 }
 
 // Login response types
@@ -64,7 +96,7 @@ interface AuthStore {
   resetSignupData: () => void;
 
   // Current step in signup flow
-  currentStep: "company" | "details" | "product" | "verify";
+  currentStep: "company" | "details" | "verify";
   setCurrentStep: (step: AuthStore["currentStep"]) => void;
 
   // Api response data
@@ -84,6 +116,10 @@ interface AuthStore {
   // Verified user data
   verifiedUser: VerifyEmailResponse | null;
   setVerifiedUser: (response: VerifyEmailResponse) => void;
+
+  // KYC/TOS links returned from verify-email (used before sign-in)
+  pendingVerification: PendingVerificationLinks | null;
+  setPendingVerification: (data: PendingVerificationLinks | null) => void;
 
   // Login state
   accessToken: string | null;
@@ -132,6 +168,9 @@ export const useAuthStore = create<AuthStore>()(
       verifiedUser: null,
       setVerifiedUser: (response) => set({ verifiedUser: response }),
 
+      pendingVerification: null,
+      setPendingVerification: (data) => set({ pendingVerification: data }),
+
       // Login state
       accessToken: null,
       refreshToken: null,
@@ -169,6 +208,7 @@ export const useAuthStore = create<AuthStore>()(
           isLoading: false,
           error: null,
           verifiedUser: null,
+          pendingVerification: null,
           accessToken: null,
           refreshToken: null,
           user: null,
@@ -189,6 +229,7 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         companyId: state.companyId,
         isAuthenticated: state.isAuthenticated,
+        pendingVerification: state.pendingVerification,
       }),
 
       onRehydrateStorage: () => (state) => {

@@ -1,10 +1,24 @@
-import { get } from './api-client';
+import { get } from "./api-client";
+import { BridgeKycStatus, BridgeTosStatus } from "@/store/auth-store";
+
+export interface CompanyKycSummary {
+  companyStageStatus?: string;
+  employerStageStatus?: string;
+  bridgeKycStatus?: BridgeKycStatus;
+  bridgeTosStatus?: BridgeTosStatus | null;
+  bridgeKycRejectionReasons?: string[];
+  bridgeKycRejectedAt?: string | null;
+  hasWallet?: boolean;
+  hasBridgeWallet?: boolean;
+  hasVirtualAccount?: boolean;
+  canCreateActivePayrollGroup?: boolean;
+}
 
 export interface CompanyDetailsResponse {
   id: string;
   name: string;
   country: string;
-  teamSize: number;
+  teamSize?: number;
   address: string;
   city: string;
   state: string;
@@ -23,6 +37,7 @@ export interface CompanyDetailsResponse {
     balance: number;
   };
   hasTransactionPin: boolean;
+  kyc?: CompanyKycSummary;
 }
 
 export async function getCompanyDetails(): Promise<CompanyDetailsResponse> {

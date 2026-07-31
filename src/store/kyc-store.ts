@@ -1,170 +1,94 @@
-// import { create } from "zustand";
-
-// /**
-//  * Full KYC Status response from API
-//  * Maps directly to getKYCStatus() response
-//  */
-// export interface FullKYCStatus {
-//   companyKycStatus: 'pending' | 'not_started' | 'in_progress' | 'submitted' | 'approved' | 'rejected'
-//   employerKycStatus: 'pending' | 'not_started' | 'in_progress' | 'submitted' | 'approved' | 'rejected'
-//   tosStatus: 'pending' | 'not_started' | 'accepted' | 'rejected'
-//   kycStatus: 'not_started' | 'approved' | 'rejected' // Bridge verification status
-//   kycLink?: string
-//   tosLink?: string
-//   message?: string
-//   rejectionReason?: string | null
-// }
-
-// export interface KYCStatus {
-//   kycStatus:
-//     | "pending"
-//     | "not_started"
-//     | "in_progress"
-//     | "submitted"
-//     | "approved"
-//     | "rejected";
-//   tosStatus?: "pending" | "not_started" | "accepted" | "rejected";
-//   kycLink?: string;
-//   tosLink?: string;
-//   message?: string;
-// }
-
-// export interface CompanyKYCStatus {
-//   kycLink?: string;
-//   tosLink?: string;
-//   companyKycStatus:
-//     | "pending"
-//     | "not_started"
-//     | "in_progress"
-//     | "submitted"
-//     | "approved"
-//     | "rejected";
-//   tosStatus: "pending" | "not_started" | "accepted" | "rejected";
-//   message?: string;
-// }
-
-// export interface EmployerKYCStatus {
-//   employerKycStatus:
-//     | "pending"
-//     | "not_started"
-//     | "in_progress"
-//     | "submitted"
-//     | "approved"
-//     | "rejected";
-//   message?: string;
-// }
-
-// interface KYCStore {
-//   // KYC State
-//   companyKYCStatus: CompanyKYCStatus | null;
-//   setCompanyKYCStatus: (status: CompanyKYCStatus) => void;
-//   clearCompanyKYCStatus: () => void;
-
-//   // Employer KYC State
-//   employerKYCStatus: EmployerKYCStatus | null;
-//   setEmployerKYCStatus: (status: EmployerKYCStatus) => void;
-//   clearEmployerKYCStatus: () => void;
-
-//   // KYC Status State (for backward compatibility)
-//   kycStatus: KYCStatus | null;
-//   setKYCStatus: (status: KYCStatus) => void;
-//   clearKYCStatus: () => void;
-
-//   // Loading state
-//   isLoading: boolean;
-//   setIsLoading: (loading: boolean) => void;
-
-//   error: string | null;
-//   setError: (error: string | null) => void;
-
-//   // Reset state
-//   resetKYC: () => void;
-// }
-
-// export const useKYCStore = create<KYCStore>((set) => ({
-//   // Company KYC state
-//   companyKYCStatus: null,
-//   setCompanyKYCStatus: (status) => set({ companyKYCStatus: status }),
-//   clearCompanyKYCStatus: () => set({ companyKYCStatus: null }),
-
-//   // Employer KYC state
-//   employerKYCStatus: null,
-//   setEmployerKYCStatus: (status) => set({ employerKYCStatus: status }),
-//   clearEmployerKYCStatus: () => set({ employerKYCStatus: null }),
-
-//   // KYC state (for backward compatibility)
-//   kycStatus: null,
-//   setKYCStatus: (status) => set({ kycStatus: status }),
-//   clearKYCStatus: () => set({ kycStatus: null }),
-
-//   // Loading state
-//   isLoading: false,
-//   setIsLoading: (loading) => set({ isLoading: loading }),
-
-//   error: null,
-//   setError: (error) => set({ error }),
-
-//   // Reset state
-//   resetKYC: () =>
-//     set({
-//       companyKYCStatus: null,
-//       employerKYCStatus: null,
-//       kycStatus: null,
-//       isLoading: false,
-//       error: null,
-//     }),
-// }));
-
 import { create } from "zustand";
+import {
+  BridgeKycStatus,
+  BridgeTosStatus,
+} from "@/store/auth-store";
+
+export type KycStageStatus = "pending" | "submitted";
+
+export interface KycRejectionReason {
+  details: string[];
+  createdAt?: string;
+}
 
 /**
- * Full KYC Status response from API
- * Maps directly to getKYCStatus() response
+ * Full KYC Status response from GET /kyc/status
  */
 export interface FullKYCStatus {
-  companyKycStatus:
-    | "pending"
-    | "not_started"
-    | "in_progress"
-    | "submitted"
-    | "approved"
-    | "rejected";
-  employerKycStatus:
-    | "pending"
-    | "not_started"
-    | "in_progress"
-    | "submitted"
-    | "approved"
-    | "rejected";
-  tosStatus: "pending" | "not_started" | "accepted" | "rejected" | "approved";
-  kycStatus:
-    | "pending"
-    | "not_started"
-    | "in_progress"
-    | "submitted"
-    | "approved"
-    | "rejected"; // Bridge verification status
-  kycLink?: string;
-  tosLink?: string;
+  companyKycStatus?: KycStageStatus | string;
+  employerKycStatus?: KycStageStatus | string;
+  fullName?: string;
+  email?: string;
+  tosStatus: BridgeTosStatus | null;
+  kycStatus: BridgeKycStatus;
+  kycLink?: string | null;
+  tosLink?: string | null;
   message?: string;
-  rejectionReason?: string | null;
+  rejectionReason?: KycRejectionReason | string | null;
 }
 
 interface KYCStore {
-  // Full KYC status from API
   kycStatus: FullKYCStatus | null;
   setKYCStatus: (status: Partial<FullKYCStatus> | FullKYCStatus) => void;
   clearKYCStatus: () => void;
 
-  // Loading and error states
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
 
   error: string | null;
   setError: (error: string | null) => void;
 
-  // Reset entire KYC state
   resetKYC: () => void;
+}
+
+export function isKycFullyApproved(
+  status: Pick<FullKYCStatus, "kycStatus" | "tosStatus"> | null | undefined,
+): boolean {
+  return status?.kycStatus === "approved" && status?.tosStatus === "approved";
+}
+
+export function getRejectionDetails(
+  rejectionReason: FullKYCStatus["rejectionReason"],
+): string[] {
+  if (!rejectionReason) return [];
+  if (typeof rejectionReason === "string") return [rejectionReason];
+  return rejectionReason.details ?? [];
+}
+
+/** User-facing label for identity verification status (no provider names). */
+export function formatKycStatusLabel(status: BridgeKycStatus | string | null | undefined): string {
+  switch (status) {
+    case "approved":
+      return "Verified";
+    case "rejected":
+      return "Rejected";
+    case "under_review":
+      return "Under review";
+    case "incomplete":
+    case "awaiting_questionnaire":
+    case "awaiting_ubo":
+    case "not_started":
+      return "Action required";
+    case "paused":
+      return "On hold";
+    case "offboarded":
+      return "Unavailable";
+    case "pending":
+    default:
+      return "Pending";
+  }
+}
+
+export function needsUserKycAction(
+  status: BridgeKycStatus | string | null | undefined,
+): boolean {
+  return (
+    status === "not_started" ||
+    status === "incomplete" ||
+    status === "awaiting_questionnaire" ||
+    status === "awaiting_ubo" ||
+    status === "rejected"
+  );
 }
 
 export const useKYCStore = create<KYCStore>((set, get) => ({

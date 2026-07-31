@@ -21,8 +21,7 @@ export async function signupCompany(data: SignupData): Promise<SignupResponse> {
     email: data.email,
     password: data.password,
     companyName: data.companyName,
-    teamSize: data.teamSize,
-    country: data.country,
+    ...(data.country ? { country: data.country } : {}),
     product: data.product || "PAYROLL",
   });
   return response.data;

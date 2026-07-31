@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CompanyDetailsForm } from "@/components/auth/signup/company-details-form";
 import { useAuthStore } from "@/store/auth-store";
+import { Toaster } from "react-hot-toast";
 import onboardingIllustration from "../../../../../../public/signup/Onboarding-Illustration.png";
 
 export default function CompanyDetailsPage() {
@@ -12,7 +13,7 @@ export default function CompanyDetailsPage() {
   const { setCurrentStep } = useAuthStore();
 
   const handleBack = () => {
-    setCurrentStep("details");
+    setCurrentStep("company");
     router.back();
   };
   return (
@@ -76,6 +77,8 @@ export default function CompanyDetailsPage() {
           <CompanyDetailsForm />
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }

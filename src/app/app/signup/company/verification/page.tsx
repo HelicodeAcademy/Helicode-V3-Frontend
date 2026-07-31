@@ -1,30 +1,16 @@
 "use client";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import Image from "next/image";
-import { ProductForm } from "@/components/auth/signup/product-form";
-import { useAuthStore } from "@/store/auth-store";
+import { OnboardingVerification } from "@/components/auth/signup/onboarding-verification";
 import { Toaster } from "react-hot-toast";
 import onboardingIllustration from "../../../../../../public/signup/Onboarding-Illustration.png";
 
-export default function ProductSelectionPage() {
-  const router = useRouter();
-  const { setCurrentStep } = useAuthStore();
-
-  const handleBack = () => {
-    setCurrentStep("details");
-    router.back();
-  };
-
+export default function CompanyVerificationPage() {
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      {/* Left sidebar with logo */}
       <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
         <div className="relative w-full h-full overflow-hidden">
-          {/* Illustrator wrapper with requested background, rounding and padding */}
           <div className="relative w-full h-full">
-            {/* Logo positioned inside the illustrator on the left */}
             <div className="absolute left-6 top-9 z-10">
               <Image
                 src="/signup/logo.svg"
@@ -48,22 +34,8 @@ export default function ProductSelectionPage() {
         </div>
       </div>
 
-      {/* Right Content */}
       <div className="w-full lg:basis-3/5 px-6 lg:px-12 py-8 bg-white flex flex-col">
-        {/* Header Navigation */}
-        <div className="flex justify-between items-center w-full">
-          <button
-            className="text-black font-normal flex items-center text-sm hover:text-primary transition-colors"
-            onClick={handleBack}
-          >
-            <Image
-              src="/signup/back-arrow.svg"
-              alt="back-arrow"
-              width={16}
-              height={16}
-            />
-            Go back
-          </button>
+        <div className="flex justify-end items-center w-full">
           <Link
             href="/login"
             className="font-medium hover:underline text-black text-sm"
@@ -73,9 +45,8 @@ export default function ProductSelectionPage() {
           </Link>
         </div>
 
-        {/* Main Content */}
-        <div className="w-full max-w-105.75 mx-auto flex-1 flex items-center justify-center">
-          <ProductForm />
+        <div className="w-full max-w-138.75 mx-auto flex-1 flex items-center justify-center">
+          <OnboardingVerification />
         </div>
       </div>
 

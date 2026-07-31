@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { KYCStatusCard } from "@/components/dashboard-home/kyc/kyc-status-card";
+import { KycVerificationBanner } from "@/components/dashboard-home/kyc/kyc-verification-banner";
 import { useWalletStore } from "@/store/wallet-store";
 import { getWalletAddress } from "@/lib/wallet-service";
 import { getCompanyDetails } from "@/lib/company-details";
@@ -39,8 +39,7 @@ import {
   PayrollMetricsRange,
 } from "@/lib/payroll-service";
 import { getKYCStatus } from "@/lib/kyc-service";
-import { KYCOnboardingModal } from "@/components/dashboard-home/kyc/kyc-onboarding-modal";
-import { useKYCStore } from "@/store/kyc-store";
+import { isKycFullyApproved, useKYCStore } from "@/store/kyc-store";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
@@ -53,7 +52,7 @@ const PAYROLL_RANGE_OPTIONS: Array<{
 
 export default function DashboardHomePage() {
   const router = useRouter();
-  const { setKYCStatus } = useKYCStore();
+  const { kycStatus, setKYCStatus } = useKYCStore();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
   const [currency, setCurrency] = useState("usd");
@@ -66,7 +65,6 @@ export default function DashboardHomePage() {
   const [recentTransactions, setRecentTransactions] = useState<
     TransactionData[]
   >([]);
-  const [showKYCModal, setShowKYCModal] = useState(false);
 
   useEffect(() => {
     setTitle("Home");
@@ -81,24 +79,7 @@ export default function DashboardHomePage() {
   const fetchKycStatus = async () => {
     try {
       const data = await getKYCStatus();
-      // Populate the KYC store with the fetched status
-      // setKYCStatus(data);
-
-      // Populate company KYC store so modal has data immediately
-      setKYCStatus({
-        companyKycStatus: data.companyKycStatus,
-        employerKycStatus: data.employerKycStatus,
-        tosStatus: data.tosStatus,
-        kycStatus: data.kycStatus,
-        kycLink: data.kycLink,
-        tosLink: data.tosLink,
-        message: data.message,
-        rejectionReason: data.rejectionReason,
-      });
-
-      // if (data.companyKycStatus !== "submitted") {
-      //   setShowKYCModal(true);
-      // }
+      setKYCStatus(data);
     } catch (error) {
       console.error("Failed to fetch KYC status", error);
     }
@@ -167,10 +148,7 @@ export default function DashboardHomePage() {
     PAYROLL_RANGE_OPTIONS.find((option) => option.value === activeMetric)
       ?.label ?? "Last 30 days";
 
-  const handleKYCVerificationComplete = () => {
-    setShowKYCModal(false);
-    fetchKycStatus();
-  };
+  const verificationApproved = isKycFullyApproved(kycStatus);
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -305,8 +283,24 @@ export default function DashboardHomePage() {
             />
             Add new hire
           </Button>
-          <Link href="/dashboard/payroll">
-            <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
+          {verificationApproved ? (
+            <Link href="/dashboard/payroll">
+              <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
+                <Image
+                  src="/home/arrow-narrow-up-right.svg"
+                  alt="contract"
+                  width={16}
+                  height={16}
+                />
+                Run Payroll
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              disabled
+              title="Complete account verification to run payroll"
+              className="bg-[#FFFFFF] border border-[#D0D5DD] rounded-lg text-[#98A2B3] font-medium cursor-not-allowed"
+            >
               <Image
                 src="/home/arrow-narrow-up-right.svg"
                 alt="contract"
@@ -315,9 +309,12 @@ export default function DashboardHomePage() {
               />
               Run Payroll
             </Button>
-          </Link>
+          )}
         </div>
       </div>
+
+      {/* Verification status — only when not fully approved */}
+      <KycVerificationBanner />
 
       {/* Promotional Section */}
       <div className="flex items-stretch gap-6 rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
@@ -347,120 +344,101 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* Recent Payments and Quick Actions */}
-      <div className="grid gap-6 md:grid-cols-2 items-start">
-        {/* Recent Payments */}
-        <div className="rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-[#E4E7EC]">
-            <h3 className="text-sm font-medium text-[#101928]">
-              Recent Payments
-            </h3>
-            <Button
-              variant="secondary"
-              className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
-            >
-              <Link href={"/dashboard/transactions"}>View all</Link>
-            </Button>
-          </div>
-
-          {/* Table */}
-          <Table>
-            <TableHeader className="bg-[#F9FAFB]">
-              <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent">
-                <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-                  Person
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-                  Amount
-                </TableHead>
-                <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
-                  Date
-                </TableHead>
-                <TableHead className="py-4 text-xs font-medium text-[#344054] uppercase">
-                  Status
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {previewTransactions.length === 0 ? (
-                <TableRow className="border-b border-[#E4E7EC] last:border-b-0">
-                  <TableCell
-                    colSpan={4}
-                    className="px-6 py-10 text-center text-sm font-medium text-[#667085]"
-                  >
-                    No recent payment.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                previewTransactions.map((payment, idx) => {
-                  const initials = payment.name
-                    .trim()
-                    .split(/\s+/)
-                    .map((word) => word[0].toUpperCase())
-                    .join("");
-
-                  return (
-                    <TableRow
-                      key={idx}
-                      className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
-                    >
-                      <TableCell className="px-6 py-5">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
-                            <AvatarFallback className="bg-[#FFED94]">
-                              {initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium text-[#101828]">
-                              {payment.name}
-                            </p>
-                            <p className="text-xs text-[#475367]">
-                              {payment.role}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="px-6 text-sm font-bold text-[#101928]">
-                        {payment.amount}
-                      </TableCell>
-
-                      <TableCell className="px-6 text-sm text-[#101928]">
-                        {payment.date}
-                      </TableCell>
-
-                      <TableCell className="">
-                        <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border border-[#CAEFDC] font-medium">
-                          {payment.status}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Quick Actions Sidebar */}
-        <div className="rounded-2xl border border-[#F2F2F2] bg-white p-6">
-          <h3 className="text-sm font-medium text-[#101828] mb-8">
-            Quick Actions
+      {/* Recent Payments */}
+      <div className="rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#E4E7EC]">
+          <h3 className="text-sm font-medium text-[#101928]">
+            Recent Payments
           </h3>
-          <div className="space-y-4">
-            <KYCStatusCard onStartStage1={() => setShowKYCModal(true)} />
-          </div>
+          <Button
+            variant="secondary"
+            className="rounded-full w-18 h-7 text-xs  bg-white border hover:bg-[#E0EAFF]"
+          >
+            <Link href={"/dashboard/transactions"}>View all</Link>
+          </Button>
         </div>
-      </div>
 
-      <KYCOnboardingModal
-        open={showKYCModal}
-        onVerificationComplete={handleKYCVerificationComplete}
-        onClose={() => setShowKYCModal(false)}
-      />
+        {/* Table */}
+        <Table>
+          <TableHeader className="bg-[#F9FAFB]">
+            <TableRow className="border-b border-[#E4E7EC] hover:bg-transparent">
+              <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
+                Person
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
+                Amount
+              </TableHead>
+              <TableHead className="px-6 py-4 text-xs font-medium text-[#344054] uppercase">
+                Date
+              </TableHead>
+              <TableHead className="py-4 text-xs font-medium text-[#344054] uppercase">
+                Status
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {previewTransactions.length === 0 ? (
+              <TableRow className="border-b border-[#E4E7EC] last:border-b-0">
+                <TableCell
+                  colSpan={4}
+                  className="px-6 py-10 text-center text-sm font-medium text-[#667085]"
+                >
+                  No recent payment.
+                </TableCell>
+              </TableRow>
+            ) : (
+              previewTransactions.map((payment, idx) => {
+                const initials = payment.name
+                  .trim()
+                  .split(/\s+/)
+                  .map((word) => word[0].toUpperCase())
+                  .join("");
+
+                return (
+                  <TableRow
+                    key={idx}
+                    className="border-b border-[#E4E7EC] last:border-b-0 hover:bg-[#F9FAFB]"
+                  >
+                    <TableCell className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10 text-[#8F3E19] text-xl font-bold">
+                          <AvatarFallback className="bg-[#FFED94]">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium text-[#101828]">
+                            {payment.name}
+                          </p>
+                          <p className="text-xs text-[#475367]">
+                            {payment.role}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="px-6 text-sm font-bold text-[#101928]">
+                      {payment.amount}
+                    </TableCell>
+
+                    <TableCell className="px-6 text-sm text-[#101928]">
+                      {payment.date}
+                    </TableCell>
+
+                    <TableCell className="">
+                      <span className="bg-[#ECFDF3] text-[#4D8F72] px-2 py-1 rounded-full border border-[#CAEFDC] font-medium">
+                        {payment.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
