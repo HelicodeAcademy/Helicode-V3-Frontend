@@ -294,6 +294,25 @@ export default function DashboardHomePage() {
         {/* Action Buttons */}
         <div className="flex gap-3">
           <Button
+            onClick={handleFundWallet}
+            disabled={!verificationApproved}
+            title={
+              verificationApproved
+                ? undefined
+                : "Complete account verification to fund wallet"
+            }
+            className="bg-[#0052FF] transition-colors hover:bg-[#0041c4] disabled:bg-[#D0D5DD] disabled:cursor-not-allowed"
+          >
+            <Image
+              src="/home/arrow-narrow-up-right-white.svg"
+              alt="fund"
+              width={16}
+              height={16}
+              className="rotate-180"
+            />
+            Fund wallet
+          </Button>
+          <Button
             onClick={handleWithdraw}
             disabled={!verificationApproved}
             title={
@@ -310,18 +329,6 @@ export default function DashboardHomePage() {
               height={16}
             />
             Withdraw
-          </Button>
-          <Button
-            onClick={handleFundWallet}
-            disabled={!verificationApproved}
-            title={
-              verificationApproved
-                ? undefined
-                : "Complete account verification to fund wallet"
-            }
-            className="bg-[#0052FF] transition-colors hover:bg-[#0041c4] disabled:bg-[#D0D5DD] disabled:cursor-not-allowed"
-          >
-            Fund wallet
           </Button>
         </div>
       </div>
