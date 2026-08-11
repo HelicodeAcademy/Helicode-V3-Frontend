@@ -17,7 +17,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { FolderOpen, LogOut, MoreVertical } from "lucide-react";
+import { LogOut, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,15 +31,13 @@ import { usePathname } from "next/navigation";
 import { TransactionsIcon } from "@/components/icons/icons";
 import {
   SidebarAccountingIcon,
-  SidebarAnalyticsIcon,
+  SidebarCreditCardIcon,
   SidebarEarnIcon,
   SidebarHiringIcon,
   SidebarHomeIcon,
   SidebarPayrollIcon,
-  SidebarPayslipIcon,
   SidebarSettingsIcon,
   SidebarTeamIcon,
-  SidebarWalletIcon,
 } from "@/components/icons/sidebar-icons";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -89,7 +87,7 @@ const treasuryNav: NavItem[] = [
     href: "/dashboard/accounting",
   },
   { icon: SidebarEarnIcon, label: "Earn", href: "/dashboard/earn" },
-  { icon: SidebarWalletIcon, label: "Cards", href: "/dashboard/cards" },
+  { icon: SidebarCreditCardIcon, label: "Cards", href: "/dashboard/cards" },
 ];
 
 const settingsNav: NavItem[] = [

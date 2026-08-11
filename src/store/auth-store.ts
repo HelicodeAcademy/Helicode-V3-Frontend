@@ -213,7 +213,8 @@ export const useAuthStore = create<AuthStore>()(
           refreshToken: null,
           user: null,
           companyId: null,
-          authType: null,
+          // Keep authType so logout / protected-route redirects stay on the
+          // correct login page (employer vs company-admin).
           isAuthenticated: false,
         }),
       isAuthenticated: false,
