@@ -4,7 +4,6 @@ import { useContext, useEffect } from "react";
 import { PageTitleContext } from "./layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -40,6 +39,10 @@ import {
 } from "@/lib/payroll-service";
 import { getKYCStatus } from "@/lib/kyc-service";
 import { isKycFullyApproved, useKYCStore } from "@/store/kyc-store";
+import { FundWalletModal } from "@/components/wallet/fund-wallet-modal";
+import { FundCryptoModal } from "@/components/wallet/fund-crypto-modal";
+import { FundCardModal } from "@/components/wallet/fund-card-modal";
+import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
@@ -51,7 +54,6 @@ const PAYROLL_RANGE_OPTIONS: Array<{
 ];
 
 export default function DashboardHomePage() {
-  const router = useRouter();
   const { kycStatus, setKYCStatus } = useKYCStore();
   const { setTitle } = useContext(PageTitleContext);
   const [showBalance, setShowBalance] = useState(true);
@@ -65,6 +67,10 @@ export default function DashboardHomePage() {
   const [recentTransactions, setRecentTransactions] = useState<
     TransactionData[]
   >([]);
+  const [fundWalletOpen, setFundWalletOpen] = useState(false);
+  const [fundCryptoOpen, setFundCryptoOpen] = useState(false);
+  const [fundCardOpen, setFundCardOpen] = useState(false);
+  const [withdrawFundsOpen, setWithdrawFundsOpen] = useState(false);
 
   useEffect(() => {
     setTitle("Home");
@@ -149,6 +155,22 @@ export default function DashboardHomePage() {
       ?.label ?? "Last 30 days";
 
   const verificationApproved = isKycFullyApproved(kycStatus);
+
+  const handleWithdraw = () => {
+    if (!verificationApproved) {
+      toast.error("Complete account verification before withdrawing funds.");
+      return;
+    }
+    setWithdrawFundsOpen(true);
+  };
+
+  const handleFundWallet = () => {
+    if (!verificationApproved) {
+      toast.error("Complete account verification before funding your wallet.");
+      return;
+    }
+    setFundWalletOpen(true);
+  };
 
   return (
     <div className="py-4 px-8 space-y-6">
@@ -272,44 +294,35 @@ export default function DashboardHomePage() {
         {/* Action Buttons */}
         <div className="flex gap-3">
           <Button
-            className="bg-[#0052FF] transition-colors hover:bg-[#0041c4]"
-            onClick={() => router.push("/dashboard/team/add")}
+            onClick={handleWithdraw}
+            disabled={!verificationApproved}
+            title={
+              verificationApproved
+                ? undefined
+                : "Complete account verification to withdraw"
+            }
+            className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20 disabled:border-[#D0D5DD] disabled:text-[#98A2B3] disabled:cursor-not-allowed"
           >
             <Image
-              src="/home/plus-sign.svg"
-              alt="contract"
+              src="/home/arrow-narrow-up-right.svg"
+              alt="withdraw"
               width={16}
               height={16}
             />
-            Add new hire
+            Withdraw
           </Button>
-          {verificationApproved ? (
-            <Link href="/dashboard/payroll">
-              <Button className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20">
-                <Image
-                  src="/home/arrow-narrow-up-right.svg"
-                  alt="contract"
-                  width={16}
-                  height={16}
-                />
-                Run Payroll
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              disabled
-              title="Complete account verification to run payroll"
-              className="bg-[#FFFFFF] border border-[#D0D5DD] rounded-lg text-[#98A2B3] font-medium cursor-not-allowed"
-            >
-              <Image
-                src="/home/arrow-narrow-up-right.svg"
-                alt="contract"
-                width={16}
-                height={16}
-              />
-              Run Payroll
-            </Button>
-          )}
+          <Button
+            onClick={handleFundWallet}
+            disabled={!verificationApproved}
+            title={
+              verificationApproved
+                ? undefined
+                : "Complete account verification to fund wallet"
+            }
+            className="bg-[#0052FF] transition-colors hover:bg-[#0041c4] disabled:bg-[#D0D5DD] disabled:cursor-not-allowed"
+          >
+            Fund wallet
+          </Button>
         </div>
       </div>
 
@@ -439,6 +452,25 @@ export default function DashboardHomePage() {
           </TableBody>
         </Table>
       </div>
+
+      <FundWalletModal
+        open={fundWalletOpen}
+        onOpenChange={setFundWalletOpen}
+        onSelectCrypto={() => {
+          setFundWalletOpen(false);
+          setFundCryptoOpen(true);
+        }}
+        onSelectCard={() => {
+          setFundWalletOpen(false);
+          setFundCardOpen(true);
+        }}
+      />
+      <FundCryptoModal open={fundCryptoOpen} onOpenChange={setFundCryptoOpen} />
+      <FundCardModal open={fundCardOpen} onOpenChange={setFundCardOpen} />
+      <WithdrawFundsModal
+        open={withdrawFundsOpen}
+        onOpenChange={setWithdrawFundsOpen}
+      />
     </div>
   );
 }
