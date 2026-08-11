@@ -76,10 +76,10 @@ const primaryNav: NavItem[] = [
 
 const companyNav: NavItem[] = [
   { icon: SidebarPayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
-  { icon: SidebarPayslipIcon, label: "Payslips", href: "/dashboard/payslips" },
-  { icon: SidebarAnalyticsIcon, label: "Reports", href: "/dashboard/reports" },
+  // { icon: SidebarPayslipIcon, label: "Payslips", href: "/dashboard/payslips" },
+  // { icon: SidebarAnalyticsIcon, label: "Reports", href: "/dashboard/reports" },
   { icon: SidebarHiringIcon, label: "Hiring", href: "/dashboard/hiring" },
-  { icon: FolderOpen, label: "Pay Inputs", href: "/dashboard/pay-inputs" },
+  // { icon: FolderOpen, label: "Pay Inputs", href: "/dashboard/pay-inputs" },
 ];
 
 const treasuryNav: NavItem[] = [
@@ -116,9 +116,9 @@ function NavSection({
   pathname: string;
 }) {
   return (
-    <div>
+    <div className="space-y-1">
       {title && (
-        <p className="px-3 pt-2 pb-0.5 text-[11px] font-medium uppercase tracking-wide text-[#98A2B3]">
+        <p className="px-4.5 pt-4 pb-1 text-[11px] font-medium uppercase tracking-wide text-[#98A2B3]">
           {title}
         </p>
       )}
@@ -132,7 +132,7 @@ function NavSection({
                 asChild
                 isActive={isActive}
                 tooltip={item.label}
-                className={`text-sm font-medium leading-[145%] px-3 py-1.5 h-9 ${
+                className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
                   isActive ? "text-[#0052FF] bg-[#0052FF1A]!" : "text-[#0F112A]"
                 }`}
               >
@@ -186,8 +186,8 @@ function DashboardSidebar() {
 
   return (
     <Sidebar className="w-64 border-r border-[#eaeaea]">
-      <SidebarHeader className="p-0">
-        <div className="flex items-center gap-3 px-4 py-2.5">
+      <SidebarHeader>
+        <div className="flex items-center gap-3 px-4 py-4">
           <div className="h-10 w-10 rounded-lg bg-[#D0D5DD] flex items-center justify-center shrink-0">
             <span className="text-white text-base font-semibold">
               {companyInitial}
@@ -202,15 +202,15 @@ function DashboardSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="gap-0.5 px-3 pb-1">
+      <SidebarContent className="px-4 pb-4">
         <NavSection items={primaryNav} pathname={pathname} />
         <NavSection title="Company" items={companyNav} pathname={pathname} />
         <NavSection title="Treasury" items={treasuryNav} pathname={pathname} />
         <NavSection title="Settings" items={settingsNav} pathname={pathname} />
       </SidebarContent>
 
-      <SidebarFooter className="p-0">
-        <div className="flex items-center gap-3 rounded-lg px-3 py-2 border-t border-[#E4E7EC]">
+      <SidebarFooter>
+        <div className="flex items-center gap-3 rounded-lg p-2 border-t border-[#E4E7EC]">
           <Avatar className="h-10 w-10 rounded-full">
             <AvatarFallback className="bg-[#FFED94] text-[#8F3E19] text-sm font-bold">
               {user?.firstName?.charAt(0)}
