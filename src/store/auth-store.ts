@@ -67,12 +67,32 @@ export interface PendingVerificationLinks {
 }
 
 // Login response types
+export type AuthType = "employer" | "company_admin";
+
+export type CompanyAdminPermissionAction =
+  | "VIEW_TEAM_MEMBERS"
+  | "VIEW_TRANSACTIONS"
+  | "TEAM_INVITE"
+  | "TEAM_INFO_UPDATE"
+  | "PAYROLL_GROUP_CREATE"
+  | "PAY_NOW"
+  | "COMPANY_WITHDRAWAL";
+
+export type CompanyAdminAccess = "READ" | "WRITE";
+
+export interface CompanyAdminPermission {
+  action: CompanyAdminPermissionAction;
+  access: CompanyAdminAccess;
+}
+
 export interface LoginUser {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role?: string;
+  status?: string;
+  permissions?: CompanyAdminPermission[];
 }
 
 export interface LoginResponse {
@@ -80,6 +100,7 @@ export interface LoginResponse {
   refreshToken: string;
   user: LoginUser;
   companyId: string;
+  authType?: AuthType;
 }
 
 export interface PasswordRecoveryData {
@@ -125,6 +146,7 @@ interface AuthStore {
   accessToken: string | null;
   refreshToken: string | null;
   user: LoginUser | null;
+  authType: AuthType | null;
   setLoginData: (data: LoginResponse) => void;
   clearLoginData: () => void;
   isAuthenticated: boolean;
@@ -175,12 +197,14 @@ export const useAuthStore = create<AuthStore>()(
       accessToken: null,
       refreshToken: null,
       user: null,
+      authType: null,
       setLoginData: (data) =>
         set({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           user: data.user,
           companyId: data.companyId,
+          authType: data.authType ?? "employer",
           isAuthenticated: true,
         }),
       clearLoginData: () =>
@@ -189,6 +213,7 @@ export const useAuthStore = create<AuthStore>()(
           refreshToken: null,
           user: null,
           companyId: null,
+          authType: null,
           isAuthenticated: false,
         }),
       isAuthenticated: false,
@@ -212,6 +237,7 @@ export const useAuthStore = create<AuthStore>()(
           accessToken: null,
           refreshToken: null,
           user: null,
+          authType: null,
           recoveryData: {},
         }),
 
@@ -228,6 +254,7 @@ export const useAuthStore = create<AuthStore>()(
         refreshToken: state.refreshToken,
         user: state.user,
         companyId: state.companyId,
+        authType: state.authType,
         isAuthenticated: state.isAuthenticated,
         pendingVerification: state.pendingVerification,
       }),

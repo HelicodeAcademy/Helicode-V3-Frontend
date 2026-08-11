@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import {
-  BridgeKycStatus,
-  BridgeTosStatus,
-} from "@/store/auth-store";
+import { BridgeKycStatus, BridgeTosStatus } from "@/store/auth-store";
 
 export type KycStageStatus = "pending" | "submitted";
 
@@ -56,7 +53,9 @@ export function getRejectionDetails(
 }
 
 /** User-facing label for identity verification status (no provider names). */
-export function formatKycStatusLabel(status: BridgeKycStatus | string | null | undefined): string {
+export function formatKycStatusLabel(
+  status: BridgeKycStatus | string | null | undefined,
+): string {
   switch (status) {
     case "approved":
       return "Verified";

@@ -3,7 +3,15 @@ import { executeTokenRefresh } from "./token-refresh";
 import { executeTeamTokenRefresh } from "./token-refresh-team";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 
-const PUBLIC_ENDPOINTS = ["/auth/signin", "/auth/signup", "/auth/refresh"];
+const PUBLIC_ENDPOINTS = [
+  "/auth/signin",
+  "/auth/signup",
+  "/auth/refresh",
+  "/company-admins/auth/setup-code",
+  "/company-admins/auth/setup-confirm",
+  "/company-admins/auth/login",
+  "/company-admins/auth/refresh",
+];
 const TEAM_PUBLIC_ENDPOINTS = [
   "/team/auth/login",
   "/team/auth/signup",
@@ -62,9 +70,11 @@ export async function apiCall<T>(
         await executeTokenRefresh();
         return apiCall<T>(endpoint, options, false); // retry once with new token
       } catch {
-        // refresh failed, redirect to login
+        // refresh failed, redirect to the correct login
+        const authType = useAuthStore.getState().authType;
         useAuthStore.getState().clearLoginData();
-        window.location.href = "/login";
+        window.location.href =
+          authType === "company_admin" ? "/company-admin/login" : "/login";
         throw new Error("Session expired. Please log in again.");
       }
     }
@@ -109,6 +119,13 @@ export async function patch<T>(
 export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
     method: "GET",
+  });
+}
+
+// Delete request helper
+export async function del<T>(endpoint: string): Promise<ApiResponse<T>> {
+  return apiCall<T>(endpoint, {
+    method: "DELETE",
   });
 }
 

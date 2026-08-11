@@ -256,6 +256,16 @@ export function LoginForm() {
                 "Log in"
               )}
             </Button>
+
+            <p className="text-sm text-[#667085]">
+              Invited as a company admin?{" "}
+              <Link
+                href="/company-admin/login"
+                className="font-semibold text-[#0052FF]"
+              >
+                Admin login
+              </Link>
+            </p>
           </form>
         </div>
       )}

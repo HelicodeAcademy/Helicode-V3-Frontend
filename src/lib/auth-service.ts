@@ -93,7 +93,10 @@ export async function verifySigninCode(
     },
   );
 
-  return response.data;
+  return {
+    ...response.data,
+    authType: "employer",
+  };
 }
 
 // Resend signin OTP code for 2FA

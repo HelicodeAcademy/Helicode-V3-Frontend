@@ -25,6 +25,7 @@ export interface CompanyDetailsResponse {
   postCode: string;
   websiteUrl: string;
   invoiceCurrency: string;
+  createdAt?: string;
   employer: {
     id: string;
     email: string;
