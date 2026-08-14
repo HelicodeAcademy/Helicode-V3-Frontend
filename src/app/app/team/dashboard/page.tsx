@@ -35,7 +35,6 @@ import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { useTeamWalletStore } from "@/store/team/team-wallet-store";
-import { TeamBridgeVerificationStatus } from "@/components/team-dashboard/kyc/team-bridge-verification-status";
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
@@ -106,15 +105,6 @@ export default function TalentDashboardHomePage() {
       setTeamMember(data);
       setHasPin(data.hasTransactionPin);
       setTeamWalletBalance(data.wallet.balance);
-
-      // Auto-open KYC if KYC is not approved and the member hasn't opted
-      // into the stablecoin-only (Bridge) flow
-      const memberBridgeStarted =
-        (data.bridgeKycStatus && data.bridgeKycStatus !== "not_started") ||
-        (data.bridgeTosStatus && data.bridgeTosStatus !== "not_started");
-      if (!data.kycStatus && !memberBridgeStarted) {
-        setKycModalOpen(true);
-      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to fetch team data";
@@ -186,15 +176,10 @@ export default function TalentDashboardHomePage() {
 
   const kycNotApproved = !teamData?.kycStatus;
   const bankDetailsNotAdded = !teamData?.bankPayoutStatus;
-  // Stablecoin-only members (unsupported offramp countries) go straight to
-  // Bridge KYC and never complete local KYC or add bank details
-  const bridgeStarted = Boolean(
-    (teamData?.bridgeKycStatus && teamData.bridgeKycStatus !== "not_started") ||
-    (teamData?.bridgeTosStatus && teamData.bridgeTosStatus !== "not_started"),
-  );
   const bridgeApproved =
     teamData?.bridgeKycStatus === "approved" &&
     teamData?.bridgeTosStatus === "approved";
+  const kycNotDone = kycNotApproved && !bridgeApproved;
 
   return (
     <div className="space-y-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -309,7 +294,7 @@ export default function TalentDashboardHomePage() {
           </Button>
         </div>
 
-        {kycNotApproved && !bridgeStarted && !isLoading && (
+        {kycNotDone && !isLoading && (
           <div className="bg-[#FEF3C7] border border-[#F59E0B] rounded-lg p-4 flex items-start gap-3 mt-10">
             <AlertCircle className="h-5 w-5 text-[#F59E0B] shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -350,16 +335,6 @@ export default function TalentDashboardHomePage() {
               Add Bank Details
             </Button>
           </div>
-        )}
-
-        {/* Bridge Verification Status */}
-        {((!bankDetailsNotAdded && kycNotApproved === false) ||
-          bridgeStarted) && (
-          <TeamBridgeVerificationStatus
-            bankPayoutStatus={teamData?.bankPayoutStatus}
-            bridgeKycStatus={teamData?.bridgeKycStatus}
-            bridgeTosStatus={teamData?.bridgeTosStatus}
-          />
         )}
       </div>
 
