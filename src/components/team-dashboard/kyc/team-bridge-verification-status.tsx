@@ -28,7 +28,7 @@ export function TeamBridgeVerificationStatus({
     (bridgeKycStatus && bridgeKycStatus !== "not_started") ||
     (bridgeTosStatus && bridgeTosStatus !== "not_started");
 
-    const fetchBridgeStatus = async () => {
+  const fetchBridgeStatus = async () => {
     try {
       setLoading(true);
       const data = await getBridgeKycStatus();
@@ -62,8 +62,6 @@ export function TeamBridgeVerificationStatus({
   if (allApproved) {
     return null;
   }
-
-
 
   const handleOpenLink = (link: string | undefined, linkType: string) => {
     if (link) {
