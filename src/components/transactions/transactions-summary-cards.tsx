@@ -81,7 +81,7 @@ export function TransactionsSummaryCards({
         </p>
       </div>
 
-      <div className="rounded-xl border border-[#FED7AA] bg-[#FFF7ED] px-6 py-5">
+      <div className="rounded-md bg-[#FFF7ED] p-4">
         <div className="flex items-center gap-2 text-[#F97316]">
           <div className="rounded-full h-5 w-5 bg-[#FFEBDA] flex items-center justify-center">
             <Minus className="h-4 w-4" />

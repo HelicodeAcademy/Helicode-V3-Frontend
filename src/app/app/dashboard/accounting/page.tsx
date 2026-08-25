@@ -16,7 +16,7 @@ export default function AccountingPage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-8">
       <div className="w-full max-w-142.5 rounded-2xl border border-[#E4E7EC] bg-white px-8 py-10.5 text-center">
         <Image
-          src="/home/quickbook_logo.png"
+          src="/home/quickbooks.svg"
           alt="QuickBooks"
           width={80}
           height={80}
@@ -31,7 +31,7 @@ export default function AccountingPage() {
         </p>
         <Button className="mt-8" variant="primary">
           <Image
-            src="/home/link.png"
+            src="/home/links.svg"
             alt=""
             width={16}
             height={16}

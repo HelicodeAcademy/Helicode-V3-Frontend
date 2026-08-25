@@ -95,9 +95,9 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${style}`}
     >
-      {(status === "Success" || status === "Paid") && (
+      {/* {(status === "Success" || status === "Paid") && (
         <Image src="/transaction/check.png" alt="" width={16} height={16} />
-      )}
+      )} */}
       {status}
     </span>
   );
@@ -111,13 +111,13 @@ function TypeCell({ type }: { type: CompanyFeedTransaction["type"] }) {
       <span className={`flex h-8 w-8 items-center justify-center rounded-full`}>
         {isReceived ? (
           <Image
-            src="/transaction/received.png"
+            src="/transaction/received.svg"
             alt=""
             width={24}
             height={24}
           />
         ) : (
-          <Image src="/transaction/sent.png" alt="" width={24} height={24} />
+          <Image src="/transaction/sent.svg" alt="" width={24} height={24} />
         )}
       </span>
       <span className="text-sm font-medium text-[#101928]">{type}</span>
@@ -159,7 +159,7 @@ export function TransactionsFeedTable({
       <div className="overflow-hidden rounded-lg border border-[#E4E7EC] bg-white">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-[#E4E7EC] bg-[#ECEFF4] hover:bg-[#F9FAFB]">
+            <TableRow className="border-b border-[#E4E7EC] bg-[#F9FAFB] hover:bg-[#F9FAFB]">
               {view === "company" ? (
                 <>
                   <TableHead className="px-6 py-4 text-xs font-medium uppercase text-[#667085]">
