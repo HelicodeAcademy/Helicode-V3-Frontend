@@ -27,7 +27,7 @@ export interface AddTeamMemberPayload {
   startDate: string;
   frequency: "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
   currency: "USD" | "EUR" | "USDC" | "USDT";
-  contract: File;
+  contract?: File;
 }
 
 export interface UpdateTeamMemberPayload {
@@ -121,8 +121,9 @@ export async function addTeamMember(
   formData.append("startDate", payload.startDate);
   formData.append("frequency", payload.frequency);
   formData.append("currency", payload.currency);
-  //   formData.append("contract", payload.contract);
-  formData.append("contract", payload.contract, payload.contract.name);
+  if (payload.contract) {
+    formData.append("contract", payload.contract, payload.contract.name);
+  }
 
   await postFormData<void>("/teams/add", formData);
 }

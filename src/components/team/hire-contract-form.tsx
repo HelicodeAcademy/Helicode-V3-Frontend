@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UploadCloud } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useAddHireStore, HireContractForm } from "@/store/add-hire-store";
 import { addTeamMember } from "@/lib/team-service";
 import { toast } from "react-hot-toast";
@@ -58,8 +57,6 @@ export function HireContractFormComponent({
       newErrors.amount = "Enter a valid amount.";
     if (!contract.department.trim())
       newErrors.department = "Department is required.";
-    if (!contract.contract)
-      newErrors.contract = "Please upload a contract file.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -81,7 +78,7 @@ export function HireContractFormComponent({
         startDate: details.startDate,
         frequency: contract.frequency,
         currency: contract.currency,
-        contract: contract.contract!,
+        ...(contract.contract ? { contract: contract.contract } : {}),
       });
       onSuccess();
     } catch (err: unknown) {
@@ -191,17 +188,13 @@ export function HireContractFormComponent({
           {/* Upload Contract — styled dropzone */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
-              Upload contract <span className="text-[#FF3F3F]">*</span>
+              Upload contract{" "}
+              <span className="text-[#667085] font-normal">(optional)</span>
             </label>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className={cn(
-                "w-full border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center gap-2 transition-colors",
-                errors.contract
-                  ? "border-red-400 bg-red-50"
-                  : "border-[#E4E7EC] hover:border-[#0052FF] hover:bg-[#f0f6ff]",
-              )}
+              className="w-full border-2 border-dashed rounded-xl px-4 py-6 flex flex-col items-center gap-2 transition-colors border-[#E4E7EC] hover:border-[#0052FF] hover:bg-[#f0f6ff]"
             >
               <UploadCloud className="h-6 w-6 text-[#667085]" />
               {contract.contract ? (
@@ -233,9 +226,6 @@ export function HireContractFormComponent({
                 if (file) setContract({ contract: file });
               }}
             />
-            {errors.contract && (
-              <p className="text-xs text-red-500 mt-1">{errors.contract}</p>
-            )}
           </div>
         </div>
 
