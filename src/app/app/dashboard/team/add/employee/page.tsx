@@ -33,6 +33,14 @@ export default function AddEmployeePage() {
     router.push("/dashboard/team");
   };
 
+  const handleSuccessModalOpenChange = (open: boolean) => {
+    setShowSuccessModal(open);
+    if (!open) {
+      reset();
+      router.push("/dashboard/team");
+    }
+  };
+
   return (
     <>
       {step === "details" && (
@@ -52,7 +60,7 @@ export default function AddEmployeePage() {
       )}
       <NewHireSuccessModal
         open={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
+        onOpenChange={handleSuccessModalOpenChange}
         onAddAnother={handleAddAnother}
         onInviteNow={handleInviteNow}
         modalType="employee"

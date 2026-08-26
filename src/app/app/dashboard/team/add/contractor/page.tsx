@@ -32,6 +32,14 @@ export default function AddContractorPage() {
     router.push("/dashboard/team");
   };
 
+  const handleSuccessModalOpenChange = (open: boolean) => {
+    setShowSuccessModal(open);
+    if (!open) {
+      reset();
+      router.push("/dashboard/team");
+    }
+  };
+
   return (
     <>
       {step === "details" && (
@@ -51,7 +59,7 @@ export default function AddContractorPage() {
       )}
       <NewHireSuccessModal
         open={showSuccessModal}
-        onOpenChange={setShowSuccessModal}
+        onOpenChange={handleSuccessModalOpenChange}
         onAddAnother={handleAddAnother}
         onInviteNow={handleInviteNow}
         modalType="contractor"
