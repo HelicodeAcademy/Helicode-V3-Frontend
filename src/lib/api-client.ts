@@ -102,6 +102,17 @@ export async function patch<T>(
   });
 }
 
+// Put request helper
+export async function put<T>(
+  endpoint: string,
+  body: unknown,
+): Promise<ApiResponse<T>> {
+  return apiCall<T>(endpoint, {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
 // Get request helper
 export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {

@@ -35,6 +35,28 @@ export interface VerifyEmailResponse {
 }
 
 // Login response types
+<<<<<<< Updated upstream
+=======
+export type AuthType = "employer" | "company_admin";
+
+export type CompanyAdminPermissionAction =
+  | "VIEW_TEAM_MEMBERS"
+  | "VIEW_TRANSACTIONS"
+  | "TEAM_INVITE"
+  | "TEAM_INFO_UPDATE"
+  | "PAYROLL_GROUP_CREATE"
+  | "PAY_NOW"
+  | "COMPANY_WITHDRAWAL"
+  | "QUICKBOOKS_MANAGE";
+
+export type CompanyAdminAccess = "READ" | "WRITE";
+
+export interface CompanyAdminPermission {
+  action: CompanyAdminPermissionAction;
+  access: CompanyAdminAccess;
+}
+
+>>>>>>> Stashed changes
 export interface LoginUser {
   id: string;
   email: string;
