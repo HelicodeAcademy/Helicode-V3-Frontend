@@ -2,9 +2,11 @@
 
 import type React from "react";
 import Image from "next/image";
-import { createContext, useState, useEffect, useRef, useCallback } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
+import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
+import { EMPLOYER_LAST_ACTIVITY_KEY } from "@/lib/inactivity-session";
 
 import {
   SidebarProvider,
@@ -246,22 +248,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
-  const { logout } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const { setKYCStatus } = useKYCStore();
-  const inactivityTimerRef = useRef<number | null>(null);
 
-  const INACTIVITY_LIMIT = 20 * 60 * 1000;
+  const handleInactivityLogout = useCallback(() => {
+    toast.error("Session expired due to inactivity. Logging out...");
+    logout();
+  }, [logout]);
 
-  const resetInactivityTimer = useCallback(() => {
-    if (inactivityTimerRef.current !== null) {
-      window.clearTimeout(inactivityTimerRef.current);
-    }
-
-    inactivityTimerRef.current = window.setTimeout(() => {
-      toast.error("Session expired due to inactivity. Logging out...");
-      logout();
-    }, INACTIVITY_LIMIT);
-  }, [INACTIVITY_LIMIT, logout]);
+  useInactivityLogout({
+    storageKey: EMPLOYER_LAST_ACTIVITY_KEY,
+    onLogout: handleInactivityLogout,
+    enabled: isAuthenticated,
+  });
 
   // Fetch KYC status on layout mount to ensure it's available for all dashboard pages
   useEffect(() => {
@@ -276,51 +275,6 @@ export default function DashboardLayout({
 
     fetchKycStatus();
   }, [setKYCStatus]);
-
-  useEffect(() => {
-    const handleActivity = () => {
-      resetInactivityTimer();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState !== "visible") {
-        return;
-      }
-
-      resetInactivityTimer();
-    };
-
-    const activityEvents = [
-      "mousedown",
-      "keydown",
-      "touchstart",
-      "scroll",
-      "click",
-      "mousemove",
-      "pointerdown",
-      "wheel",
-    ];
-
-    resetInactivityTimer();
-
-    activityEvents.forEach((event) => {
-      document.addEventListener(event, handleActivity, { passive: true });
-    });
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleActivity);
-
-    return () => {
-      if (inactivityTimerRef.current !== null) {
-        window.clearTimeout(inactivityTimerRef.current);
-      }
-
-      activityEvents.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
-      });
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleActivity);
-    };
-  }, [INACTIVITY_LIMIT, logout, resetInactivityTimer]);
 
   return (
     <ProtectedRoute>

@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import {
+  clearLastActivity,
+  EMPLOYER_LAST_ACTIVITY_KEY,
+  touchLastActivity,
+} from "@/lib/inactivity-session";
 
 // Types for auth flow
 export interface SignupData {
@@ -198,7 +203,8 @@ export const useAuthStore = create<AuthStore>()(
       refreshToken: null,
       user: null,
       authType: null,
-      setLoginData: (data) =>
+      setLoginData: (data) => {
+        touchLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
         set({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
@@ -206,8 +212,10 @@ export const useAuthStore = create<AuthStore>()(
           companyId: data.companyId,
           authType: data.authType ?? "employer",
           isAuthenticated: true,
-        }),
-      clearLoginData: () =>
+        });
+      },
+      clearLoginData: () => {
+        clearLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
         set({
           accessToken: null,
           refreshToken: null,
@@ -216,7 +224,8 @@ export const useAuthStore = create<AuthStore>()(
           // Keep authType so logout / protected-route redirects stay on the
           // correct login page (employer vs company-admin).
           isAuthenticated: false,
-        }),
+        });
+      },
       isAuthenticated: false,
 
       // Password recovery state

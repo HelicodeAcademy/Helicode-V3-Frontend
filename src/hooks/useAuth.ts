@@ -10,6 +10,10 @@ import {
   executeTokenRefresh,
   getLoginPathForAuthType,
 } from "@/lib/token-refresh";
+import {
+  clearLastActivity,
+  EMPLOYER_LAST_ACTIVITY_KEY,
+} from "@/lib/inactivity-session";
 
 const REFRESH_THRESHOLD_SECONDS = 10 * 60;
 const CHECK_INTERVAL_MS = 60_000;
@@ -75,6 +79,7 @@ export function useAuth() {
 
   const logout = useCallback(() => {
     const loginPath = getLoginPathForAuthType(authType);
+    clearLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
     clearLoginData();
     useTeamStore.getState().clearMembers();
     router.push(loginPath);

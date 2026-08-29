@@ -14,7 +14,6 @@ import {
   ChevronLeft,
   ExternalLink,
   Loader2,
-  Lock,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -237,7 +236,7 @@ export function TeamKYCModal({
             </Button>
 
             <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-[#8A94A6]">
-              <Image src="/team/lock.svg" alt="lock" width={16} height={16} />
+              <Image src="/team/Lock.svg" alt="lock" width={16} height={16} />
               Your information is secure and used only for verification.
             </p>
           </>
