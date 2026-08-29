@@ -39,10 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-<<<<<<< Updated upstream
-=======
 
 FRONTEND_INTEGRATION.md
 QUICKBOOKS_INTEGRATION.md
-COMPANY_ADMIN_INTEGRATION.md
->>>>>>> Stashed changes
+COMPANY_ADMINS_INTEGRATION.md

@@ -6,6 +6,10 @@ import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { isTokenExpired, getTokenTimeRemaining } from "@/lib/auth-utils";
 import toast from "react-hot-toast";
 import { executeTeamTokenRefresh } from "@/lib/token-refresh-team";
+import {
+  clearLastActivity,
+  TEAM_LAST_ACTIVITY_KEY,
+} from "@/lib/inactivity-session";
 
 // Custom hook for team authentication and token management
 // Check if team user is authenticated and then token refreshes before expiration
@@ -86,6 +90,7 @@ export function useTeamAuth() {
 
   const logout = () => {
     localStorage.removeItem("team-auth-storage");
+    clearLastActivity(TEAM_LAST_ACTIVITY_KEY);
     clearTeamLoginData();
     router.push("/team/login");
     toast.success("Team logout successful!");

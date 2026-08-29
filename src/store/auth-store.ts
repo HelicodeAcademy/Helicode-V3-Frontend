@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import {
+  clearLastActivity,
+  EMPLOYER_LAST_ACTIVITY_KEY,
+  touchLastActivity,
+} from "@/lib/inactivity-session";
 
 // Types for auth flow
 export interface SignupData {
@@ -8,8 +13,7 @@ export interface SignupData {
   email: string;
   password: string;
   companyName: string;
-  teamSize: number;
-  country: string;
+  country?: string;
   product?: string;
 }
 
@@ -19,24 +23,55 @@ export interface SignupResponse {
   message: string;
 }
 
+export type BridgeKycStatus =
+  | "pending"
+  | "not_started"
+  | "incomplete"
+  | "awaiting_questionnaire"
+  | "awaiting_ubo"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "paused"
+  | "offboarded"
+  | "in_progress"
+  | "submitted";
+
+export type BridgeTosStatus =
+  | "pending"
+  | "approved"
+  | "not_started"
+  | "accepted"
+  | "rejected";
+
 export interface VerifyEmailResponse {
   id: string;
   companyId: string;
   firstName: string;
   lastName: string;
   email: string;
-  fullName: string | null;
-  country: string | null;
-  dob: string | null;
-  proofOfAddress: string | null;
+  fullName?: string | null;
+  country?: string | null;
+  dob?: string | null;
+  proofOfAddress?: string | null;
   status: string;
-  phone: string | null;
-  idDocument: string | null;
+  phone?: string | null;
+  idDocument?: string | null;
+  message?: string;
+  kycLink?: string | null;
+  tosLink?: string | null;
+  kycStatus?: BridgeKycStatus;
+  tosStatus?: BridgeTosStatus;
+}
+
+export interface PendingVerificationLinks {
+  kycLink?: string | null;
+  tosLink?: string | null;
+  kycStatus?: BridgeKycStatus | null;
+  tosStatus?: BridgeTosStatus | null;
 }
 
 // Login response types
-<<<<<<< Updated upstream
-=======
 export type AuthType = "employer" | "company_admin";
 
 export type CompanyAdminPermissionAction =
@@ -56,13 +91,14 @@ export interface CompanyAdminPermission {
   access: CompanyAdminAccess;
 }
 
->>>>>>> Stashed changes
 export interface LoginUser {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role?: string;
+  status?: string;
+  permissions?: CompanyAdminPermission[];
 }
 
 export interface LoginResponse {
@@ -70,6 +106,7 @@ export interface LoginResponse {
   refreshToken: string;
   user: LoginUser;
   companyId: string;
+  authType?: AuthType;
 }
 
 export interface PasswordRecoveryData {
@@ -86,7 +123,7 @@ interface AuthStore {
   resetSignupData: () => void;
 
   // Current step in signup flow
-  currentStep: "company" | "details" | "product" | "verify";
+  currentStep: "company" | "details" | "verify";
   setCurrentStep: (step: AuthStore["currentStep"]) => void;
 
   // Api response data
@@ -107,10 +144,15 @@ interface AuthStore {
   verifiedUser: VerifyEmailResponse | null;
   setVerifiedUser: (response: VerifyEmailResponse) => void;
 
+  // KYC/TOS links returned from verify-email (used before sign-in)
+  pendingVerification: PendingVerificationLinks | null;
+  setPendingVerification: (data: PendingVerificationLinks | null) => void;
+
   // Login state
   accessToken: string | null;
   refreshToken: string | null;
   user: LoginUser | null;
+  authType: AuthType | null;
   setLoginData: (data: LoginResponse) => void;
   clearLoginData: () => void;
   isAuthenticated: boolean;
@@ -154,26 +196,37 @@ export const useAuthStore = create<AuthStore>()(
       verifiedUser: null,
       setVerifiedUser: (response) => set({ verifiedUser: response }),
 
+      pendingVerification: null,
+      setPendingVerification: (data) => set({ pendingVerification: data }),
+
       // Login state
       accessToken: null,
       refreshToken: null,
       user: null,
-      setLoginData: (data) =>
+      authType: null,
+      setLoginData: (data) => {
+        touchLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
         set({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           user: data.user,
           companyId: data.companyId,
+          authType: data.authType ?? "employer",
           isAuthenticated: true,
-        }),
-      clearLoginData: () =>
+        });
+      },
+      clearLoginData: () => {
+        clearLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
         set({
           accessToken: null,
           refreshToken: null,
           user: null,
           companyId: null,
+          // Keep authType so logout / protected-route redirects stay on the
+          // correct login page (employer vs company-admin).
           isAuthenticated: false,
-        }),
+        });
+      },
       isAuthenticated: false,
 
       // Password recovery state
@@ -191,9 +244,11 @@ export const useAuthStore = create<AuthStore>()(
           isLoading: false,
           error: null,
           verifiedUser: null,
+          pendingVerification: null,
           accessToken: null,
           refreshToken: null,
           user: null,
+          authType: null,
           recoveryData: {},
         }),
 
@@ -210,7 +265,9 @@ export const useAuthStore = create<AuthStore>()(
         refreshToken: state.refreshToken,
         user: state.user,
         companyId: state.companyId,
+        authType: state.authType,
         isAuthenticated: state.isAuthenticated,
+        pendingVerification: state.pendingVerification,
       }),
 
       onRehydrateStorage: () => (state) => {

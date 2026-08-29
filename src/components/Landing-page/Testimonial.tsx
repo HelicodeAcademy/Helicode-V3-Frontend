@@ -6,12 +6,16 @@ import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
   {
-    name: "Seun Akinbode",
-    role: "Co-founder & CEO",
+    name: "Emmanuel Tokunbo",
+    role: "CEO",
     accent: "#0052FF",
     bg: "#EFF4FF",
-    description: "",
-    valid: false,
+    description:
+      "Helicode has been an invaluable partner, consistently delivering highly qualified candidates with remarkable speed and efficiency. Their prompt and professional approach has streamlined our hiring process, allowing us to build our team with confidence.",
+    valid: true,
+    logo: "/landingpage/cpayant.png",
+    logoWidth: 137,
+    logoHeight: 38,
   },
   {
     name: "Seun Akinbode",
@@ -21,6 +25,9 @@ const testimonials = [
     description:
       "Helicode has been one of the most impacting products for building our team.\nThey have a deep and exciting talent network.",
     valid: true,
+    logo: "/landingpage/tnkr.svg",
+    logoWidth: 81,
+    logoHeight: 28,
   },
   {
     name: "Seun Akinbode",
@@ -29,6 +36,9 @@ const testimonials = [
     bg: "#FFEEF7",
     description: "",
     valid: false,
+    logo: "/landingpage/tnkr.svg",
+    logoWidth: 81,
+    logoHeight: 28,
   },
 ];
 
@@ -71,22 +81,6 @@ export default function Testimonial() {
       behavior: "smooth",
     });
   };
-
-  // const scrollByCard = (direction: "left" | "right") => {
-  //     const el = scrollRef.current;
-  //     if (!el) return;
-
-  //     const card = el.querySelector("[data-card]") as HTMLElement;
-  //     if (!card) return;
-
-  //     const gap = 16; // must match gap-4
-  //     const amount = card.offsetWidth + gap;
-
-  //     el.scrollBy({
-  //         left: direction === "right" ? amount : -amount,
-  //         behavior: "smooth",
-  //     });
-  // };
 
   return (
     <section
@@ -136,9 +130,7 @@ export default function Testimonial() {
               className="overflow-x-auto overscroll-x-contain scroll-smooth snap-x snap-mandatory"
             >
               <div className="flex gap-4  items-stretch  px-4md:px-8">
-                {/* className="min-w-0 shrink-0 grow-0 snap-start flex basis-[92%] sm:basis-[64%] md:basis-[48%] lg:basis-[32%] pl-4 md:pl-8 xl:pl-0" */}
                 {testimonials.map((testimonial, idx) => {
-                  // const isBlurred = idx === 1; // middle card
                   const isBlurred = !testimonial.valid;
 
                   return (
@@ -163,12 +155,11 @@ export default function Testimonial() {
 
                         <div className="bg-[#F8F8F8] relative flex grow flex-col gap-10 p-6   w-full h-full">
                           <div className="size12">
-                            {/* <Image src="/landingpage/Lisk-logo.png" alt="Lisk-logo" width={81} height={28} /> */}
                             <Image
-                              src="/landingpage/tnkr.svg"
-                              alt="tnkr-logo"
-                              width={81}
-                              height={28}
+                              src={testimonial.logo}
+                              alt={testimonial.name}
+                              width={testimonial.logoWidth}
+                              height={testimonial.logoHeight}
                             />
                           </div>
                           <div>

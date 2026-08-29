@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import {
+  clearLastActivity,
+  TEAM_LAST_ACTIVITY_KEY,
+  touchLastActivity,
+} from "@/lib/inactivity-session";
 
 // Types for Team auth flow
 export interface AcceptInviteData {
@@ -132,7 +137,8 @@ export const useTeamAuthStore = create<TeamAuthStore>()(
       companyId: null,
       companies: [],
       selectedCompanyId: null,
-      setTeamLoginData: (data) =>
+      setTeamLoginData: (data) => {
+        touchLastActivity(TEAM_LAST_ACTIVITY_KEY);
         set({
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
@@ -141,13 +147,15 @@ export const useTeamAuthStore = create<TeamAuthStore>()(
           companies: data.companies,
           selectedCompanyId: data.companyId,
           isAuthenticated: true,
-        }),
+        });
+      },
       setSelectedCompany: (companyId) =>
         set(() => ({
           selectedCompanyId: companyId,
           companyId: companyId,
         })),
       clearTeamLoginData: () => {
+        clearLastActivity(TEAM_LAST_ACTIVITY_KEY);
         set({
           accessToken: null,
           refreshToken: null,

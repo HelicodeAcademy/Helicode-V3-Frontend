@@ -52,6 +52,21 @@ export function VerifyResetCodeForm() {
 
   // Auto-focus next input when digit is entered
   const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) {
+      const digits = value.replace(/\D/g, "").slice(0, 6).split("");
+      if (digits.length === 0) return;
+
+      const newOtp = [...otp];
+      digits.forEach((digit, i) => {
+        if (index + i < 6) {
+          newOtp[index + i] = digit;
+        }
+      });
+      setOtp(newOtp);
+      inputRefs.current[Math.min(index + digits.length - 1, 5)]?.focus();
+      return;
+    }
+
     // Only allow numeric input
     if (!/^\d*$/.test(value)) return;
 
@@ -63,6 +78,27 @@ export function VerifyResetCodeForm() {
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+  };
+
+  const handleOtpPaste = (
+    index: number,
+    e: React.ClipboardEvent<HTMLInputElement>,
+  ) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+    if (!pasted) return;
+
+    const newOtp = [...otp];
+    [...pasted].forEach((digit, i) => {
+      if (index + i < 6) {
+        newOtp[index + i] = digit;
+      }
+    });
+    setOtp(newOtp);
+    inputRefs.current[Math.min(index + pasted.length - 1, 5)]?.focus();
   };
 
   // Handle backspace to move to previous input
@@ -172,10 +208,12 @@ export function VerifyResetCodeForm() {
                   }}
                   type="text"
                   inputMode="numeric"
-                  maxLength={1}
+                  autoComplete={index === 0 ? "one-time-code" : "off"}
+                  maxLength={index === 0 ? 6 : 1}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={(e) => handleOtpPaste(index, e)}
                   className="w-10 h-10 text-center text-2xl font-bold border-[#D7D7D7] text-black! rounded-[6px]!"
                   placeholder="0"
                   disabled={isSubmitting || isResending}

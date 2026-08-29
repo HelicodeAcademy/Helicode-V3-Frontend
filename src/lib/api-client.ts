@@ -3,7 +3,15 @@ import { executeTokenRefresh } from "./token-refresh";
 import { executeTeamTokenRefresh } from "./token-refresh-team";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 
-const PUBLIC_ENDPOINTS = ["/auth/signin", "/auth/signup", "/auth/refresh"];
+const PUBLIC_ENDPOINTS = [
+  "/auth/signin",
+  "/auth/signup",
+  "/auth/refresh",
+  "/company-admins/auth/setup-code",
+  "/company-admins/auth/setup-confirm",
+  "/company-admins/auth/login",
+  "/company-admins/auth/refresh",
+];
 const TEAM_PUBLIC_ENDPOINTS = [
   "/team/auth/login",
   "/team/auth/signup",
@@ -18,6 +26,7 @@ export interface ApiResponse<T> {
   statusCode: number;
   message: string;
   data: T;
+  error?: string;
 }
 
 // Track in-flight refresh to prevent multiple simultaneous refresh calls
@@ -61,19 +70,23 @@ export async function apiCall<T>(
         await executeTokenRefresh();
         return apiCall<T>(endpoint, options, false); // retry once with new token
       } catch {
-        // refresh failed, redirect to login
+        // refresh failed, redirect to the correct login
+        const authType = useAuthStore.getState().authType;
         useAuthStore.getState().clearLoginData();
-        window.location.href = "/login";
+        window.location.href =
+          authType === "company_admin" ? "/company-admin/login" : "/login";
         throw new Error("Session expired. Please log in again.");
       }
     }
     // For public endpoints, throw the backend's actual error message
-    throw new Error(data.message || "Unauthorized");
+    throw new Error(data.message || data.error || "Unauthorized");
   }
 
   // Handles succesful and error responses uniformly
   if (!response.ok) {
-    throw new Error(data.message || `API Error: ${response.status}`);
+    throw new Error(
+      data.message || data.error || `API Error: ${response.status}`,
+    );
   }
   return data as ApiResponse<T>;
 }
@@ -117,6 +130,13 @@ export async function put<T>(
 export async function get<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, {
     method: "GET",
+  });
+}
+
+// Delete request helper
+export async function del<T>(endpoint: string): Promise<ApiResponse<T>> {
+  return apiCall<T>(endpoint, {
+    method: "DELETE",
   });
 }
 

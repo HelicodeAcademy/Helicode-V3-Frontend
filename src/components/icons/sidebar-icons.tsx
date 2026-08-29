@@ -1,0 +1,318 @@
+type IconProps = { className?: string };
+
+export function SidebarHomeIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M7.5 17.5001V11.3334C7.5 10.8667 7.5 10.6334 7.59083 10.4551C7.67072 10.2983 7.79821 10.1708 7.95501 10.0909C8.13327 10.0001 8.36662 10.0001 8.83333 10.0001H11.1667C11.6334 10.0001 11.8667 10.0001 12.045 10.0909C12.2018 10.1708 12.3293 10.2983 12.4092 10.4551C12.5 10.6334 12.5 10.8667 12.5 11.3334V17.5001M9.18141 2.30345L3.52949 6.69939C3.15168 6.99324 2.96278 7.14017 2.82669 7.32417C2.70614 7.48716 2.61633 7.67077 2.56169 7.866C2.5 8.08639 2.5 8.3257 2.5 8.80433V14.8334C2.5 15.7669 2.5 16.2336 2.68166 16.5901C2.84144 16.9037 3.09641 17.1587 3.41002 17.3185C3.76654 17.5001 4.23325 17.5001 5.16667 17.5001H14.8333C15.7668 17.5001 16.2335 17.5001 16.59 17.3185C16.9036 17.1587 17.1586 16.9037 17.3183 16.5901C17.5 16.2336 17.5 15.7669 17.5 14.8334V8.80433C17.5 8.3257 17.5 8.08639 17.4383 7.866C17.3837 7.67077 17.2939 7.48716 17.1733 7.32417C17.0372 7.14017 16.8483 6.99324 16.4705 6.69939L10.8186 2.30345C10.5258 2.07574 10.3794 1.96189 10.2178 1.91812C10.0752 1.87951 9.92484 1.87951 9.78221 1.91812C9.62057 1.96189 9.47418 2.07574 9.18141 2.30345Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarTeamIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M18.3337 17.5V15.8333C18.3337 14.2801 17.2713 12.9751 15.8337 12.605M12.917 2.7423C14.1386 3.23679 15.0003 4.43443 15.0003 5.83333C15.0003 7.23224 14.1386 8.42988 12.917 8.92437M14.167 17.5C14.167 15.9469 14.167 15.1703 13.9133 14.5577C13.5749 13.741 12.926 13.092 12.1093 12.7537C11.4967 12.5 10.7201 12.5 9.16699 12.5H6.66699C5.11385 12.5 4.33728 12.5 3.72471 12.7537C2.90795 13.092 2.25904 13.741 1.92073 14.5577C1.66699 15.1703 1.66699 15.9469 1.66699 17.5M11.2503 5.83333C11.2503 7.67428 9.75794 9.16667 7.91699 9.16667C6.07604 9.16667 4.58366 7.67428 4.58366 5.83333C4.58366 3.99238 6.07604 2.5 7.91699 2.5C9.75794 2.5 11.2503 3.99238 11.2503 5.83333Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarPayrollIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M11.666 1.85158C11.1275 1.74238 10.5701 1.68506 9.99935 1.68506C5.39697 1.68506 1.66602 5.41193 1.66602 10.0092C1.66602 14.6065 5.39697 18.3334 9.99935 18.3334C14.6017 18.3334 18.3327 14.6065 18.3327 10.0092C18.3327 9.43917 18.2753 8.88233 18.166 8.34442"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.0007 7.51186C9.08015 7.51186 8.33398 8.07089 8.33398 8.76046C8.33398 9.45004 9.08015 10.0091 10.0007 10.0091C10.9212 10.0091 11.6673 10.5682 11.6673 11.2577C11.6673 11.9473 10.9212 12.5064 10.0007 12.5064M10.0007 7.51186C10.7263 7.51186 11.3437 7.85932 11.5725 8.34429M10.0007 7.51186V6.67944M10.0007 12.5064C9.27498 12.5064 8.65765 12.159 8.42882 11.674M10.0007 12.5064V13.3388"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      />
+      <path
+        d="M18.3288 1.66675L14.8489 5.14476M14.1621 2.10107L14.2606 4.67448C14.2606 5.28102 14.6232 5.65893 15.2836 5.7066L17.887 5.82884"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarPayslipIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M6.66602 14.1667H13.3327"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.66602 10.8333H9.99935"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16.6673 16.6667V7.50008L10.834 1.66675H5.00065C4.08018 1.66675 3.33398 2.41294 3.33398 3.33341V16.6667C3.33398 17.5872 4.08018 18.3334 5.00065 18.3334H15.0007C15.9212 18.3334 16.6673 17.5872 16.6673 16.6667Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.834 1.66675V5.83341C10.834 6.75389 11.5802 7.50008 12.5007 7.50008H16.6673"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarAnalyticsIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M5.83398 14.1666V10.8333M10.0007 14.1666V5.83325M14.1673 14.1666V9.16659"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17.9173 3.74992V16.2499C17.9173 17.1704 17.1712 17.9166 16.2507 17.9166H3.75065C2.83018 17.9166 2.08398 17.1704 2.08398 16.2499V3.74992C2.08398 2.82944 2.83018 2.08325 3.75065 2.08325H16.2507C17.1712 2.08325 17.9173 2.82944 17.9173 3.74992Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarHiringIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M15.8337 8.3335V3.3335M13.3337 5.8335H18.3337M13.3337 17.5002V16.5002C13.3337 15.1 13.3337 14.4 13.0612 13.8652C12.8215 13.3948 12.439 13.0123 11.9686 12.7726C11.4339 12.5002 10.7338 12.5002 9.33366 12.5002H5.66699C4.26686 12.5002 3.5668 12.5002 3.03202 12.7726C2.56161 13.0123 2.17916 13.3948 1.93948 13.8652C1.66699 14.4 1.66699 15.1 1.66699 16.5002V17.5002M10.417 6.25016C10.417 7.86099 9.11116 9.16683 7.50033 9.16683C5.88949 9.16683 4.58366 7.86099 4.58366 6.25016C4.58366 4.63933 5.88949 3.3335 7.50033 3.3335C9.11116 3.3335 10.417 4.63933 10.417 6.25016Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarAccountingIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M4.5 21.5H19.5C20.6046 21.5 21.5 20.6046 21.5 19.5V4.50039C21.5 3.39584 20.6046 2.50042 19.5001 2.50039L4.50005 2.5C3.39546 2.49997 2.5 3.39541 2.5 4.5V19.5C2.5 20.6046 3.39543 21.5 4.5 21.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.5 9H8.5M16.5 9H17.5M11 7.5V10.5M14 7.5V10.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17.5 15H13.5M8.5 15H6.5M11 13.5V16.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarEarnIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M11.6667 15.0001C15.3486 15.0001 18.3333 12.0153 18.3333 8.33341C18.3333 4.65152 15.3486 1.66675 11.6667 1.66675C7.98477 1.66675 5 4.65152 5 8.33341C5 12.0153 7.98477 15.0001 11.6667 15.0001Z"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.9718 17.4741C10.0518 18.0199 8.97785 18.3333 7.8306 18.3333C4.42599 18.3333 1.66602 15.5733 1.66602 12.1688C1.66602 11.0215 1.97941 9.9475 2.52524 9.02759"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarWalletIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M2.5 7.08325H15.8333C16.7538 7.08325 17.5 7.82944 17.5 8.74992V16.2499C17.5 17.1704 16.7538 17.9166 15.8333 17.9166H4.16667C3.24619 17.9166 2.5 17.1704 2.5 16.2499V7.08325Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12.5 7.08186V2.76511C12.5 2.38853 12.1947 2.08325 11.8182 2.08325C11.7184 2.08325 11.6198 2.10514 11.5294 2.14739L3.1471 6.06513C2.75229 6.24965 2.5 6.64605 2.5 7.08186"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarCreditCardIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M16.666 3.33325H3.33268C2.41221 3.33325 1.66602 4.07944 1.66602 4.99992V14.9999C1.66602 15.9204 2.41221 16.6666 3.33268 16.6666H16.666C17.5865 16.6666 18.3327 15.9204 18.3327 14.9999V4.99992C18.3327 4.07944 17.5865 3.33325 16.666 3.33325Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.33398 13.3333H9.58398M12.084 13.3333H15.0007"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeMiterlimit="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M1.66602 7.5H18.3327"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SidebarSettingsIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path
+        d="M7.82888 16.1424L8.31591 17.2378C8.4607 17.5639 8.69698 17.8409 8.9961 18.0353C9.29522 18.2298 9.64434 18.3332 10.0011 18.3332C10.3579 18.3332 10.707 18.2298 11.0061 18.0353C11.3052 17.8409 11.5415 17.5639 11.6863 17.2378L12.1733 16.1424C12.3467 15.7538 12.6383 15.4297 13.0067 15.2165C13.3773 15.0027 13.8061 14.9116 14.2317 14.9563L15.4233 15.0832C15.778 15.1207 16.136 15.0545 16.4539 14.8926C16.7717 14.7307 17.0358 14.4801 17.2141 14.1711C17.3925 13.8623 17.4776 13.5084 17.4588 13.1522C17.4401 12.7961 17.3184 12.453 17.1085 12.1647L16.403 11.1952C16.1517 10.8474 16.0175 10.4288 16.0196 9.99984C16.0195 9.57199 16.155 9.15513 16.4067 8.8091L17.1122 7.83965C17.3221 7.5513 17.4438 7.20823 17.4625 6.85206C17.4813 6.4959 17.3962 6.14195 17.2178 5.83317C17.0395 5.5242 16.7754 5.27358 16.4576 5.11169C16.1397 4.94981 15.7817 4.88361 15.427 4.92113L14.2354 5.04799C13.8098 5.09268 13.381 5.0016 13.0104 4.7878C12.6413 4.57338 12.3496 4.24764 12.177 3.85724L11.6863 2.76187C11.5415 2.43581 11.3052 2.15877 11.0061 1.96434C10.707 1.76991 10.3579 1.66645 10.0011 1.6665C9.64434 1.66645 9.29522 1.76991 8.9961 1.96434C8.69698 2.15877 8.4607 2.43581 8.31591 2.76187L7.82888 3.85724C7.65632 4.24764 7.3646 4.57338 6.99554 4.7878C6.62489 5.0016 6.1961 5.09268 5.77054 5.04799L4.57517 4.92113C4.22045 4.88361 3.86246 4.94981 3.5446 5.11169C3.22675 5.27358 2.96269 5.5242 2.78443 5.83317C2.60595 6.14195 2.52092 6.4959 2.53965 6.85206C2.55839 7.20823 2.68009 7.5513 2.88999 7.83965L3.59554 8.8091C3.84716 9.15513 3.98266 9.57199 3.98258 9.99984C3.98266 10.4277 3.84716 10.8445 3.59554 11.1906L2.88999 12.16C2.68009 12.4484 2.55839 12.7914 2.53965 13.1476C2.52092 13.5038 2.60595 13.8577 2.78443 14.1665C2.96286 14.4753 3.22696 14.7258 3.54476 14.8877C3.86257 15.0495 4.22047 15.1158 4.57517 15.0785L5.76684 14.9517C6.1924 14.907 6.62119 14.9981 6.99184 15.2119C7.36228 15.4257 7.65535 15.7515 7.82888 16.1424Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.99961 12.4998C11.3803 12.4998 12.4996 11.3805 12.4996 9.99984C12.4996 8.61913 11.3803 7.49984 9.99961 7.49984C8.6189 7.49984 7.49961 8.61913 7.49961 9.99984C7.49961 11.3805 8.6189 12.4998 9.99961 12.4998Z"
+        stroke="currentColor"
+        strokeWidth="1.66667"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

@@ -27,13 +27,14 @@ import {
 import { ChevronDown, LogOut, MoreVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, createContext, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, createContext, useCallback } from "react";
 import { Toaster } from "react-hot-toast";
 import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuth } from "@/hooks/useTeamAuth";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
+import { TEAM_LAST_ACTIVITY_KEY } from "@/lib/inactivity-session";
 import toast from "react-hot-toast";
 
 export const TeamPageTitleContext = createContext<{
@@ -239,60 +240,18 @@ export default function TeamDashboardLayout({
   children: React.ReactNode;
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
-  const { user } = useTeamAuth();
-  const router = useRouter();
-  const { clearTeamLoginData } = useTeamAuthStore();
+  const { logout, isAuthenticated, user } = useTeamAuth();
 
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const handleInactivityLogout = useCallback(() => {
+    toast.error("Session expired due to inactivity. Logging out...");
+    logout();
+  }, [logout]);
 
-  // 20 minutes in milliseconds
-  const INACTIVITY_LIMIT = 20 * 60 * 1000;
-
-  const resetInactivityTimer = () => {
-    // Clear the existing timer
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-    }
-
-    // Set a new timer
-    inactivityTimerRef.current = setTimeout(() => {
-      toast.error("Session expired due to inactivity. Logging out...");
-      clearTeamLoginData();
-      router.push("/team/login");
-    }, INACTIVITY_LIMIT);
-  };
-
-  useEffect(() => {
-    resetInactivityTimer();
-
-    // Activity listeners
-    const activityEvents = [
-      "mousemove",
-      "keydown",
-      "mousedown",
-      "touchstart",
-      "scroll",
-      "click",
-    ];
-
-    const handleActivity = () => {
-      resetInactivityTimer();
-    };
-
-    activityEvents.forEach((event) =>
-      document.addEventListener(event, handleActivity),
-    );
-
-    return () => {
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-      }
-      activityEvents.forEach((event) => {
-        document.removeEventListener(event, handleActivity);
-      });
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, clearTeamLoginData]);
+  useInactivityLogout({
+    storageKey: TEAM_LAST_ACTIVITY_KEY,
+    onLogout: handleInactivityLogout,
+    enabled: isAuthenticated,
+  });
 
   return (
     <TeamProtectedRoute>

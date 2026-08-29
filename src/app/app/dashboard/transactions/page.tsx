@@ -1,117 +1,128 @@
-'use client';
+"use client";
 
+import { useContext, useEffect, useState } from "react";
+import { PageTitleContext } from "../layout";
+import { TransactionsSummaryCards } from "@/components/transactions/transactions-summary-cards";
+import { TransactionsFeedFilters } from "@/components/transactions/transactions-feed-filters";
+import { TransactionsFeedTable } from "@/components/transactions/transactions-feed-table";
+import { useDebounce } from "@/hooks/use-debounce";
+import toast from "react-hot-toast";
 import {
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-  useEffectEvent,
-} from 'react';
-import { PageTitleContext } from '../layout';
-import { TransactionsTable } from '@/components/transactions/transactions-table';
-import { TransactionsFilters } from '@/components/transactions/transactions-filters';
-import toast from 'react-hot-toast';
-import {
-  getCompanyTransactions,
-  TransactionData,
-} from '@/lib/transaction-service';
+  getTransactionsFeed,
+  type CompanyFeedTransaction,
+  type PeopleFeedTransaction,
+  type TransactionsFeedPagination,
+  type TransactionsFeedStatusFilter,
+  type TransactionsFeedSummary,
+  type TransactionsFeedView,
+} from "@/lib/transactions-feed-service";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function TransactionsPage() {
   const { setTitle } = useContext(PageTitleContext);
+  const [view, setView] = useState<TransactionsFeedView>("company");
+  const [searchInput, setSearchInput] = useState("");
+  const [status, setStatus] = useState("all");
+  const [workerType, setWorkerType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [workerType, setWorkerType] = useState('');
-  const [status, setStatus] = useState('');
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [summary, setSummary] = useState<TransactionsFeedSummary | null>(null);
+  const [companyTransactions, setCompanyTransactions] = useState<
+    CompanyFeedTransaction[]
+  >([]);
+  const [peopleTransactions, setPeopleTransactions] = useState<
+    PeopleFeedTransaction[]
+  >([]);
+  const [pagination, setPagination] =
+    useState<TransactionsFeedPagination | null>(null);
 
-  const handleSearchChange = (term: string) => {
-    setCurrentPage(1);
-    setSearchTerm(term);
-  };
-
-  const handleWorkerTypeChange = (type: string) => {
-    setCurrentPage(1);
-    setWorkerType(type);
-  };
-
-  const handleStatusChange = (nextStatus: string) => {
-    setCurrentPage(1);
-    setStatus(nextStatus);
-  };
-
-  const fetchCompanyTransactions = useEffectEvent(async () => {
-    try {
-      const transactions = await getCompanyTransactions();
-      setTransactions(Array.isArray(transactions) ? transactions : []);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch transactions';
-      toast.error(errorMessage);
-      console.error('Company transactions fetch error:', error);
-    }
-  });
+  const debouncedSearch = useDebounce(searchInput, 400);
 
   useEffect(() => {
-    setTitle('Transactions');
-    fetchCompanyTransactions();
+    setTitle("Transactions");
   }, [setTitle]);
 
-  const filteredTransactions = useMemo(() => {
-    let filtered = Array.isArray(transactions) ? transactions : [];
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-    const hasWorkerTypeFilter = workerType !== '' && workerType !== 'all';
-    const hasStatusFilter = status !== '' && status !== 'all';
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [view, debouncedSearch, status, workerType]);
 
-    if (normalizedSearch) {
-      filtered = filtered.filter(
-        (t) =>
-          t.name.toLowerCase().includes(normalizedSearch) ||
-          t.role.toLowerCase().includes(normalizedSearch)
-      );
+  useEffect(() => {
+    const fetchFeed = async () => {
+      try {
+        setIsLoading(true);
+
+        const statusParam =
+          status === "all" ? undefined : (status as TransactionsFeedStatusFilter);
+
+        const workerTypeParam =
+          view === "people" && workerType !== "all"
+            ? (workerType as "employee" | "contractor")
+            : undefined;
+
+        const data = await getTransactionsFeed({
+          view,
+          search: debouncedSearch,
+          status: statusParam,
+          workerType: workerTypeParam,
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+        });
+
+        setSummary(data.summary);
+        setPagination(data.pagination);
+
+        if (data.view === "company") {
+          setCompanyTransactions(data.transactions as CompanyFeedTransaction[]);
+          setPeopleTransactions([]);
+        } else {
+          setPeopleTransactions(data.transactions as PeopleFeedTransaction[]);
+          setCompanyTransactions([]);
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch transactions";
+        toast.error(errorMessage);
+        console.error("Transactions feed fetch error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void fetchFeed();
+  }, [view, debouncedSearch, status, workerType, currentPage]);
+
+  const handleViewChange = (nextView: TransactionsFeedView) => {
+    setView(nextView);
+    setStatus("all");
+    if (nextView === "company") {
+      setWorkerType("all");
     }
-
-    if (hasWorkerTypeFilter) {
-      filtered = filtered.filter(
-        (t) => t.workerType.toLowerCase() === workerType.toLowerCase()
-      );
-    }
-
-    if (hasStatusFilter) {
-      filtered = filtered.filter(
-        (t) => t.status.toLowerCase() === status.toLowerCase()
-      );
-    }
-
-    return filtered;
-  }, [transactions, searchTerm, workerType, status]);
-
-  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
-  const safeCurrentPage =
-    totalPages === 0 ? 1 : Math.min(currentPage, totalPages);
-  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const displayedTransactions = filteredTransactions.slice(
-    startIndex,
-    endIndex
-  );
+  };
 
   return (
-    <div className="space-y-6 border border-[#E4E7EC] rounded-lg bg-white mx-8 my-6 py-5">
-      <TransactionsFilters
-        searchTerm={searchTerm}
-        onSearchChange={handleSearchChange}
-        workerType={workerType}
-        onWorkerTypeChange={handleWorkerTypeChange}
+    <div className="mx-8 my-6 space-y-6 rounded-lg border border-[#E4E7EC] bg-white p-6">
+      <TransactionsSummaryCards summary={summary} isLoading={isLoading} />
+
+      <TransactionsFeedFilters
+        view={view}
+        onViewChange={handleViewChange}
+        searchTerm={searchInput}
+        onSearchChange={setSearchInput}
         status={status}
-        onStatusChange={handleStatusChange}
+        onStatusChange={setStatus}
+        workerType={workerType}
+        onWorkerTypeChange={setWorkerType}
       />
 
-      <TransactionsTable
-        transactions={displayedTransactions}
-        currentPage={safeCurrentPage}
-        totalPages={totalPages}
+      <TransactionsFeedTable
+        view={view}
+        companyTransactions={companyTransactions}
+        peopleTransactions={peopleTransactions}
+        pagination={pagination}
+        isLoading={isLoading}
         onPageChange={setCurrentPage}
       />
     </div>

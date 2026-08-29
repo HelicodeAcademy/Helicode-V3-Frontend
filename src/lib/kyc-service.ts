@@ -1,7 +1,8 @@
 import { get, postFormData, teamPost } from "./api-client";
 import { FullKYCStatus } from "@/store/kyc-store";
+import { BridgeKycStatus, BridgeTosStatus } from "@/store/auth-store";
 
-// Stage 1: Company KYC Data
+// Stage 1: Company KYC Data (legacy)
 export interface CompanyKYCData {
   fullName: string;
   address: string;
@@ -10,7 +11,7 @@ export interface CompanyKYCData {
   certOfIncorporation: File;
 }
 
-// Stage 2: Employer Documents Data
+// Stage 2: Employer Documents Data (legacy)
 export interface EmployerDocumentsData {
   dob: string;
   proofOfAddress: File;
@@ -18,49 +19,31 @@ export interface EmployerDocumentsData {
   idBack: File;
 }
 
-// Company KYC Response with Bridge links
 export interface CompanyKYCResponse {
   message: string;
   kycLink: string;
   tosLink: string;
-  kycStatus:
-    | "pending"
-    | "not_started"
-    | "in_progress"
-    | "submitted"
-    | "approved"
-    | "rejected";
-  tosStatus: "pending" | "not_started" | "accepted" | "rejected";
+  kycStatus: BridgeKycStatus;
+  tosStatus: BridgeTosStatus;
 }
 
 export interface EmployerDocumentsResponse {
   message: string;
-  employerKycStatus:
-    | "pending"
-    | "not_started"
-    | "in_progress"
-    | "submitted"
-    | "approved"
-    | "rejected";
+  employerKycStatus: string;
 }
 
-// Off-ramp Quote Response
 export interface OffRampQuoteResponse {
   currency: string;
   rate: number;
   amountReceived: number;
 }
 
-// Get the kyc status of the current user
-// Returns they kyc submission status amd optional tos status
-// Returns links to complete the kyc and tos if they have not started
-
 export async function getKYCStatus(): Promise<FullKYCStatus> {
   const response = await get<FullKYCStatus>("/kyc/status");
   return response.data;
 }
 
-// Submit Stage 1: Company KYC details
+/** Legacy Stage 1 — returns 410 when the new onboarding flow is enabled. */
 export async function SubmitCompanyKYC(
   formData: FormData,
 ): Promise<CompanyKYCResponse> {
@@ -71,8 +54,7 @@ export async function SubmitCompanyKYC(
   return response.data;
 }
 
-// Submit Stage 2: Employer Documents
-// Sends personal documents to employer verification
+/** Legacy Stage 2 — returns 410 when the new onboarding flow is enabled. */
 export async function submitEmployerDocuments(
   formData: FormData,
 ): Promise<EmployerDocumentsResponse> {
@@ -83,7 +65,6 @@ export async function submitEmployerDocuments(
   return response.data;
 }
 
-// Get off-ramp quote for withdrawal amount
 export async function getOffRampQuote(
   amount: number,
 ): Promise<OffRampQuoteResponse> {
@@ -96,10 +77,7 @@ export async function getOffRampQuote(
   return response.data;
 }
 
-// Submit KYC details and sends user's KYC informatation and documents to compelete verification
-// Returns links and updated status for KYC and TOS
-// No longer in use but kept for backwards compatibility
-
+/** Legacy combined submit — returns 410 when the new onboarding flow is enabled. */
 export async function submitKYC(formData: FormData): Promise<FullKYCStatus> {
   const response = await postFormData<FullKYCStatus>("/kyc/submit", formData);
   return response.data;

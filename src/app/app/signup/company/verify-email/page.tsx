@@ -12,7 +12,7 @@ export default function VerifyEmailPage() {
   const router = useRouter();
 
   const goBack = () => {
-    setCurrentStep("product");
+    setCurrentStep("details");
     router.back();
   };
 
