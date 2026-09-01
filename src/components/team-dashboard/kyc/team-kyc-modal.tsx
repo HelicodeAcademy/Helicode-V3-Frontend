@@ -151,7 +151,7 @@ export function TeamKYCModal({
     }
   };
 
-  const handleSelectStablecoinOnly = async () => {
+  const goToBridgeStep = async () => {
     try {
       setIsInitiating(true);
       const data = await initiateBridgeKyc();
@@ -161,7 +161,7 @@ export function TeamKYCModal({
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Failed to start stablecoin verification";
+          : "Failed to start verification";
       toast.error(errorMessage);
       console.error("Bridge KYC initiation error:", error);
     } finally {
@@ -171,7 +171,7 @@ export function TeamKYCModal({
 
   const handleContinue = async () => {
     if (selectedPayoutMethod === "digital-only") {
-      await handleSelectStablecoinOnly();
+      await goToBridgeStep();
       return;
     }
 
@@ -274,8 +274,7 @@ export function TeamKYCModal({
                 </button>
                 <TeamKYCForm
                   onSuccess={() => {
-                    onSuccess?.();
-                    handleOpenChange(false);
+                    void goToBridgeStep();
                   }}
                 />
               </div>
