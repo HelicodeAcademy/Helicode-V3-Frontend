@@ -136,7 +136,7 @@ export function TeamKYCModal({
 }: TeamKYCModalProps) {
   const [step, setStep] = useState<KYCStep>("choose");
   const [selectedPayoutMethod, setSelectedPayoutMethod] =
-    useState<PayoutMethod>("digital-only");
+    useState<PayoutMethod>("digital-local");
   const [isInitiating, setIsInitiating] = useState(false);
   const [bridgeData, setBridgeData] = useState<BridgeKycInitResponse | null>(
     null,
@@ -159,9 +159,7 @@ export function TeamKYCModal({
       setStep("bridge");
     } catch (error) {
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to start verification";
+        error instanceof Error ? error.message : "Failed to start verification";
       toast.error(errorMessage);
       console.error("Bridge KYC initiation error:", error);
     } finally {
