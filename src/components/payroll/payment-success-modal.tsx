@@ -29,7 +29,7 @@ export function PaymentSuccessModal({
       >
         {/* Illustration */}
         <Image
-          src="/payroll/modal-illustration.png"
+          src="/payroll/modal-illu.svg"
           alt="illustration"
           width={394}
           height={220}

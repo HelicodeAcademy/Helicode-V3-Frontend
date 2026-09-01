@@ -52,27 +52,31 @@ const STEP_COPY: Record<
 
 const PAYOUT_OPTIONS: Array<{
   value: PayoutMethod;
+  recommended: boolean;
   title: string;
   description: string;
   icon: string;
 }> = [
-  {
-    value: "digital-only",
-    title: "Digital Dollars only",
-    description:
-      "Get paid in digital dollars to your crypto wallet. Choose this if local currency payouts aren't supported in your country.",
-    icon: "/team/dollar-circle.svg",
-  },
   {
     value: "digital-local",
     title: "Digital Dollars + local currency",
     description:
       "Get paid in digital dollars, or straight into your local bank account.",
     icon: "/team/bank.svg",
+    recommended: true,
+  },
+  {
+    value: "digital-only",
+    title: "Digital Dollars only",
+    description:
+      "Get paid in digital dollars to your crypto wallet. Choose this if local currency payouts aren't supported in your country.",
+    icon: "/team/dollar-circle.svg",
+    recommended: false,
   },
 ];
 
 function PayoutMethodOption({
+  recommended,
   title,
   description,
   icon,
@@ -80,6 +84,7 @@ function PayoutMethodOption({
   onSelect,
 }: {
   title: string;
+  recommended: boolean;
   description: string;
   icon: string;
   selected: boolean;
@@ -101,6 +106,11 @@ function PayoutMethodOption({
       </div>
 
       <div className="min-w-0 flex-1">
+        {recommended && (
+          <div className="bg-[#0052FF] text-white px-2 py-1 rounded-[32px] text-[10px] font-semibold w-fit mb-2">
+            Highly recommended
+          </div>
+        )}
         <p className="font-semibold text-[#0B1524]">{title}</p>
         <p className="mt-1 text-sm leading-[145%] text-[#5A6779]">
           {description}
@@ -211,6 +221,7 @@ export function TeamKYCModal({
               {PAYOUT_OPTIONS.map((option) => (
                 <PayoutMethodOption
                   key={option.value}
+                  recommended={option.recommended}
                   title={option.title}
                   description={option.description}
                   icon={option.icon}

@@ -243,11 +243,12 @@ export function PayrollOverviewModal({
 
             <div className="p-2">
               <Image
-                src="/payroll/modal-illustration.png"
+                src="/payroll/modal-illu.svg"
                 alt="Success"
                 width={384}
                 height={220}
                 className="w-full rounded-md"
+                priority
               />
               <div className="px-4 pt-6 pb-6">
                 <h2 className="text-2xl font-bold text-[#000000] mb-8">

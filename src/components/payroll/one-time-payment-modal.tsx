@@ -341,16 +341,17 @@ export function OneTimePaymentModal({
         {step === "success" && (
           <>
             <DialogTitle className="sr-only">Payment Sent</DialogTitle>
-            <div className="flex flex-col items-center p-2">
+            <div className="flex flex-col p-2">
               <Image
-                src="/payroll/modal-illustration.png"
+                src="/payroll/modal-illu.svg"
                 alt="Success"
                 width={384}
                 height={220}
                 className="w-full rounded-md"
+                priority
               />
               <div className="px-4 pb-6 pt-6">
-                <h2 className="mb-8 text-2xl font-bold text-[#000000]">
+                <h2 className="mb-4 text-2xl font-bold text-[#000000]">
                   Payment Sent!
                 </h2>
                 <Button

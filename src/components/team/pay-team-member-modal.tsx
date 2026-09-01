@@ -219,16 +219,17 @@ export function PayTeamMemberModal({
           <>
             <DialogTitle className="sr-only">Payment Sent</DialogTitle>
 
-            <div className="p-2 flexflex-colitems-center">
+            <div className="p-2 flex flex-col">
               <Image
-                src="/payroll/modal-illustration.png"
+                src="/payroll/modal-illu.svg"
                 alt="Success"
                 width={384}
                 height={220}
                 className="w-full rounded-md"
+                priority
               />
               <div className="px-4 pt-6 pb-6">
-                <h2 className="text-2xl font-bold text-[#000000] mb-8">
+                <h2 className="text-2xl font-bold text-[#000000] mb-4">
                   Payment Sent!
                 </h2>
                 <Button
