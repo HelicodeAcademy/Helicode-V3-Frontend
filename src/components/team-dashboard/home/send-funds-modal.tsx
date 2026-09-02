@@ -223,7 +223,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
                       height={16}
                     />
                     <span className="text-sm font-medium text-[#344054]">
-                      USD
+                      USDC
                     </span>
                   </div>
                 </div>
