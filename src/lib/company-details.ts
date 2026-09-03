@@ -12,6 +12,9 @@ export interface CompanyKycSummary {
   hasBridgeWallet?: boolean;
   hasVirtualAccount?: boolean;
   canCreateActivePayrollGroup?: boolean;
+  companyFiatOfframpEnabled?: boolean;
+  offrampKycStatus?: boolean;
+  bankPayoutStatus?: boolean;
 }
 
 export interface CompanyDetailsResponse {
@@ -26,6 +29,9 @@ export interface CompanyDetailsResponse {
   websiteUrl: string;
   invoiceCurrency: string;
   createdAt?: string;
+  companyFiatOfframpEnabled?: boolean;
+  offrampKycStatus?: boolean;
+  bankPayoutStatus?: boolean;
   employer: {
     id: string;
     email: string;

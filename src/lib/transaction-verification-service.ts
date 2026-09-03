@@ -2,6 +2,7 @@ import { post } from "./api-client";
 
 export type TransactionVerificationSubject =
   | "COMPANY_WITHDRAWAL_CRYPTO"
+  | "COMPANY_WITHDRAWAL_FIAT"
   | "COMPANY_PAY_NOW_GROUP"
   | "COMPANY_PAY_NOW_MEMBER"
   | "COMPANY_PAY_NOW_ALL"

@@ -92,7 +92,10 @@ export default function SettingsPage() {
       ) : (
         <>
           {activeTab === "general" && (
-            <GeneralSettingsTab companyDetails={companyDetails} />
+            <GeneralSettingsTab
+              companyDetails={companyDetails}
+              onRefreshCompanyDetails={fetchCompanyDetails}
+            />
           )}
           {activeTab === "account" && (
             <MyAccountSettingsTab companyDetails={companyDetails} />

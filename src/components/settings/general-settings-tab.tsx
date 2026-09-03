@@ -13,13 +13,16 @@ import { Award, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { CompanyOfframpSettingsSection } from "./company-offramp-settings-section";
 
 interface GeneralSettingsTabProps {
   companyDetails: CompanyDetailsResponse | null;
+  onRefreshCompanyDetails?: () => void;
 }
 
 export function GeneralSettingsTab({
   companyDetails,
+  onRefreshCompanyDetails,
 }: GeneralSettingsTabProps) {
   const { kycStatus, setKYCStatus } = useKYCStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -150,6 +153,11 @@ export function GeneralSettingsTab({
           )}
         </div>
       </section>
+
+      <CompanyOfframpSettingsSection
+        companyDetails={companyDetails}
+        onRefresh={onRefreshCompanyDetails}
+      />
     </div>
   );
 }

@@ -25,7 +25,20 @@ import {
 import { KycVerificationBanner } from "@/components/dashboard-home/kyc/kyc-verification-banner";
 import { useWalletStore } from "@/store/wallet-store";
 import { getWalletAddress } from "@/lib/wallet-service";
-import { getCompanyDetails } from "@/lib/company-details";
+import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
+import { CompanyWithdrawFundsModal } from "@/components/wallet/company-withdraw-funds-modal";
+import { CompanyFiatWithdrawalModal } from "@/components/wallet/company-fiat-withdrawal-modal";
+import {
+  CompanyDetailsResponse,
+  getCompanyDetails,
+} from "@/lib/company-details";
+import {
+  getCompanyBankPayoutStatus,
+  getCompanyOfframpKycStatus,
+  isCompanyFiatOfframpEnabled,
+} from "@/lib/company-offramp-service";
+import { hasCompanyAdminPermission } from "@/lib/permissions";
+import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import {
   getCompanyTransactions,
@@ -42,7 +55,6 @@ import { isKycFullyApproved, useKYCStore } from "@/store/kyc-store";
 import { FundWalletModal } from "@/components/wallet/fund-wallet-modal";
 import { FundCryptoModal } from "@/components/wallet/fund-crypto-modal";
 import { FundCardModal } from "@/components/wallet/fund-card-modal";
-import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 
 const PAYROLL_RANGE_OPTIONS: Array<{
   label: string;
@@ -71,6 +83,10 @@ export default function DashboardHomePage() {
   const [fundCryptoOpen, setFundCryptoOpen] = useState(false);
   const [fundCardOpen, setFundCardOpen] = useState(false);
   const [withdrawFundsOpen, setWithdrawFundsOpen] = useState(false);
+  const [withdrawChooserOpen, setWithdrawChooserOpen] = useState(false);
+  const [fiatWithdrawOpen, setFiatWithdrawOpen] = useState(false);
+  const [companyDetails, setCompanyDetails] =
+    useState<CompanyDetailsResponse | null>(null);
 
   useEffect(() => {
     setTitle("Home");
@@ -132,6 +148,7 @@ export default function DashboardHomePage() {
   const fetchCompanyDetails = async () => {
     try {
       const data = await getCompanyDetails();
+      setCompanyDetails(data);
       setHasPin(data.hasTransactionPin);
     } catch (error) {
       console.error("Failed to fetch company details", error);
@@ -155,13 +172,49 @@ export default function DashboardHomePage() {
       ?.label ?? "Last 30 days";
 
   const verificationApproved = isKycFullyApproved(kycStatus);
+  const fiatOfframpEnabled = isCompanyFiatOfframpEnabled(companyDetails);
+  const offrampKycComplete = getCompanyOfframpKycStatus(companyDetails);
+  const bankPayoutComplete = getCompanyBankPayoutStatus(companyDetails);
+  const localPayoutSetupIncomplete =
+    fiatOfframpEnabled && (!offrampKycComplete || !bankPayoutComplete);
 
   const handleWithdraw = () => {
     if (!verificationApproved) {
       toast.error("Complete account verification before withdrawing funds.");
       return;
     }
+
+    if (fiatOfframpEnabled) {
+      setWithdrawChooserOpen(true);
+      return;
+    }
+
     setWithdrawFundsOpen(true);
+  };
+
+  const handleSelectLocalWithdraw = () => {
+    setWithdrawChooserOpen(false);
+
+    if (!hasCompanyAdminPermission("COMPANY_WITHDRAWAL", "WRITE")) {
+      toast.error("You do not have permission to withdraw to a local account.");
+      return;
+    }
+
+    if (!offrampKycComplete) {
+      toast.error(
+        "Complete payout KYC in Settings before withdrawing to a local account.",
+      );
+      return;
+    }
+
+    if (!bankPayoutComplete) {
+      toast.error(
+        "Add bank details in Settings before withdrawing to a local account.",
+      );
+      return;
+    }
+
+    setFiatWithdrawOpen(true);
   };
 
   const handleFundWallet = () => {
@@ -336,6 +389,27 @@ export default function DashboardHomePage() {
       {/* Verification status — only when not fully approved */}
       <KycVerificationBanner />
 
+      {localPayoutSetupIncomplete && (
+        <div className="bg-[#DBEAFE] border border-[#0084FD] rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-[#0084FD] shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-[#003DA5]">
+              Local payout setup required
+            </p>
+            <p className="text-sm text-[#0084FD] mt-1">
+              Complete payout KYC and bank details in Settings to withdraw to a
+              local bank account.
+            </p>
+          </div>
+          <Button
+            asChild
+            className="bg-[#0084FD] text-white hover:bg-[#0084FD]/90 h-9 text-sm shrink-0"
+          >
+            <Link href="/dashboard/settings">Go to Settings</Link>
+          </Button>
+        </div>
+      )}
+
       {/* Promotional Section */}
       <div className="flex items-stretch gap-6 rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
         <div className="flex-1 p-6">
@@ -477,6 +551,28 @@ export default function DashboardHomePage() {
       <WithdrawFundsModal
         open={withdrawFundsOpen}
         onOpenChange={setWithdrawFundsOpen}
+      />
+      <CompanyWithdrawFundsModal
+        open={withdrawChooserOpen}
+        onOpenChange={setWithdrawChooserOpen}
+        onSelectCrypto={() => {
+          setWithdrawChooserOpen(false);
+          setWithdrawFundsOpen(true);
+        }}
+        onSelectLocal={handleSelectLocalWithdraw}
+        showLocalOption={hasCompanyAdminPermission(
+          "COMPANY_WITHDRAWAL",
+          "WRITE",
+        )}
+      />
+      <CompanyFiatWithdrawalModal
+        open={fiatWithdrawOpen}
+        onOpenChange={setFiatWithdrawOpen}
+        onSuccess={() => {
+          fetchWalletBalance();
+          fetchRecentTransactions();
+          fetchCompanyDetails();
+        }}
       />
     </div>
   );
