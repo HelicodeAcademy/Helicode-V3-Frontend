@@ -37,6 +37,25 @@ const statusStyles: Record<string, string> = {
     "bg-[#FDECEC] text-[#D32828] border border-[#F0D0D0] text-xs font-semibold",
 };
 
+function formatPaymentMethodLabel(paymentMethod: string) {
+  const normalized = paymentMethod.toLowerCase();
+
+  if (
+    normalized.includes("fiat") ||
+    normalized.includes("offramp") ||
+    normalized.includes("local bank") ||
+    normalized.includes("company_fiat_offramp")
+  ) {
+    return "Local bank withdrawal";
+  }
+
+  if (normalized.includes("crypto") || normalized.includes("wallet")) {
+    return "Crypto withdrawal";
+  }
+
+  return paymentMethod;
+}
+
 function formatCompanyAmount(
   amount: string,
   type: CompanyFeedTransaction["type"],
@@ -237,7 +256,7 @@ export function TransactionsFeedTable({
                       <CurrencyCell currency={transaction.currency} />
                     </TableCell>
                     <TableCell className="text-sm font-medium text-[#101928]">
-                      {transaction.paymentMethod}
+                      {formatPaymentMethodLabel(transaction.paymentMethod)}
                     </TableCell>
                     <TableCell>
                       <StatusBadge status={transaction.status} />
