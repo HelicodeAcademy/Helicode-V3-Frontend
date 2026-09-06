@@ -218,11 +218,11 @@ export function CompanySignupForm() {
       {/* Legal Text */}
       <p className="text-xs text-[#444444] my-6 font-medium">
         By signing up, you agree to our{" "}
-        <a href="#" className="underline">
+        <a href="/terms-and-conditions" className="underline">
           Terms & Conditions
         </a>{" "}
         and{" "}
-        <a href="#" className="underline">
+        <a href="/privacy-policy" className="underline">
           Privacy Policy
         </a>
       </p>

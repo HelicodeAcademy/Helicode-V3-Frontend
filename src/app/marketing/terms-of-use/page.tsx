@@ -1,15 +1,26 @@
-import FooterCTA from '@/components/Landing-page/FooterCTA'
-import Navbar from '@/components/navigation/Navbar'
+import type { Metadata } from "next";
+import FooterCTA from "@/components/Landing-page/FooterCTA";
+import Footer from "@/components/Landing-page/Footer";
+import Navbar from "@/components/navigation/Navbar";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Terms of Use",
+  description:
+    "Read the Helicode Terms of Use covering your rights and responsibilities when using our stablecoin payroll and hiring platform.",
+  path: "/terms-of-use",
+});
 
 export default function TermsOfUsePage() {
     return (
+        <div>
+        <Navbar />
         <main>
-            <Navbar />
             <div className="py-12 md:py-16 lg:py-20">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
                     <div className="space-y-13">
                         <div className="space-y-8">
-                            <h2 className="text-4xl md:text-5xl lg:text-7xl font-normal">Terms of use</h2>
+                            <h1 className="text-4xl md:text-5xl lg:text-7xl font-normal">Terms of use</h1>
 
                             <div>
                                 <p className="text-xl">
@@ -228,5 +239,7 @@ export default function TermsOfUsePage() {
                 <FooterCTA />
             </div>
         </main>
+        <Footer />
+        </div>
     )
 }

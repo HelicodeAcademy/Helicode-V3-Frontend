@@ -1,26 +1,14 @@
 import type React from "react";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Sign Up - Helicode",
-  description: "Create your Helicode account",
-  openGraph: {
-    title: "Sign Up - Helicode",
-    description: "Create your Helicode account",
-    url: "https://app.helicode.xyz/signup",
-    siteName: "Helicode",
-    images: [
-      {
-        url: "https://helicode.xyz/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Helicode Open Graph Image",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
+export const metadata: Metadata = buildMetadata({
+  title: "Sign Up",
+  description:
+    "Create your Helicode account to hire talent and run stablecoin payroll for global teams.",
+  path: "/signup",
+  noIndex: true,
+});
 
 export default function SignupLayout({
   children,

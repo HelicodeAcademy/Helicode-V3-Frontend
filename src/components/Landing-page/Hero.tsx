@@ -18,11 +18,12 @@ export default function Hero() {
         <div className="flex flex-col gap-10 justify-center items-center text-center max-w-4xl mx-auto">
           <div className="space-y-4">
             <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black leadingtight">
-              Global hiring and payroll built on stablecoins.
+              Stablecoin payroll and global hiring for modern teams.
             </h1>
             <p className="max-w-xlmx-auto text-lg  text-[#717171] font-normal">
-              The all-in-one infrastructure for global hiring, payroll,
-              compliance, and workforce operations.
+              Helicode is the all-in-one platform for hiring talent, running
+              compliant payroll, and paying teams instantly in USDC or local
+              currency across Africa and beyond.
             </p>
           </div>
 

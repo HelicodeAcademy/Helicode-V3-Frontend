@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import "./globals.css";
 import Script from "next/script";
+import "./globals.css";
+import { JsonLd } from "@/components/seo/json-ld";
+import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +23,6 @@ const helveticaNeue = localFont({
       weight: "400",
       style: "normal",
     },
-
     {
       path: "../../public/font/Helvetica/HelveticaNeue-Medium.otf",
       weight: "500",
@@ -30,7 +31,7 @@ const helveticaNeue = localFont({
     {
       path: "../../public/font/Helvetica/HelveticaNeue-Bold.otf",
       weight: "700",
-      style: "500",
+      style: "normal",
     },
   ],
   variable: "--font-helvetica-neue",
@@ -38,26 +39,62 @@ const helveticaNeue = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Helicode",
-  description: "Stablecoin payroll for global teams",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | Stablecoin Payroll & Global Hiring`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "business",
+  keywords: [
+    "stablecoin payroll",
+    "crypto payroll",
+    "USDC payroll",
+    "global payroll Africa",
+    "payroll for remote teams",
+    "hire African talent",
+    "cross-border payroll",
+    "Helicode",
+  ],
   openGraph: {
-    title: "Helicode",
-    description: "Stablecoin payroll for global teams",
-    url: "https://helicode.xyz",
-    siteName: "Helicode",
+    title: `${SITE_NAME} | Stablecoin Payroll & Global Hiring`,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     images: [
       {
-        url: "https://helicode.xyz/og-image.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Helicode Open Graph Image",
+        alt: "Helicode — Stablecoin payroll for global teams",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | Stablecoin Payroll & Global Hiring`,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/og-image.png"],
+  },
   icons: {
     icon: "/favicon.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
@@ -71,11 +108,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${helveticaNeue.variable} font-sans antialiased`}
       >
+        <JsonLd />
+
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5RKZ24R4XG"
           strategy="afterInteractive"
         />
-
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -106,6 +144,7 @@ export default function RootLayout({
           `}
         </Script>
         <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             height="1"
             width="1"

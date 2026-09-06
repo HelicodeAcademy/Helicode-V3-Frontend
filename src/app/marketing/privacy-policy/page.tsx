@@ -1,17 +1,28 @@
+import type { Metadata } from "next";
 import FooterCTA from "@/components/Landing-page/FooterCTA";
+import Footer from "@/components/Landing-page/Footer";
 import Navbar from "@/components/navigation/Navbar";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Privacy Policy",
+  description:
+    "Read the Helicode Privacy Policy to understand how we collect, use, and protect your personal information.",
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPolicyPage() {
   return (
-    <main>
+    <div>
       <Navbar />
+      <main>
       <div className="py-12 md:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
           <div className="space-y-13">
             <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl lg:text-7xl font-normal">
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-normal">
                 Privacy Policy
-              </h2>
+              </h1>
 
               <p className="text-xl">
                 This Privacy Policy describes our policies and procedures on the
@@ -268,6 +279,8 @@ export default function PrivacyPolicyPage() {
         </div>
         <FooterCTA />
       </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
