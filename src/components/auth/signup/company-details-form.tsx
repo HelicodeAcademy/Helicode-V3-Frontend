@@ -18,7 +18,6 @@ import { countries } from "@/lib/countries";
 import { signupCompany } from "@/lib/auth-service";
 import toast from "react-hot-toast";
 import { AlertCircle, Loader2 } from "lucide-react";
-
 /**
  * Company Details Form - Second step of signup
  * Collects: Company Name, Country — then creates the account
