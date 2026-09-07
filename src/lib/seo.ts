@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.helicode.xyz";
 export const SITE_NAME = "Helicode";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+// New filename so X/LinkedIn refetch instead of using the old cached card.
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/helicode-og.png`;
 
 export const DEFAULT_DESCRIPTION =
   "Helicode is stablecoin payroll and global hiring infrastructure for teams across Africa and beyond. Hire, onboard, run payroll, and pay talent instantly in USDC or local currency.";
