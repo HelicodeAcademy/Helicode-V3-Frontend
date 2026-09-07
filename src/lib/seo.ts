@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const SITE_URL = "https://helicode.xyz";
+export const SITE_URL = "https://www.helicode.xyz";
 export const SITE_NAME = "Helicode";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 

@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { JsonLd } from "@/components/seo/json-ld";
-import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     images: [
       {
-        url: "/og-image.png",
+        url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
         alt: "Helicode — Stablecoin payroll for global teams",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} | Stablecoin Payroll & Global Hiring`,
     description: DEFAULT_DESCRIPTION,
-    images: ["/og-image.png"],
+    images: [DEFAULT_OG_IMAGE],
   },
   icons: {
     icon: "/favicon.png",
