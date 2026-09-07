@@ -15,6 +15,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Legacy / accidental marketing path → home
+  if (pathname === "/payroll" || pathname.startsWith("/payroll/")) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   //  Handle subdomains
   if (hostname.startsWith("app.") && pathname === "/") {
     return NextResponse.redirect(new URL("/signup", request.url));

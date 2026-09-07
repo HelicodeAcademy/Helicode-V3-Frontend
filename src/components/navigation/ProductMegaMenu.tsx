@@ -24,7 +24,7 @@ const products = [
     {
         title: 'Payroll',
         description: 'Pay your team instantly in stablecoins with low fees, no borders, and zero delays.',
-        href: '/payroll',
+        href: '/',
         icon: Image3,
     },
 ];

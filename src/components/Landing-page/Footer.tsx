@@ -19,10 +19,10 @@ export default function Footer() {
               <p className="text-sm font-medium text-black">Product</p>
               <div className="flex flex-col gap-2">
                 <Link
-                  href="/payroll"
+                  href="/"
                   className="text-[#939393] hover:text-black text-sm transition-colors duration-300"
                 >
-                  Payroll
+                  Home
                 </Link>
                 <Link
                   href="/about"
