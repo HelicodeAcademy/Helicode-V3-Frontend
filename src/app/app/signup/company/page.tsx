@@ -61,7 +61,7 @@ export default function CompanySignupPage() {
               className="font-medium hover:underline text-black text-sm"
             >
               Already have an account?{" "}
-              <span className="font-bold text-[#355587]">Login</span>
+              <span className="font-bold text-[#0052FF]">Login</span>
             </Link>
           </div>
 

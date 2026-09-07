@@ -79,8 +79,8 @@ export default function SignupPage() {
               </h2>
               <p className="text-[#0F112A] text-sm">
                 You can create your company account right away if you&apos;re an
-                employer or <br /> refer your employer if you&apos;re an
-                employee.
+                employer or <br className="hidden md:block" /> refer your
+                employer if you&apos;re an employee.
               </p>
             </div>
 
