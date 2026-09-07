@@ -85,6 +85,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
   },
+  verification: {
+    google: "q72C8nPSWgmv44Lip9JfsS3EEPt4yGxXO7x97EJrQas",
+  },
   robots: {
     index: true,
     follow: true,
