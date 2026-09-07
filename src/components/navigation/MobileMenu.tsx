@@ -95,9 +95,9 @@ export default function MobileMenu({ open, onClose }: Props) {
                 Hire Talent
               </HireTalentButton>
 
-              <a href="https://learn.helicode.xyz/" onClick={onClose}>
+              {/* <a href="https://learn.helicode.xyz/" onClick={onClose}>
                 Train Talent
-              </a>
+              </a> */}
 
               <div className="mt-4 flex flex-col gap-4">
                 <Button

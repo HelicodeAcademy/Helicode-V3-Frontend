@@ -50,12 +50,12 @@ export default function Navbar() {
                   Hire Talent
                 </HireTalentButton>
 
-                <a
+                {/* <a
                   href="https://learn.helicode.xyz/"
                   className="px2 text-black/70 font-normal hover:text-black transition-colors"
                 >
                   Train Talent
-                </a>
+                </a> */}
               </div>
 
               <div className="hidden lg:block h-6 w-px bg-[#e5e7eb]" />
