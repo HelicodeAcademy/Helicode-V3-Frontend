@@ -321,9 +321,8 @@ export default function Features() {
                   </h3>
 
                   <p className="text-[#697282] font-normal text-base">
-                    Run global payroll with stablecoins or fiat. Pay teams
-                    instantly across Africa, avoid FX delays, and reduce
-                    cross-border costs.
+                    Run payroll using stablecoins or fiat. Pay teams instantly,
+                    avoid FX delays, and reduce cross-border costs.
                   </p>
                 </div>
               </div>
