@@ -1,12 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChangePasswordModal } from "@/components/settings/change-password-modal";
 import { changePassword } from "@/lib/auth-service";
+import { useAuthStore } from "@/store/auth-store";
+import { useTeamStore } from "@/store/team-store";
+import { getLoginPathForAuthType } from "@/lib/token-refresh";
+import {
+  clearLastActivity,
+  EMPLOYER_LAST_ACTIVITY_KEY,
+} from "@/lib/inactivity-session";
 
 export function SecuritySettingsTab() {
+  const router = useRouter();
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const { clearLoginData, authType } = useAuthStore();
+
+  const invalidateSession = () => {
+    clearLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
+    clearLoginData();
+    useTeamStore.getState().clearMembers();
+    router.push(getLoginPathForAuthType(authType));
+  };
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
@@ -38,6 +55,7 @@ export function SecuritySettingsTab() {
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}
         onSubmitPassword={changePassword}
+        onSuccess={invalidateSession}
       />
     </div>
   );

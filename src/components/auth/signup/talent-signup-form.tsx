@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  PasswordRequirements,
+  isSignupPasswordValid,
+} from "@/components/auth/signup/password-requirements";
 
 interface TalentSignupFormData {
   firstName: string;
@@ -18,7 +22,6 @@ interface TalentSignupFormData {
 export function TalentSignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
 
   const {
     register,
@@ -30,22 +33,9 @@ export function TalentSignupForm() {
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const password = watch("password");
-
-  const validatePassword = (value: string) => {
-    if (value && value.length < 10) {
-      setPasswordError("Password required to be at least 10 characters long");
-      return false;
-    }
-    setPasswordError("");
-    return true;
-  };
+  const password = watch("password") || "";
 
   const onSubmit = async (data: TalentSignupFormData) => {
-    if (!validatePassword(data.password)) {
-      return;
-    }
-
     setIsLoading(true);
     // Placeholder for future Zustand store integration
     console.log("Form data:", data);
@@ -147,10 +137,9 @@ export function TalentSignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               {...register("password", {
-                required: "Password is required",
+                required: true,
               })}
-              onBlur={() => validatePassword(password)}
-              className={`pr-10 ${passwordError ? "border-[#FF383C]" : ""}`}
+              className="pr-10"
             />
             <button
               type="button"
@@ -165,14 +154,7 @@ export function TalentSignupForm() {
               )}
             </button>
           </div>
-          {passwordError && (
-            <p className="text-xs text-[#ED2525] mt-1">{passwordError}</p>
-          )}
-          {errors.password && (
-            <p className="text-xs text-[#ED2525] mt-1">
-              {errors.password.message}
-            </p>
-          )}
+          <PasswordRequirements password={password} />
         </div>
       </div>
 
@@ -195,7 +177,7 @@ export function TalentSignupForm() {
           width={26}
           height={26}
           className="absolute left-4"
-        />
+      /
 
         <span>Sign Up Using Google</span>
       </Button> */}
@@ -203,11 +185,11 @@ export function TalentSignupForm() {
       {/* Legal Text */}
       <p className="text-xs text-[#444444] my-6 font-medium">
         By signing up, you agree to our{" "}
-        <a href="#" className="underline">
+        <a href="/terms-of-use" className="underline">
           Terms & Conditions
         </a>{" "}
         and{" "}
-        <a href="#" className="underline">
+        <a href="/privacy-policy" className="underline">
           Privacy Policy
         </a>
       </p>
@@ -217,7 +199,7 @@ export function TalentSignupForm() {
         <Button
           type="submit"
           variant={"primary"}
-          disabled={isLoading}
+          disabled={isLoading || !isSignupPasswordValid(password)}
           className="w-37.75 hover:bg-[#101828] text-white font-medium"
         >
           {isLoading ? "Creating your account..." : "Create your account"}

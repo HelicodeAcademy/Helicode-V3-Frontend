@@ -215,9 +215,12 @@ export function VerifyEmailForm() {
       </h1>
 
       {/* Description */}
-      <p className="mb-4 text-sm text-[#444444] leading-[145%]">
+      <p className="mb-2 text-sm text-[#444444] leading-[145%]">
         A verification email has been sent to your inbox. Please verify
         <br /> your email to continue.
+      </p>
+      <p className="mb-4 text-sm text-[#667085] leading-[145%]">
+        The code expires in 10 minutes.
       </p>
       {/* Input field */}
       <form onSubmit={handleSubmit(onSubmit)}>

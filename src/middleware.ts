@@ -25,6 +25,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/signup", request.url));
   }
 
+  // Marketing legal pages must stay on marketing routes even on app.*
+  if (
+    hostname.startsWith("app.") &&
+    (pathname === "/terms-of-use" ||
+      pathname === "/privacy-policy" ||
+      pathname === "/about")
+  ) {
+    return NextResponse.rewrite(new URL(`/marketing${pathname}`, request.url));
+  }
+
   if (hostname.startsWith("app.")) {
     return NextResponse.rewrite(new URL(`/app${pathname}`, request.url));
   }

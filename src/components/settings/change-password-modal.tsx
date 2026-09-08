@@ -21,6 +21,8 @@ interface ChangePasswordModalProps {
     oldPassword: string,
     newPassword: string,
   ) => Promise<void>;
+  /** Called after a successful password change (e.g. clear session and force re-login). */
+  onSuccess?: () => void;
 }
 
 interface ChangePasswordFormData {
@@ -33,6 +35,7 @@ export function ChangePasswordModal({
   open,
   onOpenChange,
   onSubmitPassword = changePassword,
+  onSuccess,
 }: ChangePasswordModalProps) {
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
@@ -59,9 +62,10 @@ export function ChangePasswordModal({
 
     try {
       await onSubmitPassword(data.oldPassword, data.newPassword);
-      toast.success('Password changed successfully!');
+      toast.success('Password changed successfully. Please log in again.');
       reset();
-      setTimeout(() => onOpenChange(false), 1500);
+      onOpenChange(false);
+      onSuccess?.();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to change password';

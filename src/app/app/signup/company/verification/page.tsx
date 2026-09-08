@@ -12,12 +12,14 @@ export default function CompanyVerificationPage() {
         <div className="relative w-full h-full overflow-hidden">
           <div className="relative w-full h-full">
             <div className="absolute left-6 top-9 z-10">
-              <Image
-                src="/signup/logo.svg"
-                alt="Helicode Logo"
-                width={110}
-                height={24}
-              />
+              <Link href="/">
+                <Image
+                  src="/signup/logo.svg"
+                  alt="Helicode Logo"
+                  width={110}
+                  height={24}
+                />
+              </Link>
             </div>
 
             <div className="relative w-full h-full">

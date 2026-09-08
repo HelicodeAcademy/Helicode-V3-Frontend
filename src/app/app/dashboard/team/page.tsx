@@ -118,13 +118,14 @@ export default function TeamPage() {
               })
             }
           >
-            <SelectTrigger className="w-24.25 h-11! border-[#E4E7EC] text-[#0F112A]! text-sm font-medium rounded-3xl bg-[#f9fafb]">
+            <SelectTrigger className="w-fit h-11! border-[#E4E7EC] text-[#0F112A]! text-sm font-medium rounded-3xl bg-[#f9fafb]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="Active">Active</SelectItem>
               <SelectItem value="Inactive">Inactive</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
             </SelectContent>
           </Select>
         </div>

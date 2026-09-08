@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { X, Copy, Check } from "lucide-react";
+import { X, Copy, Check, Landmark } from "lucide-react";
 import { getOfframpProfile } from "@/lib/team/team-auth-service";
 import type { OfframpProfile } from "@/lib/team/team-auth-service";
 
@@ -96,7 +96,12 @@ export function BankDetailsModal({
   }, [open]);
 
   const bank = profile?.bank;
-  const countryName = bank
+  const hasBankAccount = Boolean(
+    bank?.bankName?.trim() ||
+      bank?.accountNumber?.trim() ||
+      bank?.accountName?.trim(),
+  );
+  const countryName = bank?.country
     ? (new Intl.DisplayNames(["en"], { type: "region" }).of(bank.country) ??
       bank.country)
     : "";
@@ -133,8 +138,21 @@ export function BankDetailsModal({
             <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
               <p className="text-sm text-red-600">{error}</p>
             </div>
-          ) : isLoading || !bank ? (
+          ) : isLoading ? (
             Array.from({ length: 5 }).map((_, i) => <SkeletonField key={i} />)
+          ) : !hasBankAccount || !bank ? (
+            <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#F2F4F7]">
+                <Landmark className="h-5 w-5 text-[#667085]" aria-hidden />
+              </div>
+              <p className="text-sm font-medium text-[#101928]">
+                No bank account added
+              </p>
+              <p className="mt-1 max-w-xs text-sm text-[#667085]">
+                You haven&apos;t linked a bank account for payouts yet. Add your
+                bank details to receive local currency payouts.
+              </p>
+            </div>
           ) : (
             <>
               <CopyField label="Bank name" value={bank.bankName} />

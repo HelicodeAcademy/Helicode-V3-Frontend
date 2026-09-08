@@ -33,13 +33,15 @@ export default function SignupPage() {
           <div className="relative w-full h-full">
             {/* Logo positioned inside the illustrator on the left */}
             <div className="absolute left-6 top-9 z-10">
-              <Image
-                src="/signup/logo.svg"
-                alt="Helicode Logo"
-                width={110}
-                height={24}
-                style={{ width: "auto", height: "auto" }}
-              />
+              <Link href="/">
+                <Image
+                  src="/signup/logo.svg"
+                  alt="Helicode Logo"
+                  width={110}
+                  height={24}
+                  style={{ width: "auto", height: "auto" }}
+                />
+              </Link>
             </div>
 
             <div className="relative w-full h-full">

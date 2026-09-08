@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useAuthStore } from "@/store/auth-store";
+import {
+  PasswordRequirements,
+  isSignupPasswordValid,
+} from "@/components/auth/signup/password-requirements";
 
 // This is the first step of signup
 // Collects first name, last name, work email and password from the user
@@ -29,7 +33,7 @@ export function CompanySignupForm() {
   const {
     register,
     handleSubmit,
-
+    watch,
     formState: { errors },
   } = useForm<CompanySignupFormData>({
     defaultValues: {
@@ -41,16 +45,8 @@ export function CompanySignupForm() {
     mode: "onBlur",
   });
 
-  // const password = watch("password");
-
-  // const validatePassword = (value: string) => {
-  //   if (value && value.length < 10) {
-  //     setPasswordError("Password required to be at least 10 characters long");
-  //     return false;
-  //   }
-  //   setPasswordError("");
-  //   return true;
-  // };
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const password = watch("password") || "";
 
   const onSubmit = async (data: CompanySignupFormData) => {
     // Save from data to store
@@ -162,10 +158,9 @@ export function CompanySignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               {...register("password", {
-                required: "Password is required",
+                required: true,
               })}
-              // onBlur={() => validatePassword(password)}
-              // className={`pr-10 ${passwordError ? "border-[#FF383C]" : ""}`}
+              className="pr-10"
             />
             <button
               type="button"
@@ -180,45 +175,14 @@ export function CompanySignupForm() {
               )}
             </button>
           </div>
-          {/* {passwordError && (
-            <p className="text-xs text-[#ED2525] mt-1">{passwordError}</p>
-          )} */}
-          {errors.password && (
-            <p className="text-xs text-[#ED2525] mt-1">
-              {errors.password.message}
-            </p>
-          )}
+          <PasswordRequirements password={password} />
         </div>
       </div>
-
-      {/* Divider */}
-      {/* <div className="flex items-center gap-4 mt-8 mb-6">
-        <div className="flex-1 h-px bg-[#DAE0EA]"></div>
-        <span className="text-sm text-[#444444]">or sign up with</span>
-        <div className="flex-1 h-px bg-[#DAE0EA]"></div>
-      </div> */}
-
-      {/* Google Sign Up Button */}
-      {/* <Button
-        type="button"
-        variant="outline"
-        className="relative w-full h-10.5 font-medium border-[#DAE0EA] text-[#212121] hover:bg-[#f4f5f7] bg-transparent flex items-center justify-center"
-      >
-        <Image
-          src="/signup/Google.svg"
-          alt="Google Logo"
-          width={26}
-          height={26}
-          className="absolute left-4"
-        />
-
-        <span>Sign Up Using Google</span>
-      </Button> */}
 
       {/* Legal Text */}
       <p className="text-xs text-[#444444] my-6 font-medium">
         By signing up, you agree to our{" "}
-        <a href="/terms-and-conditions" className="underline">
+        <a href="/terms-of-use" className="underline">
           Terms & Conditions
         </a>{" "}
         and{" "}
@@ -232,8 +196,8 @@ export function CompanySignupForm() {
       <Button
         type="submit"
         variant={"primary"}
-        // disabled={isLoading}
         className="mt-2"
+        disabled={!isSignupPasswordValid(password)}
       >
         Next
       </Button>

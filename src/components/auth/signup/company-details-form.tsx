@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { useAuthStore, SignupData } from "@/store/auth-store";
 import { countries } from "@/lib/countries";
 import { signupCompany } from "@/lib/auth-service";
 import toast from "react-hot-toast";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Loader2, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 /**
  * Company Details Form - Second step of signup
  * Collects: Company Name, Country — then creates the account
@@ -39,6 +38,8 @@ export function CompanyDetailsForm() {
     setIsLoading,
   } = useAuthStore();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [countryOpen, setCountryOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
 
   const {
     register,
@@ -51,6 +52,14 @@ export function CompanyDetailsForm() {
       country: signupData.country || "",
     },
   });
+
+  const filteredCountries = useMemo(() => {
+    const query = countrySearch.trim().toLowerCase();
+    if (!query) return countries;
+    return countries.filter((country) =>
+      country.toLowerCase().includes(query),
+    );
+  }, [countrySearch]);
 
   const onSubmit = async (data: CompanyDetailsFormData) => {
     try {
@@ -140,22 +149,89 @@ export function CompanyDetailsForm() {
               name="country"
               control={control}
               render={({ field }) => (
-                <Select
-                  value={field.value || undefined}
-                  onValueChange={field.onChange}
-                  disabled={isSubmitting}
+                <Popover
+                  open={countryOpen}
+                  onOpenChange={(open) => {
+                    setCountryOpen(open);
+                    if (!open) setCountrySearch("");
+                  }}
                 >
-                  <SelectTrigger className="rounded-lg border border-[#E4E7EC] bg-white w-full text-[#101828] focus:border-ring focus:ring-2 focus:ring-ring/10">
-                    <SelectValue placeholder="Select a country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country} value={country}>
-                        {country}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      disabled={isSubmitting}
+                      className={cn(
+                        "flex h-9 w-full items-center justify-between rounded-lg border border-[#E4E7EC] bg-white px-3 py-2 text-sm text-[#101828] outline-none focus:border-ring focus:ring-2 focus:ring-ring/10 disabled:cursor-not-allowed disabled:opacity-50",
+                        !field.value && "text-[#98a8c1]",
+                      )}
+                    >
+                      <span className="truncate">
+                        {field.value || "Select a country"}
+                      </span>
+                      <ChevronDown className="size-4 shrink-0 text-[#667085]" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="w-(--radix-popover-trigger-width) p-0"
+                  >
+                    <div className="border-b border-[#E4E7EC] p-2">
+                      <div className="relative">
+                        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#98A2B3]" />
+                        <Input
+                          value={countrySearch}
+                          onChange={(e) => setCountrySearch(e.target.value)}
+                          placeholder="Search country..."
+                          className="h-9 border-[#E4E7EC] pl-8"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <div
+                      className={cn(
+                        "max-h-60 overflow-y-auto overscroll-contain p-1",
+                        "scrollbar-thin scrollbar-thumb-[#D0D5DD] scrollbar-track-transparent",
+                        "[scrollbar-width:thin] [scrollbar-color:#D0D5DD_transparent]",
+                        "[&::-webkit-scrollbar]:w-2",
+                        "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#D0D5DD]",
+                        "[&::-webkit-scrollbar-track]:bg-transparent",
+                      )}
+                    >
+                      {filteredCountries.length === 0 ? (
+                        <p className="px-3 py-6 text-center text-sm text-[#667085]">
+                          No country found
+                        </p>
+                      ) : (
+                        filteredCountries.map((country) => {
+                          const selected = field.value === country;
+                          return (
+                            <button
+                              key={country}
+                              type="button"
+                              onClick={() => {
+                                field.onChange(country);
+                                setCountryOpen(false);
+                                setCountrySearch("");
+                              }}
+                              className={cn(
+                                "flex w-full items-center justify-between rounded-sm px-2 py-2 text-left text-sm text-[#101828] hover:bg-[#F2F4F7]",
+                                selected && "bg-[#EFF4FF]",
+                              )}
+                            >
+                              <span>{country}</span>
+                              {selected && (
+                                <Check className="size-4 text-[#0052FF]" />
+                              )}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                    <p className="border-t border-[#E4E7EC] px-3 py-1.5 text-[11px] text-[#98A2B3]">
+                      Scroll for more countries
+                    </p>
+                  </PopoverContent>
+                </Popover>
               )}
             />
           </div>
