@@ -13,6 +13,7 @@ export interface CompanyKycSummary {
   hasVirtualAccount?: boolean;
   canCreateActivePayrollGroup?: boolean;
   companyFiatOfframpEnabled?: boolean;
+  offrampFeePercent?: number;
   offrampKycStatus?: boolean;
   bankPayoutStatus?: boolean;
 }
@@ -30,6 +31,7 @@ export interface CompanyDetailsResponse {
   invoiceCurrency: string;
   createdAt?: string;
   companyFiatOfframpEnabled?: boolean;
+  offrampFeePercent?: number;
   offrampKycStatus?: boolean;
   bankPayoutStatus?: boolean;
   employer: {

@@ -1,5 +1,6 @@
 import { get, post } from "./api-client";
 import type { CompanyDetailsResponse } from "./company-details";
+import type { OfframpFiatQuote } from "./offramp-fee";
 import type {
   BankDetailsResponse,
   BankDetailsSubmissionData,
@@ -47,11 +48,7 @@ export interface CompanyOfframpProfile {
   bankPayoutStatus: boolean;
 }
 
-export interface CompanyOffRampQuoteResponse {
-  currency: string;
-  rate: number;
-  amountReceived: number;
-}
+export type CompanyOffRampQuoteResponse = OfframpFiatQuote;
 
 export interface CompanyFiatWithdrawalData {
   amount: number;

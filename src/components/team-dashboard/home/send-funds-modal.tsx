@@ -17,9 +17,14 @@ import toast from "react-hot-toast";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-verification-service";
 import {
+  getTeamCryptoOffRampQuote,
   getTeamTransactions,
   initiateTeamCryptoWithdrawal,
+  type TeamCryptoOffRampQuoteResponse,
 } from "@/lib/team/team-transaction-service";
+import { useDebounce } from "@/hooks/use-debounce";
+import { OfframpCryptoQuoteSummary } from "@/components/wallet/offramp-quote-summary";
+import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 
 interface SendFundsModalProps {
   open: boolean;
@@ -43,6 +48,13 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
   const [sendData, setSendData] = useState<CryptoWithdrawalFormData | null>(
     null,
   );
+  const [quote, setQuote] = useState<TeamCryptoOffRampQuoteResponse | null>(
+    null,
+  );
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
+  const { teamMember } = useTeamKYCStore();
+  const walletBalance = teamMember?.wallet?.balance || 0;
 
   const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
     defaultValues: {
@@ -53,6 +65,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
 
   const walletAddress = watch("walletAddress");
   const amount = watch("amount");
+  const debouncedAmount = useDebounce(amount, 500);
 
   useEffect(() => {
     if (!open) return;
@@ -67,7 +80,47 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
     setIsSubmitting(false);
     setVerificationError("");
     setSendData(null);
+    setQuote(null);
+    setQuoteError("");
+    setIsQuoteLoading(false);
   }, [open, reset]);
+
+  useEffect(() => {
+    if (!open || step !== "details") return;
+
+    const nextAmount = Number(debouncedAmount);
+
+    if (!debouncedAmount || Number.isNaN(nextAmount) || nextAmount <= 0) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    if (nextAmount > walletBalance) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    const fetchQuote = async () => {
+      setIsQuoteLoading(true);
+      setQuoteError("");
+
+      try {
+        const quoteResponse = await getTeamCryptoOffRampQuote(nextAmount);
+        setQuote(quoteResponse);
+      } catch (error) {
+        setQuote(null);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unable to load quote";
+        setQuoteError(errorMessage);
+      } finally {
+        setIsQuoteLoading(false);
+      }
+    };
+
+    void fetchQuote();
+  }, [debouncedAmount, open, step, walletBalance]);
 
   const validateInputs = () => {
     let isValid = true;
@@ -82,6 +135,9 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
     if (!amount || amount <= 0) {
       setAmountError("Amount must be greater than 0");
       isValid = false;
+    } else if (amount > walletBalance) {
+      setAmountError("Insufficient balance");
+      isValid = false;
     } else {
       setAmountError("");
     }
@@ -91,6 +147,17 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
 
   const handleContinue = async () => {
     if (!validateInputs()) {
+      return;
+    }
+
+    if (amount > walletBalance) {
+      setAmountError("Insufficient balance");
+      toast.error("Insufficient balance");
+      return;
+    }
+
+    if (!quote || quoteError) {
+      toast.error(quoteError || "Please wait for a valid quote");
       return;
     }
 
@@ -248,6 +315,8 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
 
                       if (!event.target.value) {
                         setAmountError("");
+                        setQuote(null);
+                        setQuoteError("");
                         return;
                       }
 
@@ -256,11 +325,32 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
                         return;
                       }
 
+                      if (nextAmount > walletBalance) {
+                        setAmountError("Insufficient balance");
+                        setQuote(null);
+                        setQuoteError("");
+                        return;
+                      }
+
                       setAmountError("");
                     }}
                   />
+                  <p className="mt-1 text-xs text-[#667085]">
+                    Available balance: ${walletBalance.toFixed(2)}
+                  </p>
                   {amountError && (
                     <p className="mt-1 text-xs text-red-500">{amountError}</p>
+                  )}
+                  {isQuoteLoading && (
+                    <p className="mt-1 text-xs text-[#667085]">
+                      Loading quote...
+                    </p>
+                  )}
+                  {quote && !quoteError && !amountError && (
+                    <OfframpCryptoQuoteSummary quote={quote} />
+                  )}
+                  {quoteError && (
+                    <p className="mt-1 text-xs text-red-500">{quoteError}</p>
                   )}
                 </div>
               </div>
@@ -272,9 +362,14 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
                   disabled={
                     !walletAddress ||
                     !amount ||
+                    amount <= 0 ||
+                    amount > walletBalance ||
                     amountError !== "" ||
                     addressError !== "" ||
-                    isSubmitting
+                    isSubmitting ||
+                    isQuoteLoading ||
+                    !!quoteError ||
+                    !quote
                   }
                 >
                   {isSubmitting ? "Sending code..." : "Continue"}

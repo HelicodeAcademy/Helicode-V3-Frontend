@@ -1,6 +1,7 @@
 import { get, postFormData, teamPost } from "./api-client";
 import { FullKYCStatus } from "@/store/kyc-store";
 import { BridgeKycStatus, BridgeTosStatus } from "@/store/auth-store";
+import type { OfframpFiatQuote } from "./offramp-fee";
 
 // Stage 1: Company KYC Data (legacy)
 export interface CompanyKYCData {
@@ -32,11 +33,7 @@ export interface EmployerDocumentsResponse {
   employerKycStatus: string;
 }
 
-export interface OffRampQuoteResponse {
-  currency: string;
-  rate: number;
-  amountReceived: number;
-}
+export type OffRampQuoteResponse = OfframpFiatQuote;
 
 export async function getKYCStatus(): Promise<FullKYCStatus> {
   const response = await get<FullKYCStatus>("/kyc/status");
