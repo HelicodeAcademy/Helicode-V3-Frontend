@@ -3,13 +3,10 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useWalletStore } from "@/store/wallet-store";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -18,7 +15,7 @@ import toast from "react-hot-toast";
 import { initiateCryptoWithdrawal } from "@/lib/wallet-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
-import { Loader2 } from "lucide-react";
+import { CryptoSendFundsForm } from "@/components/wallet/crypto-send-funds-form";
 
 interface WithdrawFundsModal {
   open: boolean;
@@ -30,181 +27,6 @@ type WithdrawStep = "details" | "verification" | "success";
 interface CryptoWithdrawalFormData {
   walletAddress: string;
   amount: string;
-}
-
-interface WithdrawDetailsStepProps {
-  walletAddress: string;
-  amount: string;
-  availableBalance: number;
-  addressError: string;
-  amountError: string;
-  onWalletAddressChange: (value: string) => void;
-  onAmountChange: (value: string) => void;
-  onContinue: () => void;
-  isLoading?: boolean;
-}
-
-interface WithdrawSuccessStepProps {
-  onGoHome: () => void;
-}
-
-function WithdrawDetailsStep({
-  walletAddress,
-  amount,
-  availableBalance,
-  addressError,
-  amountError,
-  onWalletAddressChange,
-  onAmountChange,
-  onContinue,
-  isLoading = false,
-}: WithdrawDetailsStepProps) {
-  const canContinue = walletAddress && amount && !addressError && !amountError;
-
-  return (
-    <>
-      <DialogHeader className="p-4">
-        <DialogTitle className="text-xl font-semibold text-[#101928]">
-          Withdraw funds
-        </DialogTitle>
-        <DialogDescription className="text-sm text-[#475367]">
-          Instant withdrawal to your crypto wallet
-        </DialogDescription>
-      </DialogHeader>
-
-      <div className="mt-6 space-y-6 p-4">
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <Label
-              htmlFor="to-address"
-              className="text-sm font-medium text-[#344054]"
-            >
-              To
-            </Label>
-            <Input
-              id="to-address"
-              placeholder="Paste address"
-              className="mt-1"
-              value={walletAddress}
-              onChange={(event) => onWalletAddressChange(event.target.value)}
-            />
-            {addressError ? (
-              <p className="mt-1 text-xs text-red-500">{addressError}</p>
-            ) : null}
-          </div>
-          <div className="flex flex-col">
-            <Label className="text-sm font-medium text-[#344054]">
-              Network
-            </Label>
-            <div className="mt-1 flex items-center gap-2 rounded-md border border-[#D0D5DD] bg-[#F9FAFB] px-3 py-2">
-              <Image src="/wallet/base.svg" alt="BASE" width={16} height={16} />
-              <span className="text-sm font-medium text-[#344054]">BASE</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <div className="w-32">
-            <Label className="text-sm font-medium text-[#344054]">Asset</Label>
-            <div className="mt-1 rounded-md border border-[#D0D5DD] bg-[#F9FAFB] px-3 py-2">
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/wallet/usdc.svg"
-                  alt="USDC"
-                  width={16}
-                  height={16}
-                />
-                <span className="text-sm font-medium text-[#344054]">USDC</span>
-              </div>
-            </div>
-            <span className="mt-1 block text-xs text-[#667085]">
-              Balance: ${availableBalance.toFixed(2)}
-            </span>
-          </div>
-
-          <div className="flex-1">
-            <Label
-              htmlFor="amount"
-              className="text-sm font-medium text-[#344054]"
-            >
-              Amount
-            </Label>
-            <Input
-              id="amount"
-              placeholder="0.00"
-              className="mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              type="number"
-              min="0"
-              step="0.01"
-              value={amount}
-              onChange={(event) => onAmountChange(event.target.value)}
-            />
-            {amountError ? (
-              <p className="mt-1 text-xs text-red-500">{amountError}</p>
-            ) : (
-              <p className="mt-1 text-xs text-[#667085]">
-                You can withdraw up to ${availableBalance.toFixed(2)}.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-start">
-          <Button
-            className="bg-[#000000] px-6 font-medium text-white disabled:opacity-50"
-            onClick={onContinue}
-            disabled={!canContinue || isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Procesing...
-              </>
-            ) : (
-              "Continue"
-            )}
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function WithdrawSuccessStep({ onGoHome }: WithdrawSuccessStepProps) {
-  return (
-    <div className="space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">
-      {/* <div className="flex justify-center"> */}
-      <Image
-        src="/payroll/modal-illustration.png"
-        alt="Success"
-        width={394}
-        height={220}
-        className="w-full"
-      />
-      {/* </div> */}
-
-      <div className="px-4 pb-6">
-        <div className="space-y-2 ">
-          <DialogTitle className="text-xl font-semibold text-[#101928]">
-            Withdrawal successful
-          </DialogTitle>
-          <DialogDescription className="text-sm text-[#475367]">
-            Your crypto has been successfully sent to the wallet address you
-            provided
-          </DialogDescription>
-        </div>
-
-        <div className="flex pt-4">
-          <Button
-            className="bg-[#000000] px-6 font-medium text-white"
-            onClick={onGoHome}
-          >
-            Go to home
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
@@ -224,7 +46,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   });
 
   const walletAddress = watch("walletAddress");
-  const amount = watch("amount");
+  const amount = watch("amount") || "";
   const availableBalance = walletData?.balance ?? 0;
   const parsedAmount = Number(amount);
 
@@ -234,13 +56,30 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     setStep("details");
     reset({
       walletAddress: "",
-      amount: " ",
+      amount: "",
     });
     setAmountError("");
     setAddressError("");
     setIsSubmitting(false);
     setVerificationError("");
   }, [open, reset]);
+
+  const validateAmountValue = (value: string): string => {
+    if (!value) return "";
+    const nextAmount = Number(value);
+    if (Number.isNaN(nextAmount) || nextAmount <= 0) {
+      return "Amount must be greater than 0";
+    }
+    if (nextAmount > availableBalance) {
+      return "Amount cannot exceed available balance";
+    }
+    return "";
+  };
+
+  const handleAmountChange = (value: string) => {
+    setValue("amount", value);
+    setAmountError(validateAmountValue(value));
+  };
 
   const validateInputs = () => {
     let isValid = true;
@@ -252,11 +91,9 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
       setAddressError("");
     }
 
-    if (!amount || Number(amount) <= 0) {
-      setAmountError("Amount must be greater than 0");
-      isValid = false;
-    } else if (Number(amount) > availableBalance) {
-      setAmountError("Amount cannot exceed available balance");
+    const nextAmountError = validateAmountValue(amount);
+    if (nextAmountError || !amount) {
+      setAmountError(nextAmountError || "Amount must be greater than 0");
       isValid = false;
     } else {
       setAmountError("");
@@ -340,49 +177,41 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     }
   };
 
-  const handleGoHome = () => {
-    onOpenChange(false);
-  };
+  const canContinue = Boolean(
+    walletAddress && amount && !addressError && !amountError,
+  );
+
+  const showSummary =
+    Boolean(amount) &&
+    !Number.isNaN(parsedAmount) &&
+    parsedAmount > 0 &&
+    !amountError;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-2">
+      <DialogContent
+        showCloseButton={false}
+        className="gap-0 overflow-visible rounded-2xl border-0 p-6 sm:max-w-108!"
+      >
         {step === "details" ? (
-          <WithdrawDetailsStep
+          <CryptoSendFundsForm
             walletAddress={walletAddress}
-            amount={amount?.toString() || ""}
+            amount={amount}
             availableBalance={availableBalance}
             addressError={addressError}
             amountError={amountError}
+            youSendUsdc={showSummary ? parsedAmount : null}
+            feeUsdc={showSummary ? 0 : null}
+            destinationUsdc={showSummary ? parsedAmount : null}
+            showSummary={showSummary}
+            isLoading={isSubmitting}
+            canContinue={canContinue}
             onWalletAddressChange={(value) => {
               setValue("walletAddress", value);
               if (value) setAddressError("");
             }}
-            onAmountChange={(value) => {
-              const nextAmount = value;
-              setValue("amount", nextAmount);
-
-              if (!value) {
-                setAmountError("");
-                return;
-              }
-
-              if (Number(nextAmount) <= 0) {
-                setAmountError("Amount must be greater than 0.");
-                return;
-              }
-
-              if (Number(nextAmount) > availableBalance) {
-                setAmountError(
-                  "Amount cannot be more than your available balance.",
-                );
-                return;
-              }
-
-              setAmountError("");
-            }}
-            onContinue={handleContinue}
-            isLoading={isSubmitting}
+            onAmountChange={handleAmountChange}
+            onContinue={() => void handleContinue()}
           />
         ) : step === "verification" ? (
           <EmailVerificationCodeStep
@@ -394,7 +223,34 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
             isResending={isResending}
           />
         ) : (
-          <WithdrawSuccessStep onGoHome={handleGoHome} />
+          <div className="space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">
+            <Image
+              src="/payroll/modal-illustration.png"
+              alt="Success"
+              width={394}
+              height={220}
+              className="w-full"
+            />
+
+            <div className="space-y-2">
+              <DialogTitle className="text-xl font-semibold text-[#101928]">
+                Withdrawal successful
+              </DialogTitle>
+              <DialogDescription className="text-sm text-[#475367]">
+                Your crypto has been successfully sent to the wallet address you
+                provided
+              </DialogDescription>
+            </div>
+
+            <div className="flex pt-4">
+              <Button
+                className="h-11 w-full rounded-xl bg-[#0084FD] font-semibold text-white hover:bg-[#0070DB]"
+                onClick={() => onOpenChange(false)}
+              >
+                Go to home
+              </Button>
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>
