@@ -38,7 +38,7 @@ import {
   isCompanyFiatOfframpEnabled,
 } from "@/lib/company-offramp-service";
 import { hasCompanyAdminPermission } from "@/lib/permissions";
-import { AlertCircle } from "lucide-react";
+// import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import {
   getCompanyTransactions,
@@ -175,8 +175,8 @@ export default function DashboardHomePage() {
   const fiatOfframpEnabled = isCompanyFiatOfframpEnabled(companyDetails);
   const offrampKycComplete = getCompanyOfframpKycStatus(companyDetails);
   const bankPayoutComplete = getCompanyBankPayoutStatus(companyDetails);
-  const localPayoutSetupIncomplete =
-    fiatOfframpEnabled && (!offrampKycComplete || !bankPayoutComplete);
+  // const localPayoutSetupIncomplete =
+  //   fiatOfframpEnabled && (!offrampKycComplete || !bankPayoutComplete);
 
   const handleWithdraw = () => {
     if (!verificationApproved) {
@@ -389,7 +389,7 @@ export default function DashboardHomePage() {
       {/* Verification status — only when not fully approved */}
       <KycVerificationBanner />
 
-      {localPayoutSetupIncomplete && (
+      {/* {localPayoutSetupIncomplete && (
         <div className="bg-[#DBEAFE] border border-[#0084FD] rounded-lg p-4 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-[#0084FD] shrink-0 mt-0.5" />
           <div className="flex-1">
@@ -408,7 +408,7 @@ export default function DashboardHomePage() {
             <Link href="/dashboard/settings">Go to Settings</Link>
           </Button>
         </div>
-      )}
+      )} */}
 
       {/* Promotional Section */}
       <div className="flex items-stretch gap-6 rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
