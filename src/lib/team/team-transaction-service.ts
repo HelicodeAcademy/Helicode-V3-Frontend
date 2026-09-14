@@ -5,6 +5,7 @@ import {
   CryptoWithdrawalResponse,
 } from "../wallet-service";
 import { WalletData } from "@/store/wallet-store";
+import type { OfframpCryptoQuote, OfframpFeeFields } from "../offramp-fee";
 
 // export interface TeamTransaction {
 //   status: boolean;
@@ -50,7 +51,7 @@ export interface WithdrawalData {
   reason: string;
 }
 
-export interface WithdrawalResponse {
+export interface WithdrawalResponse extends Partial<OfframpFeeFields> {
   environment: string;
   scenario: string;
   withdrawalId: string;
@@ -59,6 +60,8 @@ export interface WithdrawalResponse {
   ycResponse: Record<string, any>;
   simulatedWebhookPayload: Record<string, any>;
 }
+
+export type TeamCryptoOffRampQuoteResponse = OfframpCryptoQuote;
 
 export async function getTeamTransactions(): Promise<TeamTransactionData[]> {
   const response = await teamGet<TeamTransactionData[]>(`/team/transactions`);
@@ -90,6 +93,16 @@ export async function initiateWalletWithdrawal(
   const response = await teamPost<WithdrawalResponse>(
     "/team/wallet/offramp/fiat",
     data,
+  );
+  return response.data;
+}
+
+export async function getTeamCryptoOffRampQuote(
+  amount: number,
+): Promise<TeamCryptoOffRampQuoteResponse> {
+  const response = await teamPost<TeamCryptoOffRampQuoteResponse>(
+    "/team/wallet/offramp/crypto/quote",
+    { amount },
   );
   return response.data;
 }

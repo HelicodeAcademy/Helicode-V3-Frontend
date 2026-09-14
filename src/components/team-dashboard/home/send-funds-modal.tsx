@@ -3,13 +3,10 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -17,9 +14,14 @@ import toast from "react-hot-toast";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-verification-service";
 import {
+  getTeamCryptoOffRampQuote,
   getTeamTransactions,
   initiateTeamCryptoWithdrawal,
+  type TeamCryptoOffRampQuoteResponse,
 } from "@/lib/team/team-transaction-service";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useTeamKYCStore } from "@/store/team/team-kyc-store";
+import { CryptoSendFundsForm } from "@/components/wallet/crypto-send-funds-form";
 
 interface SendFundsModalProps {
   open: boolean;
@@ -30,7 +32,7 @@ type SendFundsStep = "details" | "verification" | "success";
 
 interface CryptoWithdrawalFormData {
   walletAddress: string;
-  amount: number;
+  amount: string;
 }
 
 export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
@@ -40,19 +42,29 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
   const [verificationError, setVerificationError] = useState("");
-  const [sendData, setSendData] = useState<CryptoWithdrawalFormData | null>(
+  const [sendData, setSendData] = useState<{
+    walletAddress: string;
+    amount: number;
+  } | null>(null);
+  const [quote, setQuote] = useState<TeamCryptoOffRampQuoteResponse | null>(
     null,
   );
+  const [isQuoteLoading, setIsQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
+  const { teamMember } = useTeamKYCStore();
+  const walletBalance = teamMember?.wallet?.balance || 0;
 
   const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
     defaultValues: {
       walletAddress: "",
-      amount: undefined,
+      amount: "",
     },
   });
 
   const walletAddress = watch("walletAddress");
-  const amount = watch("amount");
+  const amount = watch("amount") || "";
+  const parsedAmount = Number(amount);
+  const debouncedAmount = useDebounce(parsedAmount, 500);
 
   useEffect(() => {
     if (!open) return;
@@ -60,14 +72,75 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
     setStep("details");
     reset({
       walletAddress: "",
-      amount: undefined,
+      amount: "",
     });
     setAmountError("");
     setAddressError("");
     setIsSubmitting(false);
     setVerificationError("");
     setSendData(null);
+    setQuote(null);
+    setQuoteError("");
+    setIsQuoteLoading(false);
   }, [open, reset]);
+
+  useEffect(() => {
+    if (!open || step !== "details") return;
+
+    const nextAmount = Number(debouncedAmount);
+
+    if (
+      !amount ||
+      Number.isNaN(nextAmount) ||
+      nextAmount <= 0 ||
+      nextAmount > walletBalance
+    ) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    const fetchQuote = async () => {
+      setIsQuoteLoading(true);
+      setQuoteError("");
+
+      try {
+        const quoteResponse = await getTeamCryptoOffRampQuote(nextAmount);
+        setQuote(quoteResponse);
+      } catch (error) {
+        setQuote(null);
+        const errorMessage =
+          error instanceof Error ? error.message : "Unable to load quote";
+        setQuoteError(errorMessage);
+      } finally {
+        setIsQuoteLoading(false);
+      }
+    };
+
+    void fetchQuote();
+  }, [amount, debouncedAmount, open, step, walletBalance]);
+
+  const validateAmountValue = (value: string): string => {
+    if (!value) return "";
+    const nextAmount = Number(value);
+    if (Number.isNaN(nextAmount) || nextAmount <= 0) {
+      return "Amount must be greater than 0";
+    }
+    if (nextAmount > walletBalance) {
+      return "Insufficient balance";
+    }
+    return "";
+  };
+
+  const handleAmountChange = (value: string) => {
+    setValue("amount", value);
+    const error = validateAmountValue(value);
+    setAmountError(error);
+    if (error) {
+      setQuote(null);
+      setQuoteError("");
+    }
+  };
 
   const validateInputs = () => {
     let isValid = true;
@@ -79,8 +152,9 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
       setAddressError("");
     }
 
-    if (!amount || amount <= 0) {
-      setAmountError("Amount must be greater than 0");
+    const nextAmountError = validateAmountValue(amount);
+    if (nextAmountError || !amount) {
+      setAmountError(nextAmountError || "Amount must be greater than 0");
       isValid = false;
     } else {
       setAmountError("");
@@ -94,7 +168,12 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
       return;
     }
 
-    setSendData({ walletAddress, amount });
+    if (!quote || quoteError) {
+      toast.error(quoteError || "Please wait for a valid quote");
+      return;
+    }
+
+    setSendData({ walletAddress, amount: parsedAmount });
     setIsSubmitting(true);
 
     try {
@@ -151,137 +230,52 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
     }
   };
 
-  const handleGoHome = () => {
-    onOpenChange(false);
-  };
+  const canContinue = Boolean(
+    walletAddress &&
+    amount &&
+    !amountError &&
+    !addressError &&
+    !isQuoteLoading &&
+    !quoteError &&
+    quote,
+  );
+
+  const showSummary =
+    Boolean(amount) &&
+    !Number.isNaN(parsedAmount) &&
+    parsedAmount > 0 &&
+    !amountError &&
+    Boolean(quote) &&
+    !quoteError;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        showCloseButton={false}
+        className="gap-0 overflow-visible rounded-2xl border-0 p-6 sm:max-w-108!"
+      >
         {step === "details" ? (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-[#101928]">
-                Send funds
-              </DialogTitle>
-              <DialogDescription className="text-sm text-[#475367]">
-                Instant withdrawal to another crypto wallet
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="mt-6 space-y-6">
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <Label
-                    htmlFor="to-address"
-                    className="text-sm font-medium text-[#344054]"
-                  >
-                    To
-                  </Label>
-                  <Input
-                    id="to-address"
-                    placeholder="Enter wallet address"
-                    className="mt-1"
-                    value={walletAddress}
-                    onChange={(event) => {
-                      setValue("walletAddress", event.target.value);
-                      if (event.target.value) setAddressError("");
-                    }}
-                  />
-                  {addressError && (
-                    <p className="mt-1 text-xs text-red-500">{addressError}</p>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <Label className="text-sm font-medium text-[#344054]">
-                    Network
-                  </Label>
-                  <div className="mt-1 flex items-center gap-2 rounded-md border border-[#D0D5DD] bg-[#F9FAFB] px-3 py-2">
-                    <Image
-                      src="/wallet/base.svg"
-                      alt="BASE"
-                      width={16}
-                      height={16}
-                    />
-                    <span className="text-sm font-medium text-[#344054]">
-                      BASE
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <div className="w-32">
-                  <Label className="text-sm font-medium text-[#344054]">
-                    Asset
-                  </Label>
-                  <div className="mt-1 flex items-center gap-2 rounded-md border border-[#D0D5DD] bg-[#F9FAFB] px-3 py-2">
-                    <Image
-                      src="/wallet/usdc.svg"
-                      alt="USDC"
-                      width={16}
-                      height={16}
-                    />
-                    <span className="text-sm font-medium text-[#344054]">
-                      USDC
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <Label
-                    htmlFor="amount"
-                    className="text-sm font-medium text-[#344054]"
-                  >
-                    Amount
-                  </Label>
-                  <Input
-                    id="amount"
-                    placeholder="0.00"
-                    className="mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={amount?.toString() || ""}
-                    onChange={(event) => {
-                      const nextAmount = Number(event.target.value);
-                      setValue("amount", nextAmount);
-
-                      if (!event.target.value) {
-                        setAmountError("");
-                        return;
-                      }
-
-                      if (nextAmount <= 0) {
-                        setAmountError("Amount must be greater than 0");
-                        return;
-                      }
-
-                      setAmountError("");
-                    }}
-                  />
-                  {amountError && (
-                    <p className="mt-1 text-xs text-red-500">{amountError}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-start">
-                <Button
-                  className="bg-[#000000] px-6 font-medium text-white disabled:opacity-50"
-                  onClick={handleContinue}
-                  disabled={
-                    !walletAddress ||
-                    !amount ||
-                    amountError !== "" ||
-                    addressError !== "" ||
-                    isSubmitting
-                  }
-                >
-                  {isSubmitting ? "Sending code..." : "Continue"}
-                </Button>
-              </div>
-            </div>
-          </>
+          <CryptoSendFundsForm
+            walletAddress={walletAddress}
+            amount={amount}
+            availableBalance={walletBalance}
+            addressError={addressError}
+            amountError={amountError}
+            quoteError={quoteError}
+            isQuoteLoading={isQuoteLoading}
+            youSendUsdc={quote?.amountUsdc ?? null}
+            feeUsdc={quote?.feeUsdc ?? null}
+            destinationUsdc={quote?.netUsdc ?? quote?.amountReceived ?? null}
+            showSummary={showSummary}
+            isLoading={isSubmitting}
+            canContinue={canContinue}
+            onWalletAddressChange={(value) => {
+              setValue("walletAddress", value);
+              if (value) setAddressError("");
+            }}
+            onAmountChange={handleAmountChange}
+            onContinue={() => void handleContinue()}
+          />
         ) : step === "verification" ? (
           <EmailVerificationCodeStep
             onBack={() => {
@@ -318,8 +312,8 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
 
             <div className="flex pt-4">
               <Button
-                className="bg-[#000000] px-6 font-medium text-white"
-                onClick={handleGoHome}
+                className="h-11 w-full rounded-xl bg-[#0084FD] font-semibold text-white hover:bg-[#0070DB]"
+                onClick={() => onOpenChange(false)}
               >
                 Go home
               </Button>

@@ -15,6 +15,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useWalletStore } from "@/store/wallet-store";
 import { Loader2 } from "lucide-react";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
+import { OfframpFiatQuoteSummary } from "@/components/wallet/offramp-quote-summary";
 
 interface CompanyFiatWithdrawalFormProps {
   onSuccess?: () => void;
@@ -115,6 +116,11 @@ export function CompanyFiatWithdrawalForm({
 
       if (data.amount > walletBalance) {
         toast.error("Insufficient balance");
+        return;
+      }
+
+      if (!quote || quoteError) {
+        toast.error(quoteError || "Please wait for a valid quote");
         return;
       }
 
@@ -235,28 +241,7 @@ export function CompanyFiatWithdrawalForm({
         {isQuoteLoading && (
           <p className="text-xs text-[#667085] mt-2">Loading quote...</p>
         )}
-        {quote && !quoteError && (
-          <div className="mt-3 rounded-lg border border-[#e0e0e0] bg-[#f9fafb] p-4 space-y-3">
-            <p className="text-sm font-medium text-[#101828]">Quote Summary</p>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-[#667085]">Exchange Rate</span>
-                <span className="font-medium text-[#101828]">
-                  1 USD = {quote.rate.toFixed(4)} {quote.currency}
-                </span>
-              </div>
-              <div className="flex justify-between border-t border-[#eaeaea] pt-2">
-                <span className="text-[#667085]">You&apos;ll Receive</span>
-                <span className="text-base font-bold text-[#0166f4]">
-                  {quote.amountReceived.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}{" "}
-                  {quote.currency}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        {quote && !quoteError && <OfframpFiatQuoteSummary quote={quote} />}
         {quoteError && (
           <p className="text-xs text-[#dc2626] mt-2">{quoteError}</p>
         )}
@@ -282,7 +267,11 @@ export function CompanyFiatWithdrawalForm({
       </div>
 
       {/* Submit Button */}
-      <Button type="submit" disabled={isSubmitting} className="mt-6">
+      <Button
+        type="submit"
+        disabled={isSubmitting || isQuoteLoading || !!quoteError || !quote}
+        className="mt-6"
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
