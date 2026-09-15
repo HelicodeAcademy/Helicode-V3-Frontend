@@ -20,7 +20,7 @@ export default function Hero() {
             <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black leadingtight">
               Better Money Movement for Global Businesses
             </h1>
-            <p className="max-w-xl mx-auto text-lg  text-[#717171] font-normal">
+            <p className="max-w-3xl mx-auto text-lg  text-[#717171] font-normal">
               Manage global money movement from one platform. Open USD and EUR
               accounts, send cross-border payments, run payroll in local
               currencies, and automate your finance operations.
