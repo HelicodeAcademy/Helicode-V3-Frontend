@@ -79,7 +79,7 @@ export default function Navbar() {
                   Get Started
                 </WaitlistButton> */}
                 <Link href="/signup">
-                  <Button>Get Started</Button>
+                  <Button>Open an Account</Button>
                 </Link>
               </div>
             </div>
