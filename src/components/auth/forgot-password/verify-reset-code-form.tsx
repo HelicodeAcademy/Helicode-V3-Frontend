@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,8 @@ interface VerifyResetCodeInputs {
 
 export function VerifyResetCodeForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
   const {
     recoveryData,
     setRecoveryData,
@@ -46,6 +48,12 @@ export function VerifyResetCodeForm() {
   } = useForm<VerifyResetCodeInputs>();
 
   const expiresInMinutes = recoveryData.expiresInMinutes ?? 10;
+  const loginPath =
+    recoveryData.loginPath ?? (from === "team" ? "/team/login" : "/login");
+  const forgotPasswordPath =
+    from === "team" || recoveryData.loginPath === "/team/login"
+      ? "/forgot-password?from=team"
+      : "/forgot-password";
   const hasCheckedRecoveryRef = useRef(false);
 
   // Countdown timer for resend button
@@ -67,9 +75,9 @@ export function VerifyResetCodeForm() {
 
     if (!useAuthStore.getState().recoveryData.authFlowToken) {
       toast.error("Recovery data not found. Please start over.");
-      router.replace("/forgot-password");
+      router.replace(forgotPasswordPath);
     }
-  }, [hasHydrated, router]);
+  }, [hasHydrated, router, forgotPasswordPath]);
 
   // Auto-focus next input when digit is entered
   const handleOtpChange = (index: number, value: string) => {
@@ -139,7 +147,7 @@ export function VerifyResetCodeForm() {
   const onSubmit = async () => {
     if (!recoveryData.authFlowToken) {
       toast.error("Recovery data not found. Please start over.");
-      router.push("/forgot-password");
+      router.push(forgotPasswordPath);
       return;
     }
 
@@ -156,7 +164,7 @@ export function VerifyResetCodeForm() {
       await confirmPasswordReset(code, recoveryData.authFlowToken);
 
       toast.success("Password reset successfully!");
-      router.push("/login");
+      router.push(loginPath);
       resetRecoveryData();
     } catch (error) {
       const errorMessage =
@@ -174,7 +182,7 @@ export function VerifyResetCodeForm() {
   const handleResend = async () => {
     if (!recoveryData.authFlowToken) {
       toast.error("Recovery data not found. Please start over.");
-      router.push("/forgot-password");
+      router.push(forgotPasswordPath);
       return;
     }
 

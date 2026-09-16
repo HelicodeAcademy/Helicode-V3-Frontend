@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,15 @@ interface ForgetPasswordFormInputs {
   confirmPassword: string;
 }
 
+function getLoginPath(from: string | null): "/login" | "/team/login" {
+  return from === "team" ? "/team/login" : "/login";
+}
+
 export function ForgotPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const loginPath = getLoginPath(from);
   const { setIsLoading, setRecoveryData } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -58,10 +65,13 @@ export function ForgotPasswordForm() {
         authFlowToken: recoveryResponse.authFlowToken,
         email: data.email,
         expiresInMinutes: recoveryResponse.expiresInMinutes ?? 10,
+        loginPath,
       });
 
       toast.success("Verification code sent to your email!");
-      router.push("/verify-reset-code");
+      router.push(
+        from === "team" ? "/verify-reset-code?from=team" : "/verify-reset-code",
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
@@ -206,7 +216,7 @@ export function ForgotPasswordForm() {
           type="button"
           variant="surface"
           className="w-26.25 border-[#D9D9D9] text-[#131313] hover:bg-[#f4f5f7] bg-transparent"
-          onClick={() => router.push("/login")}
+          onClick={() => router.push(loginPath)}
         >
           Back to login
         </Button>

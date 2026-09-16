@@ -239,7 +239,7 @@ export function TeamLoginForm() {
               {/* Forgot Password Link */}
               <div className="flex justify-between mt-4 items-center">
                 <a
-                  href="/forgot-password"
+                  href="/forgot-password?from=team"
                   className="text-xs font-medium text-[#101828] hover:text-[#0166f4] transition-colors"
                 >
                   Forgot Password?

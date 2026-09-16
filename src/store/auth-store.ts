@@ -113,6 +113,8 @@ export interface PasswordRecoveryData {
   authFlowToken: string;
   email: string;
   expiresInMinutes: number;
+  /** Where to send the user after a successful reset (employer vs team). */
+  loginPath: "/login" | "/team/login";
 }
 
 interface AuthStore {
