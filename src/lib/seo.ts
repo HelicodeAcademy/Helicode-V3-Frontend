@@ -131,6 +131,7 @@ export function softwareApplicationJsonLd() {
       "Contractor and employee payments",
       "Cross-border compliance",
       "USDC and local currency payouts",
+      "Global money movement for businesses",
     ],
   };
 }

@@ -11,7 +11,7 @@ import Footer from "@/components/Landing-page/Footer";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Stablecoin Payroll & Global Hiring",
+  title: "Global Money Movement For Businesses",
   description:
     "Helicode is the all-in-one platform for global hiring and stablecoin payroll. Hire talent across Africa, run compliant payroll, and pay teams instantly in USDC or local currency.",
   path: "/",
