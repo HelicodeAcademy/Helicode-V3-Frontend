@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/store/auth-store";
 import {
   confirmPasswordReset,
-  resendVerificationCode,
+  resendPasswordResetCode,
 } from "@/lib/auth-service";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
@@ -25,7 +25,13 @@ interface VerifyResetCodeInputs {
 
 export function VerifyResetCodeForm() {
   const router = useRouter();
-  const { recoveryData, setIsLoading } = useAuthStore();
+  const {
+    recoveryData,
+    setRecoveryData,
+    resetRecoveryData,
+    setIsLoading,
+    hasHydrated,
+  } = useAuthStore();
 
   // OTP split into individual digits for UI
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -39,6 +45,9 @@ export function VerifyResetCodeForm() {
     formState: { isSubmitting },
   } = useForm<VerifyResetCodeInputs>();
 
+  const expiresInMinutes = recoveryData.expiresInMinutes ?? 10;
+  const hasCheckedRecoveryRef = useRef(false);
+
   // Countdown timer for resend button
   useEffect(() => {
     if (resendTimer <= 0) return;
@@ -49,6 +58,18 @@ export function VerifyResetCodeForm() {
 
     return () => clearInterval(interval);
   }, [resendTimer]);
+
+  // After hydration, bounce users who landed here without a recovery flow.
+  // Only check once — clearing the token after a successful reset must not re-trigger this.
+  useEffect(() => {
+    if (!hasHydrated || hasCheckedRecoveryRef.current) return;
+    hasCheckedRecoveryRef.current = true;
+
+    if (!useAuthStore.getState().recoveryData.authFlowToken) {
+      toast.error("Recovery data not found. Please start over.");
+      router.replace("/forgot-password");
+    }
+  }, [hasHydrated, router]);
 
   // Auto-focus next input when digit is entered
   const handleOtpChange = (index: number, value: string) => {
@@ -115,10 +136,10 @@ export function VerifyResetCodeForm() {
   const isOtpComplete = otp.every((digit) => digit !== "");
 
   //  Verify the reset code and confirm password reset
-
   const onSubmit = async () => {
-    if (!recoveryData.userId) {
+    if (!recoveryData.authFlowToken) {
       toast.error("Recovery data not found. Please start over.");
+      router.push("/forgot-password");
       return;
     }
 
@@ -132,13 +153,11 @@ export function VerifyResetCodeForm() {
 
       const code = otp.join("");
 
-      // Confirm password reset with code
-      await confirmPasswordReset(recoveryData.userId, code);
+      await confirmPasswordReset(code, recoveryData.authFlowToken);
 
       toast.success("Password reset successfully!");
-
-      // Redirect to login
       router.push("/login");
+      resetRecoveryData();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "An unknown error occurred";
@@ -153,14 +172,19 @@ export function VerifyResetCodeForm() {
    * Resend verification code to email
    */
   const handleResend = async () => {
-    if (!recoveryData.email) {
-      toast.error("Email not found. Please start over.");
+    if (!recoveryData.authFlowToken) {
+      toast.error("Recovery data not found. Please start over.");
+      router.push("/forgot-password");
       return;
     }
 
     try {
       setIsResending(true);
-      await resendVerificationCode(recoveryData.email, "RECOVERY");
+      const response = await resendPasswordResetCode(recoveryData.authFlowToken);
+      setRecoveryData({
+        authFlowToken: response.authFlowToken,
+        expiresInMinutes: response.expiresInMinutes ?? 10,
+      });
       toast.success("Verification code resent!");
       setResendTimer(60); // 60-second countdown
       setOtp(["", "", "", "", "", ""]); // Clear OTP input
@@ -187,6 +211,9 @@ export function VerifyResetCodeForm() {
         </h1>
         <p className="text-[#444444] text-sm">
           Enter the 6-digit code sent to your email
+        </p>
+        <p className="mt-1 text-sm text-[#667085]">
+          The code expires in {expiresInMinutes} minutes.
         </p>
       </div>
 

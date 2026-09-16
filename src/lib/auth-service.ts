@@ -178,35 +178,63 @@ export async function refreshTeamAccessToken(): Promise<{
 }
 //  Sends email and new password to backend
 //  Backend sends verification code to user's email
-//  Returns userId and token for verification step
-//
+//  Returns authFlowToken for the verification step
 export async function forgotPassword(
   email: string,
   newPassword: string,
-): Promise<{ userId: string; token: string }> {
-  const response = await post<{ userId: string; token: string }>(
-    "/auth/password/forgot",
-    {
-      email,
-      newPass: newPassword,
-    },
-  );
+): Promise<{
+  authFlowToken: string;
+  expiresInMinutes: number;
+}> {
+  const response = await post<{
+    authFlowToken: string;
+    expiresInMinutes: number;
+  }>("/auth/password/forgot", {
+    email,
+    newPass: newPassword,
+  });
 
   return response.data;
 }
 
 //  Confirm password reset with verification code
 //  Called after user enters the code from their email
-//  Updates the password on the backend
-
+//  Uses authFlowToken (hashed new password is embedded in the token)
 export async function confirmPasswordReset(
-  userId: string,
   code: string,
+  authFlowToken: string,
 ): Promise<void> {
-  await post("/auth/password/confirm-reset", {
-    userId,
-    code,
-  });
+  await post(
+    "/auth/password/confirm-reset",
+    {
+      code,
+    },
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
+}
+
+// Resend password-reset OTP using the current auth flow token
+export async function resendPasswordResetCode(
+  authFlowToken: string,
+): Promise<{
+  authFlowToken: string;
+  expiresInMinutes: number;
+  message: string;
+}> {
+  const response = await post<{
+    authFlowToken: string;
+    expiresInMinutes: number;
+    message: string;
+  }>(
+    "/auth/password/resend-code",
+    {},
+    {
+      "x-auth-flow-token": authFlowToken,
+    },
+  );
+  return response.data;
 }
 
 // Change user password

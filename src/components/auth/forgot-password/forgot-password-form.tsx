@@ -55,10 +55,9 @@ export function ForgotPasswordForm() {
 
       // Store recovery data in store
       setRecoveryData({
-        userId: recoveryResponse?.userId,
-        token: recoveryResponse.token,
+        authFlowToken: recoveryResponse.authFlowToken,
         email: data.email,
-        newPassword: data.newPassword,
+        expiresInMinutes: recoveryResponse.expiresInMinutes ?? 10,
       });
 
       toast.success("Verification code sent to your email!");

@@ -110,10 +110,9 @@ export interface LoginResponse {
 }
 
 export interface PasswordRecoveryData {
-  userId: string;
-  token: string;
+  authFlowToken: string;
   email: string;
-  newPassword: string;
+  expiresInMinutes: number;
 }
 
 interface AuthStore {
@@ -268,6 +267,8 @@ export const useAuthStore = create<AuthStore>()(
         authType: state.authType,
         isAuthenticated: state.isAuthenticated,
         pendingVerification: state.pendingVerification,
+        // Keep password-reset flow alive across the verify-code page navigation
+        recoveryData: state.recoveryData,
       }),
 
       onRehydrateStorage: () => (state) => {
