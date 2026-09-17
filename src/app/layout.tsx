@@ -46,7 +46,7 @@ const helveticaNeue = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | Global Money Movement For Businesses`,
+    default: `${SITE_NAME} | Global Payroll and Payments for Modern Businesses`,
     template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_DESCRIPTION,
@@ -80,9 +80,10 @@ export const metadata: Metadata = {
     "payroll for international teams",
     "payroll for international employees",
     "payroll for international employees",
+    "global payroll and payments for modern businesses",
   ],
   openGraph: {
-    title: `${SITE_NAME} | Global Money Movement For Businesses`,
+    title: `${SITE_NAME} | Global Payroll and Payments for Modern Businesses`,
     description: DEFAULT_DESCRIPTION,
     url: SITE_URL,
     siteName: SITE_NAME,
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
         url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Helicode — Global Money Movement For Businesses",
+        alt: "Helicode — Global Payroll and Payments for Modern Businesses",
       },
     ],
     locale: "en_US",
@@ -99,7 +100,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | Global Money Movement For Businesses`,
+    title: `${SITE_NAME} | Global Payroll and Payments for Modern Businesses`,
     description: DEFAULT_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },

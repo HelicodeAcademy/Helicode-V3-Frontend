@@ -17,13 +17,13 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col gap-10 justify-center items-center text-center max-w-4xl mx-auto">
           <div className="space-y-4">
-            <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-black leadingtight">
-              Better Money Movement for Global Businesses
+            <h1 className="font-bold text-4xl sm:text-5xl md:text-6xl lg:text-6xl text-black leadingtight">
+              Global Payroll and Payments for Modern Businesses
             </h1>
             <p className="max-w-3xl mx-auto text-lg  text-[#717171] font-normal">
-              Manage global money movement from one platform. Open USD and EUR
-              accounts, send cross-border payments, run payroll in local
-              currencies, and automate your finance operations.
+              Helicode helps businesses receive international payments, manage
+              USD and EUR accounts, pay global teams in local currencies, and
+              simplify payroll and compliance from one platform.
             </p>
           </div>
 
