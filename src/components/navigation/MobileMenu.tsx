@@ -115,7 +115,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                 </Button>
 
                 <Link href="/signup">
-                  <Button>Open an Account</Button>
+                  <Button>Launch App</Button>
                 </Link>
 
                 {/* <WaitlistButton
