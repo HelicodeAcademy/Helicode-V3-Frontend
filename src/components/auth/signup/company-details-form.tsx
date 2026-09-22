@@ -56,9 +56,7 @@ export function CompanyDetailsForm() {
   const filteredCountries = useMemo(() => {
     const query = countrySearch.trim().toLowerCase();
     if (!query) return countries;
-    return countries.filter((country) =>
-      country.toLowerCase().includes(query),
-    );
+    return countries.filter((country) => country.toLowerCase().includes(query));
   }, [countrySearch]);
 
   const onSubmit = async (data: CompanyDetailsFormData) => {
@@ -227,9 +225,11 @@ export function CompanyDetailsForm() {
                         })
                       )}
                     </div>
-                    <p className="border-t border-[#E4E7EC] px-3 py-1.5 text-[11px] text-[#98A2B3]">
-                      Scroll for more countries
-                    </p>
+                    {filteredCountries.length > 10 && (
+                      <p className="border-t border-[#E4E7EC] px-3 py-1.5 text-[11px] text-[#98A2B3]">
+                        Scroll for more countries
+                      </p>
+                    )}
                   </PopoverContent>
                 </Popover>
               )}

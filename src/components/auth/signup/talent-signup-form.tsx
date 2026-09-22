@@ -8,8 +8,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  PasswordRequirements,
-  isSignupPasswordValid,
+  SIGNUP_PASSWORD_LENGTH_ERROR,
+  SIGNUP_PASSWORD_MIN_LENGTH,
 } from "@/components/auth/signup/password-requirements";
 
 interface TalentSignupFormData {
@@ -26,14 +26,11 @@ export function TalentSignupForm() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<TalentSignupFormData>({
-    mode: "onBlur",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const password = watch("password") || "";
 
   const onSubmit = async (data: TalentSignupFormData) => {
     setIsLoading(true);
@@ -137,9 +134,13 @@ export function TalentSignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               {...register("password", {
-                required: true,
+                required: SIGNUP_PASSWORD_LENGTH_ERROR,
+                minLength: {
+                  value: SIGNUP_PASSWORD_MIN_LENGTH,
+                  message: SIGNUP_PASSWORD_LENGTH_ERROR,
+                },
               })}
-              className="pr-10"
+              className={`pr-10 ${errors.password ? "border-[#FF383C]" : ""}`}
             />
             <button
               type="button"
@@ -154,7 +155,11 @@ export function TalentSignupForm() {
               )}
             </button>
           </div>
-          <PasswordRequirements password={password} />
+          {errors.password && (
+            <p className="text-xs text-[#ED2525] mt-1">
+              {errors.password.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -199,7 +204,7 @@ export function TalentSignupForm() {
         <Button
           type="submit"
           variant={"primary"}
-          disabled={isLoading || !isSignupPasswordValid(password)}
+          disabled={isLoading}
           className="w-37.75 hover:bg-[#101828] text-white font-medium"
         >
           {isLoading ? "Creating your account..." : "Create your account"}

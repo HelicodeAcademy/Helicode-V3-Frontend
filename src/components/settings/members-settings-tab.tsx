@@ -193,7 +193,7 @@ export function MembersSettingsTab({
                 Member
               </TableHead>
               <TableHead className="text-[#667085] text-xs font-medium py-3">
-                Role
+                Account type
               </TableHead>
               <TableHead className="text-[#667085] text-xs font-medium py-3">
                 Status
@@ -248,7 +248,7 @@ export function MembersSettingsTab({
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
-                      <span className="text-sm font-semibold text-[#101828]">
+                      <span className="text-sm font-semibold text-[#101828] capitalize">
                         {row.role}
                       </span>
                     </TableCell>

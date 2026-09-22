@@ -9,8 +9,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useAuthStore } from "@/store/auth-store";
 import {
-  PasswordRequirements,
-  isSignupPasswordValid,
+  SIGNUP_PASSWORD_LENGTH_ERROR,
+  SIGNUP_PASSWORD_MIN_LENGTH,
 } from "@/components/auth/signup/password-requirements";
 
 // This is the first step of signup
@@ -33,7 +33,6 @@ export function CompanySignupForm() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<CompanySignupFormData>({
     defaultValues: {
@@ -42,11 +41,9 @@ export function CompanySignupForm() {
       email: signupData.email || "",
       password: signupData.password || "",
     },
-    mode: "onBlur",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
-
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const password = watch("password") || "";
 
   const onSubmit = async (data: CompanySignupFormData) => {
     // Save from data to store
@@ -158,9 +155,13 @@ export function CompanySignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               {...register("password", {
-                required: true,
+                required: SIGNUP_PASSWORD_LENGTH_ERROR,
+                minLength: {
+                  value: SIGNUP_PASSWORD_MIN_LENGTH,
+                  message: SIGNUP_PASSWORD_LENGTH_ERROR,
+                },
               })}
-              className="pr-10"
+              className={`pr-10 ${errors.password ? "border-[#FF383C]" : ""}`}
             />
             <button
               type="button"
@@ -175,7 +176,11 @@ export function CompanySignupForm() {
               )}
             </button>
           </div>
-          <PasswordRequirements password={password} />
+          {errors.password && (
+            <p className="text-xs text-[#ED2525] mt-1">
+              {errors.password.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -193,12 +198,7 @@ export function CompanySignupForm() {
 
       {/* Submit Button */}
 
-      <Button
-        type="submit"
-        variant={"primary"}
-        className="mt-2"
-        disabled={!isSignupPasswordValid(password)}
-      >
+      <Button type="submit" variant={"primary"} className="mt-2">
         Next
       </Button>
     </form>

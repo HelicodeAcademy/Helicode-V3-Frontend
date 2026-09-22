@@ -250,24 +250,10 @@ export function VerifyEmailForm() {
         {/* Resend Button */}
         <div className="space-x-3">
           <Button
-            type="submit"
-            variant={"surface"}
-            className="w-27"
-            disabled={isSubmitting || !isOtpComplete || isResending}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <Loader2 className="h-4 w-4 animate-spin" />
-              </div>
-            ) : (
-              "Continue"
-            )}
-          </Button>
-          <Button
             onClick={handleResend}
             type="button"
-            variant={"primary"}
-            className="w-27 text-white rounded-lg transition-colors"
+            variant={"surface"}
+            className="w-27 rounded-lg transition-colors"
             disabled={resendTimer > 0 || isResending || isSubmitting}
           >
             {/* Resend email */}
@@ -279,6 +265,21 @@ export function VerifyEmailForm() {
               `Resend in ${resendTimer}s`
             ) : (
               "Resend email"
+            )}
+          </Button>
+
+          <Button
+            type="submit"
+            variant={"primary"}
+            className="w-27"
+            disabled={isSubmitting || !isOtpComplete || isResending}
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            ) : (
+              "Continue"
             )}
           </Button>
         </div>

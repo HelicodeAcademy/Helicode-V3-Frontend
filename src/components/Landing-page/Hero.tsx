@@ -35,7 +35,7 @@ export default function Hero() {
               Join Waitlist
             </WaitlistButton> */}
             <Link href="/signup">
-              <Button>Open an Account</Button>
+              <Button>Get Started</Button>
             </Link>
 
             <Button asChild variant="surface" size="default">
