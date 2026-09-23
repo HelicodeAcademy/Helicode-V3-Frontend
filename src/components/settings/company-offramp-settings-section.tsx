@@ -68,6 +68,7 @@ export function CompanyOfframpSettingsSection({
 }: CompanyOfframpSettingsSectionProps) {
   const [kycModalOpen, setKycModalOpen] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);
+  const [bankModalMode, setBankModalMode] = useState<"add" | "update">("add");
   const [viewBankModalOpen, setViewBankModalOpen] = useState(false);
 
   if (!isCompanyFiatOfframpEnabled(companyDetails)) {
@@ -210,33 +211,44 @@ export function CompanyOfframpSettingsSection({
                   </div>
 
                   {canWrite && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        if (bankPayoutComplete) {
-                          setViewBankModalOpen(true);
-                          return;
-                        }
-                        if (!offrampKycComplete) return;
-                        setBankModalOpen(true);
-                      }}
-                      disabled={!offrampKycComplete && !bankPayoutComplete}
-                      variant={
-                        bankPayoutComplete || !offrampKycComplete
-                          ? "outline"
-                          : "default"
-                      }
-                      className={cn(
-                        "h-9 shrink-0 px-4 text-sm font-medium",
-                        bankPayoutComplete
-                          ? "rounded-full border border-[#D0D5DD] bg-white text-[#344054] hover:bg-[#F9FAFB]"
-                          : offrampKycComplete
-                            ? "rounded-full bg-[#0052FF] text-white hover:bg-[#0041CC]"
-                            : "rounded-full border border-[#D0D5DD] bg-transparent text-[#98A2B3] shadow-none hover:bg-transparent disabled:opacity-100",
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                      {bankPayoutComplete && (
+                        <Button
+                          type="button"
+                          onClick={() => setViewBankModalOpen(true)}
+                          variant="outline"
+                          className="h-9 rounded-full border border-[#D0D5DD] bg-white px-4 text-sm font-medium text-[#344054] hover:bg-[#F9FAFB]"
+                        >
+                          View account
+                        </Button>
                       )}
-                    >
-                      {bankPayoutComplete ? "View account" : "Add account"}
-                    </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (!offrampKycComplete && !bankPayoutComplete) return;
+                          setBankModalMode(
+                            bankPayoutComplete ? "update" : "add",
+                          );
+                          setBankModalOpen(true);
+                        }}
+                        disabled={!offrampKycComplete && !bankPayoutComplete}
+                        variant={
+                          bankPayoutComplete || !offrampKycComplete
+                            ? "outline"
+                            : "default"
+                        }
+                        className={cn(
+                          "h-9 shrink-0 px-4 text-sm font-medium",
+                          bankPayoutComplete
+                            ? "rounded-full border border-[#D0D5DD] bg-white text-[#344054] hover:bg-[#F9FAFB]"
+                            : offrampKycComplete
+                              ? "rounded-full bg-[#0052FF] text-white hover:bg-[#0041CC]"
+                              : "rounded-full border border-[#D0D5DD] bg-transparent text-[#98A2B3] shadow-none hover:bg-transparent disabled:opacity-100",
+                        )}
+                      >
+                        {bankPayoutComplete ? "Update account" : "Add account"}
+                      </Button>
+                    </div>
                   )}
 
                   {!canWrite && bankPayoutComplete && (
@@ -266,6 +278,7 @@ export function CompanyOfframpSettingsSection({
         open={bankModalOpen}
         onOpenChange={setBankModalOpen}
         onSuccess={handleSuccess}
+        mode={bankModalMode}
       />
 
       <CompanyOfframpViewBankModal
