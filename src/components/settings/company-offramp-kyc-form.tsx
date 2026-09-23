@@ -64,6 +64,7 @@ export function CompanyOfframpKycForm({
     formState: { errors, isSubmitting },
     watch,
     control,
+    setValue,
   } = useForm<KYCSubmissionData>({
     defaultValues: {
       country: "",
@@ -80,6 +81,7 @@ export function CompanyOfframpKycForm({
   });
 
   const watchCountry = watch("country");
+  const isNigeria = watchCountry === "NG";
 
   useEffect(() => {
     // Fetch enums on component mount
@@ -96,6 +98,25 @@ export function CompanyOfframpKycForm({
 
     fetchEnums();
   }, []);
+
+  // Nigeria requires idType=NIN and additionalIdType=BVN (COMPANY_OFFRAMP.md)
+  useEffect(() => {
+    if (!enums) return;
+
+    const ninType =
+      enums.idTypes.find((type) => type.toUpperCase() === "NIN") ?? "NIN";
+    const bvnType =
+      enums.idTypes.find((type) => type.toUpperCase() === "BVN") ?? "BVN";
+
+    if (isNigeria) {
+      setValue("idType", ninType, { shouldValidate: true });
+      setValue("additionalIdType", bvnType, { shouldValidate: true });
+      return;
+    }
+
+    setValue("additionalIdType", "");
+    setValue("additionalIdNumber", "");
+  }, [enums, isNigeria, setValue]);
 
   const onSubmit = async (data: KYCSubmissionData) => {
     try {
@@ -115,7 +136,8 @@ export function CompanyOfframpKycForm({
 
       // Only include additional ID fields for Nigeria
       if (data.country === "NG") {
-        submitData.additionalIdType = data.additionalIdType;
+        submitData.idType = "NIN";
+        submitData.additionalIdType = "BVN";
         submitData.additionalIdNumber = data.additionalIdNumber;
       }
 
@@ -141,7 +163,10 @@ export function CompanyOfframpKycForm({
     );
   }
 
-  const isNigeria = watchCountry === "NG";
+  const ninType =
+    enums.idTypes.find((type) => type.toUpperCase() === "NIN") ?? "NIN";
+  const bvnType =
+    enums.idTypes.find((type) => type.toUpperCase() === "BVN") ?? "BVN";
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -322,12 +347,16 @@ export function CompanyOfframpKycForm({
           name="idType"
           rules={{ required: "ID type is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select
+              value={field.value}
+              onValueChange={field.onChange}
+              disabled={isNigeria || readOnly}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select ID type" />
               </SelectTrigger>
               <SelectContent>
-                {enums.idTypes.map((type) => (
+                {(isNigeria ? [ninType] : enums.idTypes).map((type) => (
                   <SelectItem key={type} value={type}>
                     {type.replace(/_/g, " ")}
                   </SelectItem>
@@ -336,6 +365,11 @@ export function CompanyOfframpKycForm({
             </Select>
           )}
         />
+        {isNigeria && (
+          <p className="text-xs text-[#667085] mt-1.5">
+            Nigeria requires NIN as the primary ID type.
+          </p>
+        )}
         {errors.idType && (
           <p className="text-[#ED2525] text-sm mt-1">{errors.idType.message}</p>
         )}
@@ -376,25 +410,28 @@ export function CompanyOfframpKycForm({
               control={control}
               name="additionalIdType"
               rules={{
-                required: isNigeria
-                  ? "Additional ID type is required for Nigeria"
-                  : false,
+                required: "Additional ID type is required for Nigeria",
               }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select additional ID type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {enums.idTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type.replace(/_/g, " ")}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value={bvnType}>
+                      {bvnType.replace(/_/g, " ")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               )}
             />
+            <p className="text-xs text-[#667085] mt-1.5">
+              Nigeria requires BVN as the additional ID type.
+            </p>
             {errors.additionalIdType && (
               <p className="text-[#ED2525] text-sm mt-1">
                 {errors.additionalIdType.message}
@@ -411,9 +448,7 @@ export function CompanyOfframpKycForm({
               type="text"
               placeholder="e.g., 22334455667"
               {...register("additionalIdNumber", {
-                required: isNigeria
-                  ? "Additional ID number is required for Nigeria"
-                  : false,
+                required: "Additional ID number is required for Nigeria",
                 minLength: {
                   value: 5,
                   message: "Additional ID number must be at least 5 characters",

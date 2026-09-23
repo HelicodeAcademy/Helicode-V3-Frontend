@@ -47,7 +47,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/settings") ||
     pathname.startsWith("/team") ||
     pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/verify-reset-code")
+    pathname.startsWith("/verify-reset-code") ||
+    pathname.startsWith("/company-admin")
   ) {
     return NextResponse.rewrite(new URL(`/app${pathname}`, request.url));
   }
