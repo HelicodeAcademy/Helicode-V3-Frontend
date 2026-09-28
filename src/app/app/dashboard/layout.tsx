@@ -2,7 +2,7 @@
 
 import type React from "react";
 import Image from "next/image";
-import { createContext, useState, useEffect, useCallback } from "react";
+import { Fragment, createContext, useState, useEffect, useCallback } from "react";
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
 import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
@@ -40,7 +40,11 @@ import {
   SidebarPayrollIcon,
   SidebarSettingsIcon,
   SidebarTeamIcon,
+  SidebarWalletIcon,
 } from "@/components/icons/sidebar-icons";
+import { LOCAL_ACCOUNTS } from "@/lib/local-accounts";
+import { useLocalAccountsStore } from "@/store/local-accounts-store";
+import { CurrencyMark } from "@/components/accounts/currency-mark";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import { useKYCStore } from "@/store/kyc-store";
@@ -83,6 +87,11 @@ const companyNav: NavItem[] = [
 ];
 
 const treasuryNav: NavItem[] = [
+  {
+    icon: SidebarWalletIcon,
+    label: "Accounts",
+    href: "/dashboard/accounts",
+  },
   {
     icon: SidebarAccountingIcon,
     label: "Accounting",
@@ -127,35 +136,79 @@ function NavSection({
           const Icon = item.icon;
           const isActive = isNavActive(pathname, item.href);
           return (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive}
-                tooltip={item.label}
-                className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
-                  isActive ? "text-[#0052FF] bg-[#0052FF1A]!" : "text-[#0F112A]"
-                }`}
-              >
-                <Link href={item.href} className="flex items-center gap-3.5">
-                  <Icon
-                    className={`h-5 w-5 ${
-                      isActive ? "text-[#0052FF]" : "text-[#585858]"
-                    }`}
-                  />
-                  <span
-                    className={
-                      isActive ? "text-[#0052FF] mt-1" : "text-[#585858] mt-1"
-                    }
-                  >
-                    {item.label}
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Fragment key={item.href}>
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.label}
+                  className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
+                    isActive ? "text-[#0052FF] bg-[#0052FF1A]!" : "text-[#0F112A]"
+                  }`}
+                >
+                  <Link href={item.href} className="flex items-center gap-3.5">
+                    <Icon
+                      className={`h-5 w-5 ${
+                        isActive ? "text-[#0052FF]" : "text-[#585858]"
+                      }`}
+                    />
+                    <span
+                      className={
+                        isActive ? "text-[#0052FF] mt-1" : "text-[#585858] mt-1"
+                      }
+                    >
+                      {item.label}
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {item.href === "/dashboard/accounts" && (
+                <SidebarMenuItem>
+                  <AccountSidebarLinks pathname={pathname} />
+                </SidebarMenuItem>
+              )}
+            </Fragment>
           );
         })}
       </SidebarMenu>
     </div>
+  );
+}
+
+function AccountSidebarLinks({ pathname }: { pathname: string }) {
+  const opened = useLocalAccountsStore((state) => state.opened);
+  const accounts = LOCAL_ACCOUNTS.filter((account) =>
+    opened.includes(account.code),
+  );
+
+  return (
+    <ul className="mt-1 space-y-0.5 pl-8">
+      {accounts.map((account) => {
+        const href = `/dashboard/accounts/${account.code.toLowerCase()}`;
+        const isActive = pathname === href;
+        return (
+          <li key={account.code}>
+            <Link
+              href={href}
+              className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm ${
+                isActive
+                  ? "bg-[#0052FF1A] text-[#0052FF]"
+                  : "text-[#475467] hover:bg-[#F9FAFB]"
+              }`}
+            >
+              <CurrencyMark mark={account.mark} size={16} />
+              <span className="min-w-0 flex-1 truncate">{account.name.replace("Nigerian ", "")}</span>
+              {account.lifecycle === "review" && (
+                <span className="rounded-full bg-[#FFFAEB] px-1.5 py-0.5 text-[10px] font-medium text-[#B54708]">
+                  Review
+                </span>
+              )}
+              <span className="text-xs text-[#98A2B3]">{account.sidebarAmount}</span>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

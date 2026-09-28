@@ -93,7 +93,7 @@ export function useTeamAuth() {
     clearLastActivity(TEAM_LAST_ACTIVITY_KEY);
     clearTeamLoginData();
     router.push("/team/login");
-    toast.success("Team logout successful!");
+    // toast.success("Team logout successful!");
   };
 
   return {

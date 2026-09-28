@@ -83,7 +83,7 @@ export function useAuth() {
     clearLoginData();
     useTeamStore.getState().clearMembers();
     router.push(loginPath);
-    toast.success("Logout successful!");
+    // toast.success("Logout successful!");
   }, [authType, clearLoginData, router]);
 
   return {
