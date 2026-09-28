@@ -406,29 +406,13 @@ export function CompanyOfframpKycForm({
             <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
               Additional ID Type <span className="text-[#FF3F3F]">*</span>
             </label>
-            <Controller
-              control={control}
-              name="additionalIdType"
-              rules={{
+            <input
+              type="hidden"
+              {...register("additionalIdType", {
                 required: "Additional ID type is required for Nigeria",
-              }}
-              render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select additional ID type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={bvnType}>
-                      {bvnType.replace(/_/g, " ")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              })}
             />
+            <Input value={bvnType.replace(/_/g, " ")} disabled readOnly />
             <p className="text-xs text-[#667085] mt-1.5">
               Nigeria requires BVN as the additional ID type.
             </p>
