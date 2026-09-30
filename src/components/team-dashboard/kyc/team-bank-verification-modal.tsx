@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { BankDetailsResponse } from "@/lib/team/team-kyc-service";
 import {
   Dialog,
@@ -36,11 +37,17 @@ export function TeamBankVerificationModal({
   kycStatus = "not_started",
   tosStatus = "not_started",
 }: TeamBankVerificationModalProps) {
-  if (!bankDetails) return null;
-
   const kycCompleted = kycStatus === "approved";
   const tosCompleted = tosStatus === "approved";
   const allCompleted = kycCompleted && tosCompleted;
+  const savedBank = bankDetails?.bankPayout;
+
+  useEffect(() => {
+    if (!open || !allCompleted) return;
+    onOpenChange(false);
+  }, [open, allCompleted, onOpenChange]);
+
+  if (!bankDetails || !savedBank) return null;
 
   const handleOpenLink = (url?: string) => {
     if (url) {
@@ -51,11 +58,11 @@ export function TeamBankVerificationModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="pr-10">
           <DialogTitle className="text-2xl text-[#101828]">
             Bank Verification Required
           </DialogTitle>
-          <DialogDescription className="text-[#667085] mt-2">
+          <DialogDescription className="text-[#667085] mt-2 text-left">
             Your bank details have been saved successfully. To complete the
             setup, please verify your identity.
           </DialogDescription>
@@ -70,20 +77,20 @@ export function TeamBankVerificationModal({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-[#667085]">Bank Name:</span>
-                <span className="text-[#101828] font-medium">
-                  {bankDetails?.bankPayout?.bankName}
+                <span className="text-[#101828] font-medium text-right">
+                  {savedBank.bankName}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="text-[#667085]">Account Name:</span>
-                <span className="text-[#101828] font-medium">
-                  {bankDetails.bankPayout?.accountName}
+                <span className="text-[#101828] font-medium text-right">
+                  {savedBank.accountName}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-4">
                 <span className="text-[#667085]">Account Number:</span>
-                <span className="text-[#101828] font-medium">
-                  {bankDetails?.bankPayout?.accountNumber}
+                <span className="text-[#101828] font-medium text-right">
+                  {savedBank.accountNumber}
                 </span>
               </div>
             </div>

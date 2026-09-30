@@ -160,9 +160,26 @@ export function TeamBankDetailsForm({ onSuccess }: TeamBankDetailsFormProps) {
         });
       }
 
+      const payout = response.bankPayout;
+      const savedBank = {
+        id: payout?.id ?? "",
+        country: payout?.country || data.country,
+        currencyCode: payout?.currencyCode || data.currencyCode,
+        channelId: payout?.channelId ?? "",
+        networkId: payout?.networkId ?? "",
+        bankName: payout?.bankName || data.bankName,
+        bankBranch: payout?.bankBranch || data.bankBranch,
+        accountName: payout?.accountName || data.accountName,
+        accountNumber: payout?.accountNumber || data.accountNumber,
+        updatedAt: payout?.updatedAt ?? "",
+      };
+
       reset();
       setSelectedBankCode("");
-      onSuccess?.(response);
+      onSuccess?.({
+        ...response,
+        bankPayout: savedBank,
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save bank details";

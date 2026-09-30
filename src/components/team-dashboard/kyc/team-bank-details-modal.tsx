@@ -34,6 +34,17 @@ export function TeamBankDetailsModal({
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
 
   const handleFormSuccess = (details: BankDetailsResponse) => {
+    const kycDone =
+      (details.bridgeKyc?.kycStatus ?? kycStatus) === "approved";
+    const tosDone =
+      (details.bridgeKyc?.tosStatus ?? tosStatus) === "approved";
+
+    if (kycDone && tosDone) {
+      onOpenChange(false);
+      onSuccess?.();
+      return;
+    }
+
     setBankDetails(details);
     setVerificationModalOpen(true);
   };
@@ -48,10 +59,10 @@ export function TeamBankDetailsModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl text-[#101828]">
-              Add Bank Details
-            </DialogTitle>
+        <DialogHeader className="pr-10">
+          <DialogTitle className="text-2xl text-[#101828]">
+            Add Bank Details
+          </DialogTitle>
             <DialogDescription className="text-[#667085] mt-2">
               Add your bank account details for payout processing. Ensure all
               information is accurate.
