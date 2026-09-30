@@ -17,8 +17,8 @@ interface TeamBankDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  kycStatus?: "not_started" | "pending" | "approved" | "rejected";
-  tosStatus?: "not_started" | "pending" | "approved" | "rejected";
+  kycStatus?: "not_started" | "pending" | "approved" | "rejected" | "incomplete";
+  tosStatus?: "not_started" | "pending" | "approved" | "rejected" | "incomplete";
 }
 
 export function TeamBankDetailsModal({

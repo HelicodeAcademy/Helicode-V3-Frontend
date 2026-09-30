@@ -3,7 +3,7 @@
 import { TeamPageTitleContext } from "./layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useCallback, useState } from "react";
 import { format } from "date-fns";
 import {
   Select,
@@ -86,34 +86,39 @@ export default function TalentDashboardHomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
 
-  const fetchTeamData = async () => {
-    try {
-      setIsLoading(true);
-      // Check if we have cached data
+  const fetchTeamData = useCallback(
+    async (force = false) => {
+      try {
+        if (!force) {
+          setIsLoading(true);
+        }
 
-      if (isTeamMemberDataCached()) {
-        const cachedData = useTeamKYCStore.getState().teamMember;
-        if (cachedData) {
-          setTeamData(cachedData);
+        if (!force && isTeamMemberDataCached()) {
+          const cachedData = useTeamKYCStore.getState().teamMember;
+          if (cachedData) {
+            setTeamData(cachedData);
+            return;
+          }
+        }
+
+        const data = await getTeamMe();
+        setTeamData(data);
+        setTeamMember(data);
+        setHasPin(data.hasTransactionPin);
+        setTeamWalletBalance(data.wallet.balance);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to fetch team data";
+        toast.error(errorMessage);
+        console.error("Team data fetch error:", error);
+      } finally {
+        if (!force) {
           setIsLoading(false);
-          return;
         }
       }
-
-      const data = await getTeamMe();
-      setTeamData(data);
-      setTeamMember(data);
-      setHasPin(data.hasTransactionPin);
-      setTeamWalletBalance(data.wallet.balance);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to fetch team data";
-      toast.error(errorMessage);
-      console.error("Team data fetch error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [setHasPin, setTeamMember, setTeamWalletBalance],
+  );
 
   const fetchTeamTransactions = async () => {
     try {
@@ -180,6 +185,19 @@ export default function TalentDashboardHomePage() {
     teamData?.bridgeKycStatus === "approved" &&
     teamData?.bridgeTosStatus === "approved";
   const kycNotDone = kycNotApproved && !bridgeApproved;
+
+  useEffect(() => {
+    if (!kycModalOpen && !kycNotDone) return;
+
+    const refreshOnReturn = () => {
+      if (document.visibilityState !== "visible") return;
+      void fetchTeamData(true);
+    };
+
+    document.addEventListener("visibilitychange", refreshOnReturn);
+    return () =>
+      document.removeEventListener("visibilitychange", refreshOnReturn);
+  }, [fetchTeamData, kycModalOpen, kycNotDone]);
 
   return (
     <div className="space-y-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -377,7 +395,9 @@ export default function TalentDashboardHomePage() {
       <TeamKYCModal
         open={kycModalOpen}
         onOpenChange={setKycModalOpen}
-        onSuccess={() => fetchTeamData()}
+        bridgeKycStatus={teamData?.bridgeKycStatus}
+        bridgeTosStatus={teamData?.bridgeTosStatus}
+        onSuccess={() => fetchTeamData(true)}
       />
 
       <TeamBankDetailsModal

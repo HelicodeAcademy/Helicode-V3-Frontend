@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   AlertCircle,
+  CheckCircle2,
   ChevronLeft,
   ExternalLink,
   Loader2,
@@ -29,6 +30,8 @@ interface TeamKYCModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  bridgeKycStatus?: string;
+  bridgeTosStatus?: string;
 }
 
 type KYCStep = "choose" | "form" | "bridge";
@@ -133,6 +136,8 @@ export function TeamKYCModal({
   open,
   onOpenChange,
   onSuccess,
+  bridgeKycStatus,
+  bridgeTosStatus,
 }: TeamKYCModalProps) {
   const [step, setStep] = useState<KYCStep>("choose");
   const [selectedPayoutMethod, setSelectedPayoutMethod] =
@@ -280,45 +285,73 @@ export function TeamKYCModal({
 
             {step === "bridge" && (
               <div className="mt-6 space-y-3">
-                <div className="flex items-start gap-3 rounded-lg border border-[#F59E0B] bg-[#FEF3C7] p-4">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#F59E0B]" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#92400E]">
-                      Complete KYC Verification
-                    </p>
-                    <p className="mt-1 text-sm text-[#B45309]">
-                      Verify your identity to enable stablecoin payouts.
-                    </p>
+                {bridgeKycStatus === "approved" ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-[#10B981] bg-[#D1FAE5] p-4">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#10B981]" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#065F46]">
+                        KYC verification complete
+                      </p>
+                      <p className="mt-1 text-sm text-[#047857]">
+                        Your identity has already been verified.
+                      </p>
+                    </div>
                   </div>
-                  <Button
-                    onClick={() => handleOpenLink(bridgeData?.kycLink, "KYC")}
-                    className="h-9 shrink-0 bg-[#F59E0B] text-sm whitespace-nowrap text-white hover:bg-[#F59E0B]/90"
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Open KYC
-                  </Button>
-                </div>
+                ) : (
+                  <div className="flex items-start gap-3 rounded-lg border border-[#F59E0B] bg-[#FEF3C7] p-4">
+                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#F59E0B]" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#92400E]">
+                        Complete KYC Verification
+                      </p>
+                      <p className="mt-1 text-sm text-[#B45309]">
+                        Verify your identity to enable stablecoin payouts.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => handleOpenLink(bridgeData?.kycLink, "KYC")}
+                      className="h-9 shrink-0 bg-[#F59E0B] text-sm whitespace-nowrap text-white hover:bg-[#F59E0B]/90"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Open KYC
+                    </Button>
+                  </div>
+                )}
 
-                <div className="flex items-start gap-3 rounded-lg border border-[#0084FD] bg-[#DBEAFE] p-4">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#0084FD]" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#003DA5]">
-                      Accept Terms of Service
-                    </p>
-                    <p className="mt-1 text-sm text-[#0084FD]">
-                      Accept our terms of service to complete setup.
-                    </p>
+                {bridgeTosStatus === "approved" ? (
+                  <div className="flex items-start gap-3 rounded-lg border border-[#10B981] bg-[#D1FAE5] p-4">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#10B981]" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#065F46]">
+                        Terms of Service accepted
+                      </p>
+                      <p className="mt-1 text-sm text-[#047857]">
+                        You have already accepted the terms of service.
+                      </p>
+                    </div>
                   </div>
-                  <Button
-                    onClick={() =>
-                      handleOpenLink(bridgeData?.tosLink, "Terms of Service")
-                    }
-                    className="h-9 shrink-0 bg-[#0084FD] text-sm whitespace-nowrap text-white hover:bg-[#0084FD]/90"
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Accept ToS
-                  </Button>
-                </div>
+                ) : (
+                  <div className="flex items-start gap-3 rounded-lg border border-[#0084FD] bg-[#DBEAFE] p-4">
+                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#0084FD]" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#003DA5]">
+                        Accept Terms of Service
+                      </p>
+                      <p className="mt-1 text-sm text-[#0084FD]">
+                        Accept our terms of service to complete setup.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() =>
+                        handleOpenLink(bridgeData?.tosLink, "Terms of Service")
+                      }
+                      className="h-9 shrink-0 bg-[#0084FD] text-sm whitespace-nowrap text-white hover:bg-[#0084FD]/90"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Accept ToS
+                    </Button>
+                  </div>
+                )}
 
                 <Button onClick={handleBridgeDone} className="mt-2 w-full">
                   I&apos;ve completed both steps

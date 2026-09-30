@@ -47,8 +47,8 @@ export interface TeamMeResponse {
   kycStatus?: boolean;
   bankPayoutStatus?: boolean;
   hasTransactionPin: boolean;
-  bridgeKycStatus?: "not_started" | "pending" | "approved";
-  bridgeTosStatus?: "not_started" | "pending" | "approved";
+  bridgeKycStatus?: "not_started" | "incomplete" | "pending" | "approved";
+  bridgeTosStatus?: "not_started" | "incomplete" | "pending" | "approved";
   wallet: {
     id: string;
     balance: number;

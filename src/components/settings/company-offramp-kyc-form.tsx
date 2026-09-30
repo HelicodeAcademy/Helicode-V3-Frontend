@@ -16,6 +16,7 @@ import {
   submitCompanyOfframpKyc,
 } from "@/lib/company-offramp-service";
 import type { KYCSubmissionData, OffRampEnums } from "@/lib/team/team-kyc-service";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   Select,
   SelectContent,
@@ -180,18 +181,17 @@ export function CompanyOfframpKycForm({
           name="country"
           rules={{ required: "Country is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a country" />
-              </SelectTrigger>
-              <SelectContent>
-                {enums.countries.map((code) => (
-                  <SelectItem key={code} value={code}>
-                    {COUNTRY_MAP[code] || code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select a country"
+              searchPlaceholder="Search country..."
+              emptyText="No country found"
+              options={enums.countries.map((code) => ({
+                value: code,
+                label: COUNTRY_MAP[code] || code,
+              }))}
+            />
           )}
         />
         {errors.country && (

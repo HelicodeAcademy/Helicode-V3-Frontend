@@ -72,7 +72,7 @@ export const useTeamKYCStore = create<TeamKYCStore>()(
 
 // Check if cached team member data is still valid
 export function isTeamMemberDataCached(): boolean {
-  const { teamMember, lastFetchTime } = useTeamKYCStore.getInitialState();
+  const { teamMember, lastFetchTime } = useTeamKYCStore.getState();
   if (!teamMember || !lastFetchTime) return false;
   return Date.now() - lastFetchTime < CACHE_DURATION;
 }

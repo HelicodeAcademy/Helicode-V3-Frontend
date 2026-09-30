@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 import {
   getCompanyQuidaxBanks,
@@ -44,7 +45,7 @@ interface BankOption {
   channelId: string;
 }
 
-type QuidaxBankOption = QuidaxBank
+type QuidaxBankOption = QuidaxBank;
 
 export function CompanyOfframpBankForm({
   onSuccess,
@@ -121,7 +122,10 @@ export function CompanyOfframpBankForm({
         setQuidaxBanks(response.banks || []);
         setBanks([]);
       } else {
-        const response = await getCompanySupportedBanks(countryCode, currencyCode);
+        const response = await getCompanySupportedBanks(
+          countryCode,
+          currencyCode,
+        );
         const uniqueBanks = Array.from(
           new Map(response.banks.map((bank) => [bank.name, bank])).values(),
         );
@@ -220,18 +224,17 @@ export function CompanyOfframpBankForm({
           control={control}
           rules={{ required: "Country is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
-              <SelectContent>
-                {uniqueCountries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select country"
+              searchPlaceholder="Search country..."
+              emptyText="No country found"
+              options={uniqueCountries.map((country) => ({
+                value: country.code,
+                label: country.name,
+              }))}
+            />
           )}
         />
         {errors.country && (
@@ -273,30 +276,25 @@ export function CompanyOfframpBankForm({
               !loadingBanks
             ) {
               return (
-                <Select
+                <SearchableSelect
                   value={field.value}
+                  placeholder="Select bank"
+                  searchPlaceholder="Search bank..."
+                  emptyText="No bank found"
+                  options={quidaxBanks.map((bank) => ({
+                    value: bank.name,
+                    label: bank.name,
+                  }))}
                   onValueChange={(value) => {
                     field.onChange(value);
-                    // Auto-populate bank code when bank is selected
                     const selectedBank = quidaxBanks.find(
-                      (b) => b.name === value,
+                      (bank) => bank.name === value,
                     );
                     if (selectedBank) {
                       setSelectedBankCode(selectedBank.code);
                     }
                   }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select bank" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {quidaxBanks.map((bank) => (
-                      <SelectItem key={bank.public_id} value={bank.name}>
-                        {bank.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               );
             }
             // If standard banks are available, show standard dropdown
@@ -306,18 +304,17 @@ export function CompanyOfframpBankForm({
               !loadingBanks
             ) {
               return (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select or type bank name" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {banks.map((bank) => (
-                      <SelectItem key={bank.code} value={bank.name}>
-                        {bank.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  placeholder="Select or type bank name"
+                  searchPlaceholder="Search bank..."
+                  emptyText="No bank found"
+                  options={banks.map((bank) => ({
+                    value: bank.name,
+                    label: bank.name,
+                  }))}
+                />
               );
             }
             // Otherwise show text input
@@ -375,9 +372,7 @@ export function CompanyOfframpBankForm({
             <Input
               {...field}
               placeholder={
-                selectedAccountType === "momo"
-                  ? "e.g., Kigali"
-                  : "e.g., Ile-Ife"
+                selectedAccountType === "momo" ? "e.g., Kigali" : "bank branch"
               }
               className=""
             />
@@ -431,7 +426,11 @@ export function CompanyOfframpBankForm({
       </div>
 
       {/* Submit Button */}
-      <Button type="submit" disabled={isSubmitting || readOnly} className="mt-6">
+      <Button
+        type="submit"
+        disabled={isSubmitting || readOnly}
+        className="mt-6"
+      >
         {isSubmitting ? (
           <div className="flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />

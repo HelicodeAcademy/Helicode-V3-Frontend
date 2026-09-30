@@ -8,7 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronDown, Mail, Search } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Calendar as CalendarIcon, Check, ChevronDown, Mail, Search } from "lucide-react";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAddHireStore } from "@/store/add-hire-store";
 import { HireDetailsForm } from "@/store/add-hire-store";
@@ -33,6 +35,10 @@ export function HireDetailsFormComponent({
   >({});
   const [countryOpen, setCountryOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const selectedStartDate = details.startDate
+    ? new Date(details.startDate)
+    : undefined;
 
   const filteredCountries = useMemo(() => {
     const query = countrySearch.trim().toLowerCase();
@@ -253,15 +259,40 @@ export function HireDetailsFormComponent({
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Start date <span className="text-[#FF3F3F]">*</span>
             </label>
-            <Input
-              type="date"
-              value={details.startDate}
-              onChange={(e) => setDetails({ startDate: e.target.value })}
-              className={cn(
-                errors.startDate ? "border-red-400" : "",
-                details.startDate ? "text-[#101928]" : "text-[#667085]",
-              )}
-            />
+            <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    errors.startDate && "border-red-400",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedStartDate
+                    ? format(selectedStartDate, "MMM dd, yyyy")
+                    : "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedStartDate}
+                  onSelect={(date) => {
+                    setDetails({
+                      startDate: date ? format(date, "yyyy-MM-dd") : "",
+                    });
+                    setStartDateOpen(false);
+                    if (errors.startDate) {
+                      setErrors((prev) => ({ ...prev, startDate: undefined }));
+                    }
+                  }}
+                  autoFocus
+                  captionLayout="dropdown-years"
+                />
+              </PopoverContent>
+            </Popover>
             {errors.startDate && (
               <p className="text-xs text-red-500 mt-1">{errors.startDate}</p>
             )}
