@@ -5,7 +5,7 @@ export const SITE_NAME = "Helicode";
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export const DEFAULT_DESCRIPTION =
-  "Global payroll and money movement for businesses. Hire, onboard, run payroll, and pay talent instantly in USDC or local currency.";
+  "Helicode helps businesses receive international payments, manage USD and EUR accounts, pay gloabl teams in local currencies, and simplify payroll and complaiance from one platform.";
 
 export const DEFAULT_KEYWORDS = [
   "stablecoin payroll",
