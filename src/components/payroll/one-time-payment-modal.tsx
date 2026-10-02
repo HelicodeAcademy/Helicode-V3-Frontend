@@ -359,7 +359,7 @@ export function OneTimePaymentModal({
                   onClick={handleGoHome}
                   className="hover:bg-[#101828]/90"
                 >
-                  Go to home
+                  Done
                 </Button>
               </div>
             </div>

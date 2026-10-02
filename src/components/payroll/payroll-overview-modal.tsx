@@ -261,7 +261,7 @@ export function PayrollOverviewModal({
                   // variant="outline"
                   // className="border-[#E4E7EC] text-[#101928] hover:bg-[#f9fafb]"
                 >
-                  Go to home
+                  Done
                 </Button>
               </div>
             </div>
