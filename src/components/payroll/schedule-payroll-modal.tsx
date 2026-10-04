@@ -1102,8 +1102,8 @@ export function SchedulePayrollModal({
 
         {step === "success" && (
           <div className="px-6 py-8">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#DCFAE6]">
-              <Check className="h-7 w-7 text-[#079455]" strokeWidth={3} />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#E4F4EC]">
+              <Check className="h-7 w-7 text-[#079455]" strokeWidth={2} />
             </div>
             <h2 className="text-center text-xl font-semibold text-[#0C1424]">
               {scheduleName.trim() || "Schedule"} is scheduled
@@ -1130,7 +1130,7 @@ export function SchedulePayrollModal({
                       <p className="text-sm text-[#66748C]">
                         {format(reminderDate, "EEE, MMM d")}
                       </p>
-                      <p className="text-sm text-[#0C1424]">
+                      <p className="text-sm font-medium text-[#0C1424]">
                         Reminder email to review amounts
                       </p>
                     </div>
@@ -1145,7 +1145,7 @@ export function SchedulePayrollModal({
                       <p className="text-sm text-[#66748C]">
                         {format(topUpDate, "EEE, MMM d")}
                       </p>
-                      <p className="text-sm text-[#0C1424]">
+                      <p className="text-sm text-[#0C1424] font-medium">
                         Auto top-up of {formatMoney(shortfall)} from USD account
                       </p>
                     </div>
@@ -1160,7 +1160,7 @@ export function SchedulePayrollModal({
                       <p className="text-sm text-[#66748C]">
                         {format(firstPayday, "EEE, MMM d")}
                       </p>
-                      <p className="text-sm text-[#0C1424]">
+                      <p className="text-sm font-medium text-[#0C1424]">
                         {formatMoney(perRunTotal)} paid to {selectedIds.size}{" "}
                         people
                       </p>
