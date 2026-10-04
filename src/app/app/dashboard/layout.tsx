@@ -19,7 +19,7 @@ import {
   SidebarMenuButton,
   SidebarInset,
 } from "@/components/ui/sidebar";
-import { LogOut, MoreVertical } from "lucide-react";
+import { ChevronDown, LogOut, MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -124,6 +124,9 @@ function NavSection({
   items: NavItem[];
   pathname: string;
 }) {
+  const [accountsCollapsed, setAccountsCollapsed] = useState(false);
+  const accountsExpanded = !accountsCollapsed;
+
   return (
     <div className="space-y-1">
       {title && (
@@ -135,34 +138,99 @@ function NavSection({
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = isNavActive(pathname, item.href);
+          const isAccounts = item.href === "/dashboard/accounts";
+
           return (
             <Fragment key={item.href}>
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={item.label}
-                  className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
-                    isActive ? "text-[#0052FF] bg-[#0052FF1A]!" : "text-[#0F112A]"
-                  }`}
-                >
-                  <Link href={item.href} className="flex items-center gap-3.5">
-                    <Icon
-                      className={`h-5 w-5 ${
-                        isActive ? "text-[#0052FF]" : "text-[#585858]"
+              <SidebarMenuItem>
+                {isAccounts ? (
+                  <div
+                    className={`flex items-center rounded-md ${
+                      isActive ? "bg-[#0052FF1A]" : ""
+                    }`}
+                  >
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      tooltip={item.label}
+                      className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 flex-1 ${
+                        isActive
+                          ? "text-[#0052FF] bg-transparent!"
+                          : "text-[#0F112A]"
                       }`}
-                    />
-                    <span
-                      className={
-                        isActive ? "text-[#0052FF] mt-1" : "text-[#585858] mt-1"
-                      }
                     >
-                      {item.label}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
+                      <Link
+                        href={item.href}
+                        className="flex items-center gap-3.5"
+                        onClick={() => setAccountsCollapsed(false)}
+                      >
+                        <Icon
+                          className={`h-5 w-5 ${
+                            isActive ? "text-[#0052FF]" : "text-[#585858]"
+                          }`}
+                        />
+                        <span
+                          className={
+                            isActive
+                              ? "text-[#0052FF] mt-1"
+                              : "text-[#585858] mt-1"
+                          }
+                        >
+                          {item.label}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                    <button
+                      type="button"
+                      aria-label={
+                        accountsExpanded
+                          ? "Collapse accounts"
+                          : "Expand accounts"
+                      }
+                      aria-expanded={accountsExpanded}
+                      onClick={() =>
+                        setAccountsCollapsed((collapsed) => !collapsed)
+                      }
+                      className="mr-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#585858] hover:bg-[#F2F4F7]"
+                    >
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${
+                          accountsExpanded ? "rotate-0" : "-rotate-90"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ) : (
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.label}
+                    className={`text-sm font-medium leading-[145%] px-4.5 py-3 h-11 ${
+                      isActive
+                        ? "text-[#0052FF] bg-[#0052FF1A]!"
+                        : "text-[#0F112A]"
+                    }`}
+                  >
+                    <Link href={item.href} className="flex items-center gap-3.5">
+                      <Icon
+                        className={`h-5 w-5 ${
+                          isActive ? "text-[#0052FF]" : "text-[#585858]"
+                        }`}
+                      />
+                      <span
+                        className={
+                          isActive
+                            ? "text-[#0052FF] mt-1"
+                            : "text-[#585858] mt-1"
+                        }
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                )}
               </SidebarMenuItem>
-              {item.href === "/dashboard/accounts" && (
+              {isAccounts && accountsExpanded && (
                 <SidebarMenuItem>
                   <AccountSidebarLinks pathname={pathname} />
                 </SidebarMenuItem>
@@ -181,6 +249,8 @@ function AccountSidebarLinks({ pathname }: { pathname: string }) {
     opened.includes(account.code),
   );
 
+  if (accounts.length === 0) return null;
+
   return (
     <ul className="mt-1 space-y-0.5 pl-8">
       {accounts.map((account) => {
@@ -197,13 +267,17 @@ function AccountSidebarLinks({ pathname }: { pathname: string }) {
               }`}
             >
               <CurrencyMark mark={account.mark} size={16} />
-              <span className="min-w-0 flex-1 truncate">{account.name.replace("Nigerian ", "")}</span>
+              <span className="min-w-0 flex-1 truncate">
+                {account.name.replace("Nigerian ", "")}
+              </span>
               {account.lifecycle === "review" && (
                 <span className="rounded-full bg-[#FFFAEB] px-1.5 py-0.5 text-[10px] font-medium text-[#B54708]">
                   Review
                 </span>
               )}
-              <span className="text-xs text-[#98A2B3]">{account.sidebarAmount}</span>
+              <span className="text-xs text-[#98A2B3]">
+                {account.sidebarAmount}
+              </span>
             </Link>
           </li>
         );
