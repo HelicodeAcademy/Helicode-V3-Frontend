@@ -16,6 +16,7 @@ import {
   submitCompanyOfframpKyc,
 } from "@/lib/company-offramp-service";
 import type { KYCSubmissionData, OffRampEnums } from "@/lib/team/team-kyc-service";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import {
   Select,
   SelectContent,
@@ -180,18 +181,17 @@ export function CompanyOfframpKycForm({
           name="country"
           rules={{ required: "Country is required" }}
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a country" />
-              </SelectTrigger>
-              <SelectContent>
-                {enums.countries.map((code) => (
-                  <SelectItem key={code} value={code}>
-                    {COUNTRY_MAP[code] || code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select a country"
+              searchPlaceholder="Search country..."
+              emptyText="No country found"
+              options={enums.countries.map((code) => ({
+                value: code,
+                label: COUNTRY_MAP[code] || code,
+              }))}
+            />
           )}
         />
         {errors.country && (
@@ -406,29 +406,13 @@ export function CompanyOfframpKycForm({
             <label className="block text-sm font-medium text-[#0F112A] mb-2.5">
               Additional ID Type <span className="text-[#FF3F3F]">*</span>
             </label>
-            <Controller
-              control={control}
-              name="additionalIdType"
-              rules={{
+            <input
+              type="hidden"
+              {...register("additionalIdType", {
                 required: "Additional ID type is required for Nigeria",
-              }}
-              render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select additional ID type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={bvnType}>
-                      {bvnType.replace(/_/g, " ")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              })}
             />
+            <Input value={bvnType.replace(/_/g, " ")} disabled readOnly />
             <p className="text-xs text-[#667085] mt-1.5">
               Nigeria requires BVN as the additional ID type.
             </p>

@@ -34,9 +34,11 @@ export default function TeamSettingsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTitle]);
 
-  const fetchTeamMember = async () => {
+  const fetchTeamMember = async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) {
+        setIsLoading(true);
+      }
       const data = await getTeamMe();
       setTeamMember(data);
     } catch (error) {
@@ -45,9 +47,24 @@ export default function TeamSettingsPage() {
       toast.error(errorMessage);
       console.error("Team settings fetch error:", error);
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   };
+
+  useEffect(() => {
+    if (!updateKycModalOpen) return;
+
+    const refreshOnReturn = () => {
+      if (document.visibilityState !== "visible") return;
+      void fetchTeamMember(true);
+    };
+
+    document.addEventListener("visibilitychange", refreshOnReturn);
+    return () =>
+      document.removeEventListener("visibilitychange", refreshOnReturn);
+  }, [updateKycModalOpen]);
 
   const fullName = useMemo(() => {
     if (!teamMember) return "Team member";
@@ -245,6 +262,8 @@ export default function TeamSettingsPage() {
       <TeamKYCModal
         open={updateKycModalOpen}
         onOpenChange={setUpdateKycModalOpen}
+        bridgeKycStatus={teamMember?.bridgeKycStatus}
+        bridgeTosStatus={teamMember?.bridgeTosStatus}
         onSuccess={() => {
           fetchTeamMember();
           toast.success("KYC updated successfully!");

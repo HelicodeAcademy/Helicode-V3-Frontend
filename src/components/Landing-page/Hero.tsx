@@ -26,7 +26,6 @@ export default function Hero() {
               simplify payroll and compliance from one platform.
             </p>
           </div>
-
           <div className="flex gap-3">
             {/* <WaitlistButton
               variant="primary"

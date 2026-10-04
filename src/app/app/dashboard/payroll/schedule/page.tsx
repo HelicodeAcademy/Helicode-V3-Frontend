@@ -1,24 +1,14 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
-import { PageTitleContext } from "../../layout";
-import { SchedulePayrollForm } from "@/components/payroll/schedule-payroll-form";
-import { PayrollScheduledModal } from "@/components/payroll/payroll-scheduled-modal";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SchedulePayrollPage() {
-  const { setTitle } = useContext(PageTitleContext);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setTitle("Schedule Payroll");
-  }, [setTitle]);
+    router.replace("/dashboard/payroll?schedule=1");
+  }, [router]);
 
-  return (
-    <>
-      <div className="max-w-md mx-auto py-8 flex items-center justify-center min-h-full shrink-0">
-        <SchedulePayrollForm onSuccess={() => setShowSuccess(true)} />
-      </div>
-      <PayrollScheduledModal open={showSuccess} />
-    </>
-  );
+  return null;
 }

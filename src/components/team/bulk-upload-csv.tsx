@@ -168,15 +168,17 @@ export function BulkUploadCSV({ onSuccess }: BulkUploadCSVProps) {
           <p className="text-[#667085] text-sm mb-4">
             Drag and drop your CSV file here, or click to select
           </p>
-          <Button disabled={isUploading} className="" size="sm">
-            {isUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              "Select CSV File"
-            )}
+          <Button asChild disabled={isUploading} size="sm">
+            <span>
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Select CSV File"
+              )}
+            </span>
           </Button>
         </label>
       </div>

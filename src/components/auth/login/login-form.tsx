@@ -263,7 +263,7 @@ export function LoginForm() {
                 href="/company-admin/login"
                 className="font-semibold text-[#0052FF]"
               >
-                Admin login
+                Login
               </Link>
             </p>
           </form>

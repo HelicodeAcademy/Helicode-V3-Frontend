@@ -85,7 +85,7 @@ export function PayrollMetrics() {
         {/* Action buttons */}
         <div>
           <div className="flex flex-wrap gap-4">
-            <Link href="/dashboard/payroll/schedule">
+            <Link href="/dashboard/payroll?schedule=1">
               <Button
                 variant="outline"
                 className="bg-[#0052FF] border-none text-white hover:bg-[#0052FF]/80 flex items-center hover:text-white"

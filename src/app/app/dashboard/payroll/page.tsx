@@ -1,9 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { PageTitleContext } from "../layout";
-import { PayrollMetrics } from "@/components/payroll/payroll-metrics";
-import { ScheduledPayrolls } from "@/components/payroll/scheduled-payrolls";
 import { useTeamStore } from "@/store/team-store";
 import { getTeamMembers } from "@/lib/team-service";
 import {
@@ -18,6 +16,7 @@ import { AlertCircle, ExternalLink, Loader2 } from "lucide-react";
 import { getKYCStatus } from "@/lib/kyc-service";
 import toast from "react-hot-toast";
 import { getCompanyDetails } from "@/lib/company-details";
+import { PayrollPageContent } from "@/components/payroll/payroll-page-content";
 
 export default function PayrollPage() {
   const { setTitle } = useContext(PageTitleContext);
@@ -45,7 +44,7 @@ export default function PayrollPage() {
       }
     };
 
-    fetchTeam();
+    void fetchTeam();
   }, [setMembers, setIsLoading]);
 
   useEffect(() => {
@@ -98,71 +97,70 @@ export default function PayrollPage() {
 
   const rejectionDetails = getRejectionDetails(kycStatus?.rejectionReason);
 
-  return (
-    <>
-      {payrollLocked ? (
-        <div className="max-w-2xl mx-auto py-4 px-8">
-          <div className="border border-[#FCD34D] rounded-lg p-6 bg-[#FFFBEB] space-y-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-6 w-6 text-[#F59E0B] shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-[#101828] text-lg">
-                  Verification required for payroll
-                </h3>
-                <p className="text-[#667085] mt-2">
-                  Payroll unlocks after your account verification is approved.
-                  Current status:{" "}
-                  <span className="font-medium text-[#92400E]">
-                    {formatKycStatusLabel(kycStatus?.kycStatus)}
-                  </span>
-                  .
-                </p>
-                {rejectionDetails.length > 0 && (
-                  <ul className="mt-3 list-disc list-inside space-y-1 text-sm text-[#92400E]">
-                    {rejectionDetails.map((reason) => (
-                      <li key={reason}>{reason}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {kycStatus?.tosStatus !== "approved" && (
-                <Button
-                  onClick={() => openLink("tos")}
-                  disabled={isRefreshing}
-                  className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90"
-                >
-                  {isRefreshing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Accept terms
-                    </>
-                  )}
-                </Button>
-              )}
-              {(needsUserKycAction(kycStatus?.kycStatus) ||
-                kycStatus?.kycStatus === "rejected") && (
-                <Button
-                  onClick={() => openLink("kyc")}
-                  disabled={isRefreshing}
-                  variant="outline"
-                  className="border-[#F59E0B] text-[#92400E]"
-                >
-                  Continue verification
-                </Button>
+  if (payrollLocked) {
+    return (
+      <div className="mx-auto max-w-2xl px-8 py-4">
+        <div className="space-y-4 rounded-lg border border-[#FCD34D] bg-[#FFFBEB] p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-6 w-6 shrink-0 text-[#F59E0B]" />
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-[#0C1424]">
+                Verification required for payroll
+              </h3>
+              <p className="mt-2 text-[#66748C]">
+                Payroll unlocks after your account verification is approved.
+                Current status:{" "}
+                <span className="font-medium text-[#9A5B00]">
+                  {formatKycStatusLabel(kycStatus?.kycStatus)}
+                </span>
+                .
+              </p>
+              {rejectionDetails.length > 0 && (
+                <ul className="mt-3 list-inside list-disc space-y-1 text-sm text-[#9A5B00]">
+                  {rejectionDetails.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>
+          <div className="flex flex-wrap gap-2">
+            {kycStatus?.tosStatus !== "approved" && (
+              <Button
+                onClick={() => openLink("tos")}
+                disabled={isRefreshing}
+                className="bg-[#F59E0B] text-white hover:bg-[#F59E0B]/90"
+              >
+                {isRefreshing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Accept terms
+                  </>
+                )}
+              </Button>
+            )}
+            {(needsUserKycAction(kycStatus?.kycStatus) ||
+              kycStatus?.kycStatus === "rejected") && (
+              <Button
+                onClick={() => openLink("kyc")}
+                disabled={isRefreshing}
+                variant="outline"
+                className="border-[#F59E0B] text-[#9A5B00]"
+              >
+                Continue verification
+              </Button>
+            )}
+          </div>
         </div>
-      ) : (
-        <div className="space-y-6 py-4 px-8">
-          <PayrollMetrics />
-          <ScheduledPayrolls />
-        </div>
-      )}
-    </>
+      </div>
+    );
+  }
+
+  return (
+    <Suspense fallback={null}>
+      <PayrollPageContent />
+    </Suspense>
   );
 }
