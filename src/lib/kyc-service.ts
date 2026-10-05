@@ -64,12 +64,15 @@ export async function submitEmployerDocuments(
 
 export async function getOffRampQuote(
   amount: number,
+  currency?: string,
 ): Promise<OffRampQuoteResponse> {
+  const body: { amount: number; currency?: string } = { amount };
+  if (currency) {
+    body.currency = currency;
+  }
   const response = await teamPost<OffRampQuoteResponse>(
     "/team/wallet/offramp/fiat/quote",
-    {
-      amount,
-    },
+    body,
   );
   return response.data;
 }

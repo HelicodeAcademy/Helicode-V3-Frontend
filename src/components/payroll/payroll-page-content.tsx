@@ -78,21 +78,13 @@ export function PayrollPageContent() {
     {
       label: "Next payroll",
       value: nextPayrollLabel,
-          muted: !nextPayrollDate,
+      muted: !nextPayrollDate,
     },
   ];
 
   return (
     <div className="space-y-6 px-6 py-6 lg:px-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h1 className="text-[28px] font-semibold tracking-tight text-[#0C1424]">
-            Payroll
-          </h1>
-          <p className="mt-1 text-sm text-[#66748C]">
-            Run recurring payroll, send one-off payments and export records
-          </p>
-        </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"

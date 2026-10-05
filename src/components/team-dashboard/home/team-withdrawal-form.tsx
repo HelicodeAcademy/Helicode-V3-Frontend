@@ -6,9 +6,15 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   getTeamTransactions,
   initiateWalletWithdrawal,
-  // WithdrawalData,
 } from "@/lib/team/team-transaction-service";
 import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 import { Loader2 } from "lucide-react";
@@ -17,6 +23,13 @@ import { requestTeamTransactionVerificationCode } from "@/lib/team/transaction-v
 import { getOffRampQuote, type OffRampQuoteResponse } from "@/lib/kyc-service";
 import { useDebounce } from "@/hooks/use-debounce";
 import { OfframpFiatQuoteSummary } from "@/components/wallet/offramp-quote-summary";
+import { getOfframpProfile } from "@/lib/team/team-auth-service";
+import {
+  currencySymbol,
+  formatPayrollMoney,
+  isDollarCurrency,
+  isLocalPayrollCurrency,
+} from "@/lib/local-currency-payroll";
 
 interface TeamWithdrawalFormProps {
   onSuccess?: () => void;
@@ -39,6 +52,8 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
   const [quote, setQuote] = useState<OffRampQuoteResponse | null>(null);
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
+  const [inputCurrency, setInputCurrency] = useState("USD");
+  const [bankCurrency, setBankCurrency] = useState<string | null>(null);
   const { teamMember } = useTeamKYCStore();
   const {
     register,
@@ -56,6 +71,26 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
   const walletBalance = teamMember?.wallet?.balance || 0;
   const requestedAmount = watch("amount");
   const debouncedAmount = useDebounce(requestedAmount, 500);
+  const prefix = currencySymbol(inputCurrency);
+  const currencyOptions = [
+    { value: "USD", label: "USD" },
+    ...(bankCurrency && isLocalPayrollCurrency(bankCurrency)
+      ? [{ value: bankCurrency, label: bankCurrency }]
+      : []),
+  ];
+
+  useEffect(() => {
+    const loadBank = async () => {
+      try {
+        const profile = await getOfframpProfile();
+        const code = profile.bank?.currencyCode?.toUpperCase() || null;
+        setBankCurrency(code);
+      } catch {
+        setBankCurrency(null);
+      }
+    };
+    void loadBank();
+  }, []);
 
   useEffect(() => {
     const amount = Number(debouncedAmount);
@@ -66,19 +101,28 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       return;
     }
 
-    if (amount > walletBalance) {
-      setQuote(null);
-      setQuoteError("");
-      return;
-    }
-
     const fetchQuote = async () => {
       setIsQuoteLoading(true);
       setQuoteError("");
 
       try {
-        const quoteResponse = await getOffRampQuote(amount);
+        const quoteResponse = await getOffRampQuote(
+          amount,
+          isLocalPayrollCurrency(inputCurrency) ? inputCurrency : undefined,
+        );
         setQuote(quoteResponse);
+
+        const debitUsdc = quoteResponse.amountUsdc ?? amount;
+        if (isDollarCurrency(inputCurrency) && amount > walletBalance) {
+          setQuoteError("Insufficient balance");
+          setQuote(null);
+        } else if (
+          isLocalPayrollCurrency(inputCurrency) &&
+          debitUsdc > walletBalance
+        ) {
+          setQuoteError("Insufficient balance");
+          setQuote(null);
+        }
       } catch (error) {
         setQuote(null);
         const errorMessage =
@@ -90,7 +134,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
     };
 
     void fetchQuote();
-  }, [debouncedAmount, walletBalance]);
+  }, [debouncedAmount, walletBalance, inputCurrency]);
 
   const handleRequestCode = async () => {
     try {
@@ -113,19 +157,18 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         return;
       }
 
-      if (data.amount > walletBalance) {
-        toast.error("Insufficient balance");
-        return;
-      }
-
       if (!quote || quoteError) {
         toast.error(quoteError || "Please wait for a valid quote");
         return;
       }
 
+      if (isDollarCurrency(inputCurrency) && data.amount > walletBalance) {
+        toast.error("Insufficient balance");
+        return;
+      }
+
       setWithdrawalData(data);
 
-      // Request verification code before showing verification step
       setIsSubmitting(true);
       try {
         await requestTeamTransactionVerificationCode("TEAM_WITHDRAWAL_FIAT");
@@ -159,6 +202,9 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         amount: withdrawalData.amount,
         verificationCode: code,
         reason: withdrawalData.reason,
+        ...(isLocalPayrollCurrency(inputCurrency)
+          ? { currency: inputCurrency }
+          : {}),
       });
 
       toast.success("Withdrawal initiated successfully!");
@@ -186,7 +232,8 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
             Verify Withdrawal
           </h3>
           <p className="text-sm text-[#667085]">
-            Amount: ${withdrawalData?.amount.toFixed(2)}
+            Amount:{" "}
+            {formatPayrollMoney(withdrawalData?.amount ?? 0, inputCurrency)}
           </p>
         </div>
 
@@ -208,11 +255,26 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      {/* Amount */}
       <div>
-        <label className="block text-sm font-medium text-[#101828] mb-1.5">
-          Amount to Withdraw
-        </label>
+        <div className="mb-1.5 flex items-center justify-between gap-3">
+          <label className="block text-sm font-medium text-[#101828]">
+            Amount to Withdraw
+          </label>
+          {currencyOptions.length > 1 && (
+            <Select value={inputCurrency} onValueChange={setInputCurrency}>
+              <SelectTrigger className="h-8 w-28 border-[#E4E7EC] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
         <div className="relative">
           <Input
             type="number"
@@ -225,18 +287,22 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
               validate: (value) => {
                 if (!value || value <= 0)
                   return "Amount must be greater than 0";
-                if (value > walletBalance) return "Insufficient balance";
                 return true;
               },
             })}
-            className="pl-8"
+            className={prefix ? "pl-8" : ""}
           />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#667085]">
-            $
-          </span>
+          {prefix && (
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#667085]">
+              {prefix}
+            </span>
+          )}
         </div>
         <p className="text-xs text-[#667085] mt-2">
           Available balance: ${walletBalance.toFixed(2)}
+          {isLocalPayrollCurrency(inputCurrency)
+            ? " (wallet debit is in USD)"
+            : ""}
         </p>
         {isQuoteLoading && (
           <p className="text-xs text-[#667085] mt-2">Loading quote...</p>
@@ -250,7 +316,6 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         )}
       </div>
 
-      {/* Reason */}
       <div>
         <label className="block text-sm font-medium text-[#101828] mb-1.5">
           Withdrawal Reason
@@ -266,7 +331,6 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         )}
       </div>
 
-      {/* Submit Button */}
       <Button
         type="submit"
         disabled={isSubmitting || isQuoteLoading || !!quoteError || !quote}

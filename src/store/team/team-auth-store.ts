@@ -52,6 +52,8 @@ export interface TeamMeResponse {
   wallet: {
     id: string;
     balance: number;
+    localBalance?: number;
+    localCurrency?: string;
   };
   companies: {
     company: {
@@ -72,6 +74,10 @@ export interface TeamMeResponse {
       amount: number;
       frequency: string;
       currency: string;
+      localAmount?: number;
+      localCurrency?: string;
+      fxRate?: number;
+      fxQuotedAt?: string;
     };
 
     contract: {
@@ -81,6 +87,8 @@ export interface TeamMeResponse {
     };
     incomingPayrollAmount: number;
     incomingPayrollDate: string;
+    incomingPayrollLocalAmount?: number;
+    incomingPayrollLocalCurrency?: string;
   }[];
 }
 

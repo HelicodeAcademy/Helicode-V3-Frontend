@@ -244,7 +244,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
 
             <div className="flex pt-4">
               <Button
-                className="h-11 w-full rounded-xl bg-[#0084FD] font-semibold text-white hover:bg-[#0070DB]"
+                className="h-11 w-full rounded-xl bg-[#0052FF] font-semibold text-white"
                 onClick={() => onOpenChange(false)}
               >
                 Go to home

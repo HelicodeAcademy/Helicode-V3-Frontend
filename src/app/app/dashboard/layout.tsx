@@ -2,7 +2,13 @@
 
 import type React from "react";
 import Image from "next/image";
-import { Fragment, createContext, useState, useEffect, useCallback } from "react";
+import {
+  Fragment,
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
 import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
@@ -35,7 +41,6 @@ import {
   SidebarAccountingIcon,
   SidebarCreditCardIcon,
   SidebarEarnIcon,
-  SidebarHiringIcon,
   SidebarHomeIcon,
   SidebarPayrollIcon,
   SidebarSettingsIcon,
@@ -80,10 +85,6 @@ const primaryNav: NavItem[] = [
 
 const companyNav: NavItem[] = [
   { icon: SidebarPayrollIcon, label: "Payroll", href: "/dashboard/payroll" },
-  // { icon: SidebarPayslipIcon, label: "Payslips", href: "/dashboard/payslips" },
-  // { icon: SidebarAnalyticsIcon, label: "Reports", href: "/dashboard/reports" },
-  { icon: SidebarHiringIcon, label: "Hiring", href: "/dashboard/hiring" },
-  // { icon: FolderOpen, label: "Pay Inputs", href: "/dashboard/pay-inputs" },
 ];
 
 const treasuryNav: NavItem[] = [
@@ -119,14 +120,15 @@ function NavSection({
   title,
   items,
   pathname,
+  accountsExpanded,
+  onAccountsExpandedChange,
 }: {
   title?: string;
   items: NavItem[];
   pathname: string;
+  accountsExpanded: boolean;
+  onAccountsExpandedChange: (expanded: boolean) => void;
 }) {
-  const [accountsCollapsed, setAccountsCollapsed] = useState(false);
-  const accountsExpanded = !accountsCollapsed;
-
   return (
     <div className="space-y-1">
       {title && (
@@ -162,7 +164,7 @@ function NavSection({
                       <Link
                         href={item.href}
                         className="flex items-center gap-3.5"
-                        onClick={() => setAccountsCollapsed(false)}
+                        onClick={() => onAccountsExpandedChange(true)}
                       >
                         <Icon
                           className={`h-5 w-5 ${
@@ -189,7 +191,7 @@ function NavSection({
                       }
                       aria-expanded={accountsExpanded}
                       onClick={() =>
-                        setAccountsCollapsed((collapsed) => !collapsed)
+                        onAccountsExpandedChange(!accountsExpanded)
                       }
                       className="mr-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[#585858] hover:bg-[#F2F4F7]"
                     >
@@ -211,7 +213,11 @@ function NavSection({
                         : "text-[#0F112A]"
                     }`}
                   >
-                    <Link href={item.href} className="flex items-center gap-3.5">
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-3.5"
+                      onClick={() => onAccountsExpandedChange(false)}
+                    >
                       <Icon
                         className={`h-5 w-5 ${
                           isActive ? "text-[#0052FF]" : "text-[#585858]"
@@ -291,6 +297,7 @@ function DashboardSidebar() {
   const { user, logout } = useAuth();
   const { walletData, setWalletData } = useWalletStore();
   const [companyName, setCompanyName] = useState<string>("");
+  const [accountsExpanded, setAccountsExpanded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -330,10 +337,33 @@ function DashboardSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-4 pb-4">
-        <NavSection items={primaryNav} pathname={pathname} />
-        <NavSection title="Company" items={companyNav} pathname={pathname} />
-        <NavSection title="Treasury" items={treasuryNav} pathname={pathname} />
-        <NavSection title="Settings" items={settingsNav} pathname={pathname} />
+        <NavSection
+          items={primaryNav}
+          pathname={pathname}
+          accountsExpanded={accountsExpanded}
+          onAccountsExpandedChange={setAccountsExpanded}
+        />
+        <NavSection
+          title="Company"
+          items={companyNav}
+          pathname={pathname}
+          accountsExpanded={accountsExpanded}
+          onAccountsExpandedChange={setAccountsExpanded}
+        />
+        <NavSection
+          title="Treasury"
+          items={treasuryNav}
+          pathname={pathname}
+          accountsExpanded={accountsExpanded}
+          onAccountsExpandedChange={setAccountsExpanded}
+        />
+        <NavSection
+          title="Settings"
+          items={settingsNav}
+          pathname={pathname}
+          accountsExpanded={accountsExpanded}
+          onAccountsExpandedChange={setAccountsExpanded}
+        />
       </SidebarContent>
 
       <SidebarFooter>

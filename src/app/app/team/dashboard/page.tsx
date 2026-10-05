@@ -135,8 +135,23 @@ export default function TalentDashboardHomePage() {
   };
 
   const balance = teamData?.wallet.balance ?? 0;
+  const localBalance = teamData?.wallet.localBalance;
+  const localBalanceCurrency = teamData?.wallet.localCurrency;
+  const showLocalBalance =
+    typeof localBalance === "number" && Boolean(localBalanceCurrency);
 
   const selectedCurrency = currency.toUpperCase();
+  const companyPayroll = teamData?.companies[0];
+  const incomingLocalAmount = companyPayroll?.incomingPayrollLocalAmount;
+  const incomingLocalCurrency = companyPayroll?.incomingPayrollLocalCurrency;
+  const incomingAmount =
+    typeof incomingLocalAmount === "number" && incomingLocalCurrency
+      ? incomingLocalAmount
+      : companyPayroll?.incomingPayrollAmount;
+  const incomingCurrency =
+    typeof incomingLocalAmount === "number" && incomingLocalCurrency
+      ? incomingLocalCurrency
+      : selectedCurrency;
 
   const getCurrencySymbol = (currencyCode?: string) => {
     switch (currencyCode?.toUpperCase()) {
@@ -148,8 +163,16 @@ export default function TalentDashboardHomePage() {
         return "€";
       case "GBP":
         return "£";
+      case "NGN":
+        return "₦";
+      case "GHS":
+        return "GH₵";
+      case "KES":
+        return "KSh";
+      case "ZAR":
+        return "R";
       default:
-        return currencyCode ?? "";
+        return currencyCode ? `${currencyCode} ` : "";
     }
   };
 
@@ -157,22 +180,26 @@ export default function TalentDashboardHomePage() {
     if (typeof amount !== "number") return "--";
 
     const symbol = getCurrencySymbol(currencyCode);
-    return `${symbol}${amount.toFixed(2)}`;
+    const formatted = amount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    if (symbol === "$" || symbol === "€" || symbol === "£" || symbol === "₦" || symbol === "R" || symbol === "GH₵" || symbol === "KSh") {
+      return `${symbol}${formatted}`;
+    }
+    return `${formatted} ${currencyCode ?? ""}`.trim();
   };
 
   const payrollData = [
     {
       label: "Incoming",
-      value: formatIncomingAmount(
-        teamData?.companies[0]?.incomingPayrollAmount,
-        selectedCurrency,
-      ),
+      value: formatIncomingAmount(incomingAmount, incomingCurrency),
     },
     {
       label: "Next Payroll",
-      value: teamData?.companies[0]?.incomingPayrollDate
+      value: companyPayroll?.incomingPayrollDate
         ? format(
-            new Date(teamData.companies[0].incomingPayrollDate),
+            new Date(companyPayroll.incomingPayrollDate),
             "MMM d, yyyy",
           )
         : "",
@@ -244,10 +271,21 @@ export default function TalentDashboardHomePage() {
                   <div className="h-12 w-40 animate-pulse rounded bg-gray-200"></div>
                 ) : (
                   <>
-                    <div className="text-[1.75rem] font-bold text-[#1C232D] sm:text-[2rem]">
-                      {showBalance
-                        ? `${getCurrencySymbol(selectedCurrency)}${balance.toFixed(2)}`
-                        : "••••••"}
+                    <div>
+                      <div className="text-[1.75rem] font-bold text-[#1C232D] sm:text-[2rem]">
+                        {showBalance
+                          ? `${getCurrencySymbol(selectedCurrency)}${balance.toFixed(2)}`
+                          : "••••••"}
+                      </div>
+                      {showBalance && showLocalBalance && (
+                        <p className="mt-1 text-sm text-[#667085]">
+                          ≈{" "}
+                          {formatIncomingAmount(
+                            localBalance,
+                            localBalanceCurrency,
+                          )}
+                        </p>
+                      )}
                     </div>
 
                     <button

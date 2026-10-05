@@ -115,7 +115,9 @@ export function BulkUploadCSV({ onSuccess }: BulkUploadCSVProps) {
               Download Sample CSV
             </h3>
             <p className="text-[#667085] text-xs mt-1">
-              Download a template CSV file to see the correct format and headers
+              Download a template CSV file to see the correct format and headers.
+              Use USD/USDC for dollar salaries, or a local code (e.g. NGN) that
+              matches the member&apos;s country.
               required.
             </p>
           </div>

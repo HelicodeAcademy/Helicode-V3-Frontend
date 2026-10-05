@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,11 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UploadCloud } from "lucide-react";
+import { Loader2, UploadCloud } from "lucide-react";
 import { useAddHireStore, HireContractForm } from "@/store/add-hire-store";
-import { addTeamMember } from "@/lib/team-service";
+import { addTeamMember, quotePayrollSalary } from "@/lib/team-service";
 import { toast } from "react-hot-toast";
 import { Currency, PaymentFrequency } from "@/store/team-store";
+import {
+  formatPayrollMoney,
+  isLocalPayrollCurrency,
+  payrollCurrencyOptionsForCountry,
+  type PayrollQuoteResponse,
+} from "@/lib/local-currency-payroll";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface HireContractFormComponentProps {
   title: string;
@@ -22,10 +29,6 @@ interface HireContractFormComponentProps {
   workerType: "CONTRACTOR" | "EMPLOYEE";
   onSuccess: () => void;
 }
-
-const CURRENCIES: { value: Currency; label: string }[] = [
-  { value: "USD", label: "USD" },
-];
 
 const FREQUENCIES: { value: PaymentFrequency; label: string }[] = [
   { value: "HOURLY", label: "Hourly" },
@@ -45,7 +48,70 @@ export function HireContractFormComponent({
     Partial<Record<keyof HireContractForm, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quote, setQuote] = useState<PayrollQuoteResponse | null>(null);
+  const [quoteError, setQuoteError] = useState("");
+  const [isQuoting, setIsQuoting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const currencyOptions = payrollCurrencyOptionsForCountry(details.country);
+  const debouncedAmount = useDebounce(contract.amount, 400);
+
+  useEffect(() => {
+    const allowed = currencyOptions.map((option) => option.value);
+    if (!allowed.includes(contract.currency)) {
+      setContract({ currency: "USD" });
+    }
+  }, [currencyOptions, contract.currency, setContract]);
+
+  useEffect(() => {
+    const amount = Number(debouncedAmount);
+    if (
+      !details.country ||
+      !contract.currency ||
+      !debouncedAmount ||
+      Number.isNaN(amount) ||
+      amount <= 0
+    ) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    if (!isLocalPayrollCurrency(contract.currency)) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    let cancelled = false;
+    const run = async () => {
+      setIsQuoting(true);
+      setQuoteError("");
+      try {
+        const result = await quotePayrollSalary({
+          country: details.country,
+          currency: contract.currency,
+          amount,
+        });
+        if (!cancelled) setQuote(result);
+      } catch (error) {
+        if (!cancelled) {
+          setQuote(null);
+          setQuoteError(
+            error instanceof Error
+              ? error.message
+              : "Could not fetch payout rate",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsQuoting(false);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedAmount, contract.currency, details.country]);
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof HireContractForm, string>> = {};
@@ -57,6 +123,9 @@ export function HireContractFormComponent({
       newErrors.amount = "Enter a valid amount.";
     if (!contract.department.trim())
       newErrors.department = "Department is required.";
+    if (isLocalPayrollCurrency(contract.currency) && quoteError) {
+      newErrors.amount = "Retry the quote before submitting.";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -82,13 +151,9 @@ export function HireContractFormComponent({
       });
       onSuccess();
     } catch (err: unknown) {
-      // toast.error(
-      //     err instanceof Error ? err.message : "Failed to add team member.",
-      // );
       const message =
         err instanceof Error ? err.message : "Failed to add team member.";
       toast.error(message);
-      // console.error("[addTeamMember]", message);
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +168,6 @@ export function HireContractFormComponent({
         <p className="text-[#444444] text-sm mb-8">{subtitle}</p>
 
         <div className="space-y-5">
-          {/* Monthly Rate */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Rate <span className="text-[#FF3F3F]">*</span>
@@ -121,7 +185,6 @@ export function HireContractFormComponent({
             )}
           </div>
 
-          {/* Currency — now a proper select */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Currency <span className="text-[#FF3F3F]">*</span>
@@ -136,7 +199,7 @@ export function HireContractFormComponent({
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent>
-                {CURRENCIES.map((c) => (
+                {currencyOptions.map((c) => (
                   <SelectItem key={c.value} value={c.value}>
                     {c.label}
                   </SelectItem>
@@ -145,7 +208,42 @@ export function HireContractFormComponent({
             </Select>
           </div>
 
-          {/* Payment Frequency */}
+          {isLocalPayrollCurrency(contract.currency) && (
+            <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] px-4 py-3">
+              {isQuoting ? (
+                <p className="flex items-center gap-2 text-sm text-[#66748C]">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Fetching payout rate…
+                </p>
+              ) : quoteError ? (
+                <p className="text-sm text-[#B42318]">{quoteError}</p>
+              ) : quote ? (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium text-[#0C1424]">
+                    Settles as{" "}
+                    {formatPayrollMoney(
+                      quote.settlementAmount,
+                      quote.settlementCurrency,
+                    )}
+                  </p>
+                  {quote.rate != null && (
+                    <p className="text-[#66748C]">
+                      Rate: 1 USD ={" "}
+                      {quote.rate.toLocaleString("en-US", {
+                        maximumFractionDigits: 4,
+                      })}{" "}
+                      {quote.currency}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-[#66748C]">
+                  Enter an amount to see the dollar settlement.
+                </p>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Payment Frequency <span className="text-[#FF3F3F]">*</span>
@@ -169,7 +267,6 @@ export function HireContractFormComponent({
             </Select>
           </div>
 
-          {/* Department */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Department <span className="text-[#FF3F3F]">*</span>
@@ -185,7 +282,6 @@ export function HireContractFormComponent({
             )}
           </div>
 
-          {/* Upload Contract — styled dropzone */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Upload contract{" "}
@@ -234,7 +330,7 @@ export function HireContractFormComponent({
             onClick={handleSubmit}
             variant="primary"
             className="w-32"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isQuoting}
           >
             {isSubmitting ? "Creating..." : "Create New Hire"}
           </Button>

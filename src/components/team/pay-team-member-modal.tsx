@@ -13,6 +13,18 @@ import Image from "next/image";
 import { paySingleTeamMember } from "@/lib/team-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
+import {
+  currencySymbol,
+  isLocalPayrollCurrency,
+  payrollCurrencyOptionsForCountry,
+} from "@/lib/local-currency-payroll";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PayTeamMemberModalProps {
   open: boolean;
@@ -30,16 +42,31 @@ export function PayTeamMemberModal({
   const router = useRouter();
   const [step, setStep] = useState<PayStep>("pay");
   const [amount, setAmount] = useState("");
+  const [payCurrency, setPayCurrency] = useState("USD");
   const [amountError, setAmountError] = useState("");
   const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
 
+  const currencyOptions = payrollCurrencyOptionsForCountry(
+    member?.country ?? "",
+  );
+  const prefix = currencySymbol(payCurrency);
+
   // Reset on open
   useEffect(() => {
     if (open && member) {
       setStep("pay");
-      setAmount(String(member.amount));
+      const defaultCurrency =
+        member.localCurrency && isLocalPayrollCurrency(member.localCurrency)
+          ? member.localCurrency
+          : "USD";
+      setPayCurrency(defaultCurrency);
+      setAmount(
+        member.localAmount != null && defaultCurrency !== "USD"
+          ? String(member.localAmount)
+          : String(member.amount),
+      );
       setAmountError("");
       setVerificationError("");
     }
@@ -92,7 +119,12 @@ export function PayTeamMemberModal({
     setIsSubmitting(true);
     setVerificationError("");
     try {
-      await paySingleTeamMember(member.id, code, Number(amount));
+      await paySingleTeamMember(
+        member.id,
+        code,
+        Number(amount),
+        isLocalPayrollCurrency(payCurrency) ? payCurrency : undefined,
+      );
       setStep("success");
     } catch (err: unknown) {
       const message =
@@ -158,10 +190,26 @@ export function PayTeamMemberModal({
 
               {/* Amount card */}
               <div className="bg-white rounded-xl px-4 pt-3.5 pb-4">
-                <p className="text-sm text-[#667085] mb-2">Amount</p>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-sm text-[#667085]">Amount</p>
+                  {currencyOptions.length > 1 && (
+                    <Select value={payCurrency} onValueChange={setPayCurrency}>
+                      <SelectTrigger className="h-8 w-28 border-[#E4E7EC] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencyOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
                 <div className="relative">
                   <span className="absolute left-0 top-1/2 -translate-y-1/2 text-[2rem] font-bold text-[#101928]">
-                    $
+                    {prefix || ""}
                   </span>
                   <input
                     type="number"
@@ -173,9 +221,14 @@ export function PayTeamMemberModal({
                     }}
                     onWheel={(e) => e.currentTarget.blur()}
                     placeholder="0.00"
-                    className="w-full pl-8 text-[2rem] font-bold text-[#101928] bg-transparent outline-none border-none placeholder:text-[#d0d5dd]"
+                    className={`w-full text-[2rem] font-bold text-[#101928] bg-transparent outline-none border-none placeholder:text-[#d0d5dd] ${
+                      prefix ? "pl-8" : "pl-0"
+                    }`}
                   />
                 </div>
+                {!prefix && payCurrency && (
+                  <p className="mt-1 text-xs text-[#667085]">{payCurrency}</p>
+                )}
                 {amountError && (
                   <p className="text-xs text-red-500 mt-1">{amountError}</p>
                 )}

@@ -59,7 +59,14 @@ function formatPaymentMethodLabel(paymentMethod: string) {
 function formatCompanyAmount(
   amount: string,
   type: CompanyFeedTransaction["type"],
+  localAmount?: string,
+  localCurrency?: string,
 ) {
+  if (localAmount && localCurrency) {
+    const prefix = type === "Received" ? "+" : "";
+    return `${prefix}${localAmount} ${localCurrency}`;
+  }
+
   const value = Number.parseFloat(amount);
   const formatted = Number.isNaN(value)
     ? amount
@@ -75,7 +82,15 @@ function formatCompanyAmount(
   return `$${formatted}`;
 }
 
-function formatPeopleAmount(amount: string) {
+function formatPeopleAmount(
+  amount: string,
+  localAmount?: string,
+  localCurrency?: string,
+) {
+  if (localAmount && localCurrency) {
+    return `${localAmount} ${localCurrency}`;
+  }
+
   const value = Number.parseFloat(amount);
   if (Number.isNaN(value)) {
     return amount;
@@ -250,10 +265,16 @@ export function TransactionsFeedTable({
                       {formatCompanyAmount(
                         transaction.amount,
                         transaction.type,
+                        transaction.localAmount,
+                        transaction.localCurrency,
                       )}
                     </TableCell>
                     <TableCell>
-                      <CurrencyCell currency={transaction.currency} />
+                      <CurrencyCell
+                        currency={
+                          transaction.localCurrency || transaction.currency
+                        }
+                      />
                     </TableCell>
                     <TableCell className="text-sm font-medium text-[#101928]">
                       {formatPaymentMethodLabel(transaction.paymentMethod)}
@@ -301,7 +322,11 @@ export function TransactionsFeedTable({
                     {transaction.workerType}
                   </TableCell>
                   <TableCell className="text-sm font-medium text-[#101928]">
-                    {formatPeopleAmount(transaction.amount)}
+                    {formatPeopleAmount(
+                      transaction.amount,
+                      transaction.localAmount,
+                      transaction.localCurrency,
+                    )}
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={transaction.status} />

@@ -16,6 +16,22 @@ import { EmailVerificationCodeStep } from "@/components/ui/email-verification-co
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
 import { useWalletStore } from "@/store/wallet-store";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  currencySymbol,
+  formatPayrollMoney,
+  isLocalPayrollCurrency,
+  payrollCurrencyOptionsForCountry,
+  type PayrollQuoteResponse,
+} from "@/lib/local-currency-payroll";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { quotePayrollSalary } from "@/lib/team-service";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface OneTimePaymentModalProps {
   open: boolean;
@@ -25,18 +41,16 @@ interface OneTimePaymentModalProps {
 type FlowStep = "recipient" | "amount" | "review" | "verification" | "success";
 type MemberFilter = "everyone" | "employees" | "contractors";
 type PaymentType =
-  | "Bonus"
+  | "Salary"
   | "Reimbursement"
   | "Commission"
-  | "Salary"
   | "Advance"
   | "Other";
 
 const PAYMENT_TYPES: PaymentType[] = [
-  "Bonus",
+  "Salary",
   "Reimbursement",
   "Commission",
-  "Salary",
   "Advance",
   "Other",
 ];
@@ -52,11 +66,8 @@ const AVATAR_COLORS = [
   "bg-[#0052FF] text-white",
 ];
 
-function formatMoney(amount: number) {
-  return `$${amount.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+function formatMoney(amount: number, currency?: string) {
+  return formatPayrollMoney(amount, currency);
 }
 
 function initials(name: string) {
@@ -73,8 +84,16 @@ function firstName(name: string) {
 }
 
 function memberCurrency(member: TeamMember) {
+  if (member.localCurrency) return member.localCurrency;
   const withCurrency = member as TeamMember & { currency?: string };
   return withCurrency.currency || "USD";
+}
+
+function memberDisplayAmount(member: TeamMember) {
+  if (member.localAmount != null && member.localCurrency) {
+    return String(member.localAmount);
+  }
+  return member.amount ? String(member.amount) : "";
 }
 
 function canPayMember(member: TeamMember) {
@@ -113,7 +132,7 @@ function PayNowStepper({ step }: { step: FlowStep }) {
               <span
                 className={cn(
                   "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                  completed && "bg-[#0B7A55] text-white",
+                  completed && "bg-[#21966F] text-white",
                   active && "bg-[#0052FF] text-white",
                   !completed && !active && "bg-[#D0D5DD] text-white",
                 )}
@@ -160,13 +179,17 @@ export function OneTimePaymentModal({
   const [filter, setFilter] = useState<MemberFilter>("everyone");
   const [searchInput, setSearchInput] = useState("");
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const [paymentType, setPaymentType] = useState<PaymentType>("Bonus");
+  const [paymentType, setPaymentType] = useState<PaymentType>("Salary");
   const [amount, setAmount] = useState("");
+  const [payCurrency, setPayCurrency] = useState("USD");
   const [note, setNote] = useState("");
   const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+  const [payrollQuote, setPayrollQuote] = useState<PayrollQuoteResponse | null>(
+    null,
+  );
   const [paymentResult, setPaymentResult] = useState<Awaited<
     ReturnType<typeof paySingleTeamMember>
   > | null>(null);
@@ -177,10 +200,12 @@ export function OneTimePaymentModal({
     setFilter("everyone");
     setSearchInput("");
     setSelectedMember(null);
-    setPaymentType("Bonus");
+    setPaymentType("Salary");
     setAmount("");
+    setPayCurrency("USD");
     setNote("");
     setVerificationError("");
+    setPayrollQuote(null);
     setPaymentResult(null);
     setPaidAt(null);
   }, []);
@@ -221,20 +246,63 @@ export function OneTimePaymentModal({
     });
   }, [members, filter, searchInput]);
 
+  const currencyOptions = payrollCurrencyOptionsForCountry(
+    selectedMember?.country ?? "",
+  );
+  const debouncedAmount = useDebounce(amount, 400);
   const amountValue = Number(amount) || 0;
-  const totalDebited = amountValue + NETWORK_FEE;
+  const settlementAmount =
+    isLocalPayrollCurrency(payCurrency) && payrollQuote
+      ? payrollQuote.settlementAmount
+      : amountValue;
+  const totalDebited = settlementAmount + NETWORK_FEE;
   const balance = walletData?.balance ?? 0;
   const balanceAfter = Math.max(balance - totalDebited, 0);
-  const selectedCurrency = selectedMember
-    ? memberCurrency(selectedMember)
-    : "USD";
+  const selectedCurrency = payCurrency;
+  const amountPrefix = currencySymbol(payCurrency);
+
+  useEffect(() => {
+    const parsed = Number(debouncedAmount);
+    if (
+      !selectedMember ||
+      !isLocalPayrollCurrency(payCurrency) ||
+      !debouncedAmount ||
+      Number.isNaN(parsed) ||
+      parsed <= 0
+    ) {
+      setPayrollQuote(null);
+      return;
+    }
+
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const quote = await quotePayrollSalary({
+          country: selectedMember.country,
+          currency: payCurrency,
+          amount: parsed,
+        });
+        if (!cancelled) setPayrollQuote(quote);
+      } catch {
+        if (!cancelled) setPayrollQuote(null);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedAmount, payCurrency, selectedMember]);
 
   const continueFromRecipient = () => {
     if (!selectedMember || !canPayMember(selectedMember)) {
       toast.error("Select an active team member to pay.");
       return;
     }
-    setAmount(selectedMember.amount ? String(selectedMember.amount) : "");
+    const nextCurrency = isLocalPayrollCurrency(memberCurrency(selectedMember))
+      ? memberCurrency(selectedMember)
+      : "USD";
+    setPayCurrency(nextCurrency);
+    setAmount(memberDisplayAmount(selectedMember));
     setStep("amount");
   };
 
@@ -277,6 +345,7 @@ export function OneTimePaymentModal({
         selectedMember.id,
         code,
         amountValue,
+        isLocalPayrollCurrency(payCurrency) ? payCurrency : undefined,
       );
       setPaymentResult(result);
       setPaidAt(new Date());
@@ -298,7 +367,7 @@ export function OneTimePaymentModal({
     pdf.setFontSize(16);
     pdf.text("Payment receipt", 20, 20);
     pdf.setFontSize(12);
-    pdf.text(`Amount: ${formatMoney(amountValue)}`, 20, 40);
+    pdf.text(`Amount: ${formatMoney(amountValue, payCurrency)}`, 20, 40);
     pdf.text(`Paid to: ${selectedMember.fullName}`, 20, 50);
     pdf.text(`Type: ${paymentType}`, 20, 60);
     pdf.text(`Date: ${format(paidAt, "MMM d, yyyy - HH:mm")}`, 20, 70);
@@ -541,26 +610,57 @@ export function OneTimePaymentModal({
                     Amount
                   </p>
                   <div className="flex h-11 items-center rounded-xl border border-[#0052FF] px-3">
-                    <span className="mr-1 text-sm text-[#0C1424]">$</span>
+                    <span className="mr-1 shrink-0 text-sm text-[#0C1424]">
+                      {amountPrefix || "$"}
+                    </span>
                     <input
                       type="number"
                       min={0}
                       value={amount}
                       onChange={(event) => setAmount(event.target.value)}
                       onWheel={(event) => event.currentTarget.blur()}
-                      className="w-full bg-transparent text-sm text-[#0C1424] outline-none"
+                      className="min-w-0 flex-1 bg-transparent text-sm text-[#0C1424] outline-none"
                     />
-                    <span className="text-sm text-[#66748C]">
-                      {selectedCurrency}
-                    </span>
+                    {currencyOptions.length > 1 ? (
+                      <Select
+                        value={payCurrency}
+                        onValueChange={setPayCurrency}
+                      >
+                        <SelectTrigger className="h-8 w-auto shrink-0 border-0 bg-transparent px-1.5 text-sm font-medium text-[#66748C] shadow-none focus:ring-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent align="end">
+                          {currencyOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="shrink-0 text-sm text-[#66748C]">
+                        {selectedCurrency}
+                      </span>
+                    )}
                   </div>
+                  {isLocalPayrollCurrency(payCurrency) && payrollQuote && (
+                    <p className="mt-2 text-xs text-[#66748C]">
+                      Settles as{" "}
+                      {formatMoney(
+                        payrollQuote.settlementAmount,
+                        payrollQuote.settlementCurrency,
+                      )}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="mb-2 text-sm font-semibold text-[#0C1424]">
                     Pay from
                   </p>
-                  <div className="flex h-11 items-center justify-between rounded-xl border border-[#D0D5DD] px-3 text-sm text-[#0C1424]">
-                    <span>USD account · {formatMoney(balance)}</span>
+                  <div className="flex h-11 items-center rounded-xl border border-[#D0D5DD] px-3 text-sm text-[#0C1424]">
+                    <span className="truncate">
+                      USD account · {formatMoney(balance)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -587,11 +687,11 @@ export function OneTimePaymentModal({
                 <div className="flex justify-between text-[#66748C]">
                   <span>Amount</span>
                   <span className="text-[#0C1424] font-semibold">
-                    {formatMoney(amountValue)}
+                    {formatMoney(amountValue, payCurrency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-[#66748C] border-b pb-2">
-                  <span>Network fee</span>
+                  <span>Fee</span>
                   <span className="text-[#0C1424] font-semibold">
                     {formatMoney(NETWORK_FEE)}
                   </span>
@@ -600,7 +700,9 @@ export function OneTimePaymentModal({
                 <div className="flex justify-between text-[#66748C]">
                   <span>{firstName(selectedMember.fullName)} receives</span>
                   <span className="text-[#0052FF] font-semibold">
-                    {formatMoney(amountValue)} {selectedCurrency}
+                    {isLocalPayrollCurrency(payCurrency)
+                      ? formatMoney(amountValue, payCurrency)
+                      : formatMoney(amountValue)}
                   </span>
                 </div>
                 <div className="flex justify-between text-[#66748C]">

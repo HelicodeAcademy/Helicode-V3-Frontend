@@ -29,6 +29,8 @@ export interface CompanyFeedTransaction {
   status: "Success" | "Pending" | "Failed";
   date: string;
   dateDisplay: string;
+  localAmount?: string;
+  localCurrency?: string;
 }
 
 export interface PeopleFeedTransaction {
@@ -42,6 +44,8 @@ export interface PeopleFeedTransaction {
   status: "Paid" | "Pending" | "Failed";
   date: string;
   dateDisplay: string;
+  localAmount?: string;
+  localCurrency?: string;
 }
 
 export interface TransactionsFeedPagination {

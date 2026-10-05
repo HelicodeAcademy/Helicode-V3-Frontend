@@ -43,6 +43,12 @@ export function OfframpFiatQuoteSummary({ quote }: { quote: OfframpFiatQuote }) 
     <div className="mt-3 rounded-lg border border-[#e0e0e0] bg-[#f9fafb] p-4 space-y-3">
       <p className="text-sm font-medium text-[#101828]">Quote Summary</p>
       <div className="space-y-2 text-xs">
+        {quote.inputAmount != null && quote.inputCurrency && (
+          <QuoteRow
+            label="You entered"
+            value={`${formatLocalAmount(quote.inputAmount)} ${quote.inputCurrency}`}
+          />
+        )}
         <QuoteRow
           label="Exchange Rate"
           value={`1 USDC = ${quote.rate.toFixed(4)} ${quote.currency}`}

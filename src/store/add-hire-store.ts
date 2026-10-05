@@ -39,7 +39,7 @@ const defaultDetails: HireDetailsForm = {
 
 const defaultContract: HireContractForm = {
   amount: "",
-  currency: "USDC",
+  currency: "USD",
   frequency: "MONTHLY",
   department: "",
   contract: null,

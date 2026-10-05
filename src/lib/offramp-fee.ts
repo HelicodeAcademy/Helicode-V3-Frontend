@@ -15,6 +15,9 @@ export interface OfframpFiatQuote extends OfframpFeeFields {
   currency: string;
   rate: number;
   amountReceived: number;
+  /** Present when the member typed a local currency amount. */
+  inputAmount?: number;
+  inputCurrency?: string;
 }
 
 export interface OfframpCryptoQuote extends OfframpFeeFields {

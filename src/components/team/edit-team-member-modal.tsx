@@ -5,19 +5,33 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format, parseISO, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TeamMember } from "@/store/team-store";
-import { apiCall } from "@/lib/api-client";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { updateTeamMember } from "@/lib/team-service";
+import { quotePayrollSalary, updateTeamMember } from "@/lib/team-service";
+import {
+  currencySymbol,
+  formatPayrollMoney,
+  isLocalPayrollCurrency,
+  payrollCurrencyOptionsForCountry,
+  type PayrollQuoteResponse,
+} from "@/lib/local-currency-payroll";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface EditTeamMemberModalProps {
   open: boolean;
@@ -32,6 +46,7 @@ interface EditForm {
   role: string;
   startDate: string;
   amount: string;
+  currency: string;
 }
 
 interface EditErrors {
@@ -54,27 +69,93 @@ export function EditTeamMemberModal({
     role: "",
     startDate: "",
     amount: "",
+    currency: "USD",
   });
   const [errors, setErrors] = useState<EditErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [quote, setQuote] = useState<PayrollQuoteResponse | null>(null);
+  const [quoteError, setQuoteError] = useState("");
+  const [isQuoting, setIsQuoting] = useState(false);
 
-  // Seed form when member changes
+  const currencyOptions = payrollCurrencyOptionsForCountry(
+    member?.country ?? "",
+  );
+  const debouncedAmount = useDebounce(form.amount, 400);
+  const prefix = currencySymbol(form.currency) || form.currency;
+
   useEffect(() => {
     if (member) {
       const [firstName = "", ...rest] = member.fullName.split(" ");
+      const displayCurrency =
+        member.localCurrency ||
+        (member.currency && isLocalPayrollCurrency(member.currency)
+          ? member.currency
+          : "USD");
+      const displayAmount =
+        member.localAmount != null
+          ? String(member.localAmount)
+          : String(member.amount);
       setForm({
         firstName,
         lastName: rest.join(" "),
         role: member.role,
         startDate: member.dateJoined ?? "",
-        amount: String(member.amount),
+        amount: displayAmount,
+        currency: displayCurrency,
       });
       setErrors({});
       setShowSuccess(false);
+      setQuote(null);
+      setQuoteError("");
     }
   }, [member]);
+
+  useEffect(() => {
+    const amount = Number(debouncedAmount);
+    if (
+      !member?.country ||
+      !form.currency ||
+      !debouncedAmount ||
+      Number.isNaN(amount) ||
+      amount <= 0 ||
+      !isLocalPayrollCurrency(form.currency)
+    ) {
+      setQuote(null);
+      setQuoteError("");
+      return;
+    }
+
+    let cancelled = false;
+    const run = async () => {
+      setIsQuoting(true);
+      setQuoteError("");
+      try {
+        const result = await quotePayrollSalary({
+          country: member.country,
+          currency: form.currency,
+          amount,
+        });
+        if (!cancelled) setQuote(result);
+      } catch (error) {
+        if (!cancelled) {
+          setQuote(null);
+          setQuoteError(
+            error instanceof Error
+              ? error.message
+              : "Could not fetch payout rate",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsQuoting(false);
+      }
+    };
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedAmount, form.currency, member?.country]);
 
   const setField = (field: keyof EditForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -89,6 +170,9 @@ export function EditTeamMemberModal({
     if (!form.startDate) e.startDate = "Required.";
     if (!form.amount || isNaN(Number(form.amount)) || Number(form.amount) <= 0)
       e.amount = "Enter a valid amount.";
+    if (isLocalPayrollCurrency(form.currency) && quoteError) {
+      e.amount = "Retry the quote before submitting.";
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -103,6 +187,7 @@ export function EditTeamMemberModal({
         role: form.role,
         startDate: form.startDate,
         amount: String(form.amount),
+        currency: form.currency,
       });
       setShowSuccess(true);
     } catch (err: unknown) {
@@ -173,7 +258,6 @@ export function EditTeamMemberModal({
         </p>
 
         <div className="space-y-4 mt-1">
-          {/* First & Last name */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
@@ -208,7 +292,6 @@ export function EditTeamMemberModal({
             As it appears on their government issued identification
           </p>
 
-          {/* Job title */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Job title <span className="text-[#FF3F3F]">*</span>
@@ -224,7 +307,6 @@ export function EditTeamMemberModal({
             )}
           </div>
 
-          {/* Start date */}
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Start date <span className="text-[#FF3F3F]">*</span>
@@ -265,14 +347,36 @@ export function EditTeamMemberModal({
             )}
           </div>
 
-          {/* Monthly rate */}
+          <div>
+            <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
+              Currency <span className="text-[#FF3F3F]">*</span>
+            </label>
+            <Select
+              value={form.currency}
+              onValueChange={(value) => setField("currency", value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-[#0F112A] mb-1.5">
               Monthly rate <span className="text-[#FF3F3F]">*</span>
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#667085] font-medium">
-                $
+                {prefix === "$" || prefix === "₦" || prefix === "€" || prefix === "£" || prefix === "R" || prefix === "GH₵" || prefix === "KSh"
+                  ? prefix
+                  : ""}
               </span>
               <Input
                 type="number"
@@ -280,9 +384,43 @@ export function EditTeamMemberModal({
                 value={form.amount}
                 onChange={(e) => setField("amount", e.target.value)}
                 placeholder="5000"
-                className={cn("pl-7", errors.amount ? "border-red-400" : "")}
+                className={cn(
+                  errors.amount ? "border-red-400" : "",
+                  prefix === "$" ||
+                    prefix === "₦" ||
+                    prefix === "€" ||
+                    prefix === "£" ||
+                    prefix === "R" ||
+                    prefix === "GH₵" ||
+                    prefix === "KSh"
+                    ? "pl-7"
+                    : "",
+                )}
               />
             </div>
+            {isLocalPayrollCurrency(form.currency) && (
+              <div className="mt-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] px-3 py-2">
+                {isQuoting ? (
+                  <p className="flex items-center gap-2 text-xs text-[#66748C]">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Fetching payout rate…
+                  </p>
+                ) : quoteError ? (
+                  <p className="text-xs text-[#B42318]">{quoteError}</p>
+                ) : quote ? (
+                  <p className="text-xs text-[#66748C]">
+                    Settles as{" "}
+                    {formatPayrollMoney(
+                      quote.settlementAmount,
+                      quote.settlementCurrency,
+                    )}
+                    {quote.rate != null
+                      ? ` · 1 USD = ${quote.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${quote.currency}`
+                      : ""}
+                  </p>
+                ) : null}
+              </div>
+            )}
             {errors.amount && (
               <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
             )}
@@ -293,7 +431,7 @@ export function EditTeamMemberModal({
           <Button
             variant="primary"
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isQuoting}
             className="hover:bg-[#101828]/90"
           >
             {isSubmitting ? "Saving..." : "Continue"}

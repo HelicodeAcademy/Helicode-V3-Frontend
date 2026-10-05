@@ -171,7 +171,9 @@ export function TeamTable({
                     {member.type.charAt(0) + member.type.slice(1).toLowerCase()}
                   </TableCell>
                   <TableCell className="py-4 text-[#101928] text-sm font-medium">
-                    ${member.amount.toLocaleString()}
+                    {member.localAmount != null && member.localCurrency
+                      ? `${member.localAmount.toLocaleString()} ${member.localCurrency}`
+                      : `$${member.amount.toLocaleString()}`}
                   </TableCell>
                   <TableCell className="py-4 text-[#101928] text-sm font-medium">
                     {new Date(member.dateJoined).toLocaleDateString("en-US", {

@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatPayrollMoney } from "@/lib/local-currency-payroll";
 import { TeamTransactionData } from "@/lib/team/team-transaction-service";
 
 interface PaymentHistoryProps {
@@ -28,13 +29,11 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
     }
   };
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
+  const formatAmount = (payment: TeamTransactionData) => {
+    if (payment.localAmount != null && payment.localCurrency) {
+      return formatPayrollMoney(payment.localAmount, payment.localCurrency);
+    }
+    return formatPayrollMoney(payment.amount, payment.currency || "USD");
   };
 
   const formatDate = (date: string) => {
@@ -73,7 +72,7 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-lg font-bold text-[#101928]">
-                    {formatAmount(payment.amount)}
+                    {formatAmount(payment)}
                   </p>
                   <p className="mt-1 text-sm text-[#667085]">
                     {formatDate(payment.payrollDate)}
@@ -150,7 +149,7 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
                     {formatDate(payment.payrollDate)}
                   </TableCell>
                   <TableCell className="px-6 py-5 text-sm font-bold text-[#101928]">
-                    {formatAmount(payment.amount)}
+                    {formatAmount(payment)}
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <div className="flex flex-row items-center space-x-1">

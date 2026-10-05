@@ -21,6 +21,9 @@ export interface TeamTransactionData {
   status: string;
   frequency: string;
   direction: string;
+  type?: string;
+  localAmount?: number;
+  localCurrency?: string;
 }
 
 export interface BankDetailsSubmissionData {
@@ -49,6 +52,8 @@ export interface WithdrawalData {
   amount: number;
   verificationCode: string;
   reason: string;
+  /** Omit for dollar withdrawals. Send saved bank currency for local input. */
+  currency?: string;
 }
 
 export interface WithdrawalResponse extends Partial<OfframpFeeFields> {

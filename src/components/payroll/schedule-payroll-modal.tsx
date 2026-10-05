@@ -233,7 +233,7 @@ function ScheduleStepper({ step }: { step: FlowStep }) {
               <span
                 className={cn(
                   "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                  completed && "bg-[#0B7A55] text-white",
+                  completed && "bg-[#21966F] text-white",
                   active && "bg-[#0052FF] text-white",
                   !completed && !active && "bg-[#D0D5DD] text-white",
                 )}
@@ -614,7 +614,7 @@ export function SchedulePayrollModal({
                       syncFirstPayday(frequency, value);
                     }}
                   >
-                    <SelectTrigger className="h-11 w-full rounded-xl border-[#E4E7EC] text-[#0C1424]">
+                    <SelectTrigger className="h-11! w-full rounded-xl border-[#E4E7EC] text-[#0C1424]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -684,7 +684,7 @@ export function SchedulePayrollModal({
               </div>
 
               {nextPaydays.length > 0 && (
-                <div className="flex items-start gap-3 rounded-xl border border-[#B2CCFF] bg-[#F5F8FF] px-4 py-3">
+                <div className="flex items-start gap-3 rounded-xl bg-[#E9F0FF] px-4 py-3">
                   <CalendarIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#0052FF]" />
                   <p className="text-sm text-[#0052FF]">
                     Next paydays: {nextPaydaysLabel}

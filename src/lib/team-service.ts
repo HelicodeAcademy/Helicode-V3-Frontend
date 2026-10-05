@@ -1,5 +1,6 @@
 import { get, postFormData, apiCall, patch, post, getFile } from "./api-client";
 import { TeamMember, TeamFilters } from "@/store/team-store";
+import type { PayrollQuoteResponse } from "./local-currency-payroll";
 
 type TeamListRaw = TeamMember[] | { data: TeamMember[]; total: number };
 
@@ -26,7 +27,8 @@ export interface AddTeamMemberPayload {
   amount: string;
   startDate: string;
   frequency: "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
-  currency: "USD" | "EUR" | "USDC" | "USDT";
+  /** USD/USDC or a local code (NGN, GHS, …) matching the member country. */
+  currency: string;
   contract?: File;
 }
 
@@ -36,6 +38,8 @@ export interface UpdateTeamMemberPayload {
   role: string;
   startDate: string;
   amount: string;
+  /** Send with amount when salary currency changes. */
+  currency?: string;
 }
 
 interface UpdateTeamMemberResponse {
@@ -49,6 +53,8 @@ export interface PaySingleMemberResponse {
   teamId: string;
   amount: number;
   date: string;
+  localAmount?: number;
+  localCurrency?: string;
 }
 
 export interface BulkUploadSuccessfulMember {
@@ -166,15 +172,37 @@ export async function paySingleTeamMember(
   memberId: string,
   verificationCode: string,
   amount: number,
+  currency?: string,
 ): Promise<PaySingleMemberResponse> {
+  const body: {
+    verificationCode: string;
+    amount: number;
+    currency?: string;
+  } = {
+    verificationCode,
+    amount,
+  };
+  if (currency) {
+    body.currency = currency;
+  }
+
   const response = await post<PaySingleMemberResponse>(
     `/payroll-groups/pay-now/${memberId}`,
-    {
-      verificationCode,
-      amount,
-    },
+    body,
   );
 
+  return response.data;
+}
+
+export async function quotePayrollSalary(data: {
+  country: string;
+  currency: string;
+  amount: number;
+}): Promise<PayrollQuoteResponse> {
+  const response = await post<PayrollQuoteResponse>(
+    "/teams/payroll/quote",
+    data,
+  );
   return response.data;
 }
 

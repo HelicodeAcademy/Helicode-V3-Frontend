@@ -4,7 +4,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export type WorkerType = "CONTRACTOR" | "EMPLOYEE";
 export type TeamStatus = "Active" | "Inactive" | "Pending";
 export type PaymentFrequency = "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
-export type Currency = "USD" | "EUR" | "USDC" | "USDT";
+/** Stored / selectable payroll currencies. Local codes are accepted when country matches. */
+export type Currency = "USD" | "EUR" | "USDC" | "USDT" | string;
 
 export interface TeamMember {
   id: string;
@@ -15,6 +16,9 @@ export interface TeamMember {
   amount: number;
   status: TeamStatus;
   dateJoined: string;
+  currency?: string;
+  localAmount?: number;
+  localCurrency?: string;
 }
 
 export interface TeamFilters {
