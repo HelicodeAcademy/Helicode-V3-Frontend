@@ -20,6 +20,18 @@ export interface TransactionsFeedSummary {
   currency: string;
 }
 
+export interface TransactionParty {
+  name: string | null;
+  kind: string;
+}
+
+export interface TransactionSource {
+  method: string | null;
+  institution: string | null;
+  account: string | null;
+  reference: string | null;
+}
+
 export interface CompanyFeedTransaction {
   id: string;
   type: "Received" | "Sent";
@@ -31,6 +43,9 @@ export interface CompanyFeedTransaction {
   dateDisplay: string;
   localAmount?: string;
   localCurrency?: string;
+  sender?: TransactionParty;
+  receiver?: TransactionParty;
+  source?: TransactionSource;
 }
 
 export interface PeopleFeedTransaction {
