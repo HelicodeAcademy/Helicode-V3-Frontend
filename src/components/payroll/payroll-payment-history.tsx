@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import toast from "react-hot-toast";
+import { format, subDays } from "date-fns";
 import { jsPDF } from "jspdf";
 import {
   Select,
@@ -13,26 +14,64 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  getCompanyTransactions,
-  type TransactionData,
+  getPaymentHistory,
+  type PaymentHistoryPagination,
+  type PaymentHistoryRow,
 } from "@/lib/transaction-service";
 import { cn } from "@/lib/utils";
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 10;
 
-function formatMoney(amount: number) {
-  return `$${amount.toLocaleString("en-US", {
+function formatMoney(amount: string | number) {
+  const value = typeof amount === "number" ? amount : Number(amount);
+  const safe = Number.isFinite(value) ? value : 0;
+  return `$${safe.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
 }
 
-function isWithinDays(dateLabel: string, days: number) {
-  const parsed = new Date(dateLabel);
-  if (Number.isNaN(parsed.getTime())) return true;
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - days);
-  return parsed >= cutoff;
+function formatDisplayDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return format(date, "MMM d, yyyy");
+}
+
+function titleCasePaymentType(value: string | null) {
+  if (!value) return null;
+  return value.charAt(0) + value.slice(1).toLowerCase();
+}
+
+function frequencyLabel(frequency: string) {
+  const base = frequency.charAt(0) + frequency.slice(1).toLowerCase();
+  return `${base} run`;
+}
+
+function paymentTitle(row: PaymentHistoryRow) {
+  if (row.type === "ONE_TIME") {
+    return row.recipient?.name ?? "One-time payment";
+  }
+  return row.group?.name ?? "Payroll run";
+}
+
+function paymentSubtitle(row: PaymentHistoryRow) {
+  if (row.type === "ONE_TIME") {
+    const typeLabel = titleCasePaymentType(row.paymentType);
+    const role = row.recipient?.role;
+    if (typeLabel && role) return `${typeLabel} · ${role}`;
+    if (typeLabel) return typeLabel;
+    if (role) return role;
+    return null;
+  }
+
+  const freq = row.group?.frequency
+    ? frequencyLabel(row.group.frequency)
+    : "Payroll run";
+  if (row.scheduledFor) {
+    const month = format(new Date(row.scheduledFor), "MMMM");
+    return `${freq} · ${month}`;
+  }
+  return freq;
 }
 
 function getPageItems(current: number, total: number): (number | "ellipsis")[] {
@@ -54,72 +93,88 @@ function getPageItems(current: number, total: number): (number | "ellipsis")[] {
   return items;
 }
 
+function rangeToFrom(range: string) {
+  const days = Number(range);
+  return format(subDays(new Date(), Number.isFinite(days) ? days : 90), "yyyy-MM-dd");
+}
+
 export function PayrollPaymentHistory() {
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [rows, setRows] = useState<PaymentHistoryRow[]>([]);
+  const [pagination, setPagination] = useState<PaymentHistoryPagination>({
+    page: 1,
+    limit: PAGE_SIZE,
+    total: 0,
+    totalPages: 1,
+    hasPrevious: false,
+    hasNext: false,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [range, setRange] = useState("90");
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getCompanyTransactions();
-        setTransactions(data);
-      } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Failed to load payment history",
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    void load();
-  }, []);
-
-  const visible = useMemo(
-    () =>
-      transactions.filter((transaction) =>
-        isWithinDays(transaction.date, Number(range)),
-      ),
-    [transactions, range],
-  );
-
-  const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageStart =
-    visible.length === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
-  const pageEnd = Math.min(currentPage * PAGE_SIZE, visible.length);
-  const paged = visible.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
-  const pageItems = getPageItems(currentPage, totalPages);
-
-  useEffect(() => {
-    setPage(1);
-  }, [range]);
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages);
+  const load = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await getPaymentHistory({
+        page,
+        limit: PAGE_SIZE,
+        from: rangeToFrom(range),
+      });
+      setRows(data.transactions);
+      setPagination(data.pagination);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to load payment history",
+      );
+    } finally {
+      setIsLoading(false);
     }
-  }, [page, totalPages]);
+  }, [page, range]);
 
-  const downloadReceipt = (transaction: TransactionData) => {
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const handleRangeChange = (value: string) => {
+    setRange(value);
+    setPage(1);
+  };
+
+  const downloadReceipt = (row: PaymentHistoryRow) => {
     const pdf = new jsPDF();
     pdf.setFontSize(16);
     pdf.text("Payment receipt", 20, 20);
     pdf.setFontSize(12);
-    pdf.text(`Payment: ${transaction.name}`, 20, 40);
-    pdf.text(`Role: ${transaction.role}`, 20, 50);
-    pdf.text(`Date: ${transaction.date}`, 20, 60);
-    pdf.text(`Status: ${transaction.status}`, 20, 70);
-    pdf.text(`Amount: ${formatMoney(transaction.amount)}`, 20, 80);
-    pdf.save(`receipt-${transaction.id}.pdf`);
+    let y = 40;
+    const lines = [
+      `Reference: ${row.reference}`,
+      `Payment: ${paymentTitle(row)}`,
+      `Type: ${row.type === "ONE_TIME" ? "One-time" : "Payroll run"}`,
+      `People: ${row.peopleCount}`,
+      `Date: ${formatDisplayDate(row.date)}`,
+      `Status: ${row.status}`,
+      `Amount: ${formatMoney(row.amount)}`,
+    ];
+    if (row.fee) lines.push(`Fee: ${formatMoney(row.fee)}`);
+    if (row.localAmount && row.localCurrency) {
+      lines.push(`Local amount: ${row.localAmount} ${row.localCurrency}`);
+    }
+    if (row.note) lines.push(`Note: ${row.note}`);
+    lines.forEach((line) => {
+      pdf.text(line, 20, y);
+      y += 10;
+    });
+    pdf.save(`receipt-${row.reference}.pdf`);
   };
+
+  const totalPages = Math.max(1, pagination.totalPages || 1);
+  const currentPage = Math.min(page, totalPages);
+  const pageStart =
+    pagination.total === 0 ? 0 : (currentPage - 1) * pagination.limit + 1;
+  const pageEnd = Math.min(currentPage * pagination.limit, pagination.total);
+  const pageItems = getPageItems(currentPage, totalPages);
 
   return (
     <section className="rounded-xl border border-[#EAECF0] bg-white">
@@ -134,7 +189,7 @@ export function PayrollPaymentHistory() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={range} onValueChange={setRange}>
+          <Select value={range} onValueChange={handleRangeChange}>
             <SelectTrigger className="h-9 w-35 border-[#D0D5DD] text-sm text-[#0C1424]">
               <SelectValue />
             </SelectTrigger>
@@ -157,7 +212,7 @@ export function PayrollPaymentHistory() {
         <div className="flex items-center justify-center border-t border-[#EAECF0] py-16">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#E5E7EB] border-t-[#0052FF]" />
         </div>
-      ) : visible.length === 0 ? (
+      ) : rows.length === 0 ? (
         <div className="border-t border-[#EAECF0] px-5 py-12 text-center text-sm text-[#66748C]">
           No payments in this period.
         </div>
@@ -176,22 +231,20 @@ export function PayrollPaymentHistory() {
                 </tr>
               </thead>
               <tbody>
-                {paged.map((transaction) => {
-                  const isOneTime =
-                    Boolean(transaction.role) && transaction.role !== "N/A";
+                {rows.map((row) => {
+                  const isOneTime = row.type === "ONE_TIME";
+                  const subtitle = paymentSubtitle(row);
                   return (
                     <tr
-                      key={transaction.id}
+                      key={row.id}
                       className="border-b border-[#EAECF0] last:border-b-0"
                     >
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-[#0C1424]">
-                          {transaction.name}
+                          {paymentTitle(row)}
                         </p>
-                        {transaction.role && transaction.role !== "N/A" && (
-                          <p className="text-sm text-[#66748C]">
-                            {transaction.role}
-                          </p>
+                        {subtitle && (
+                          <p className="text-sm text-[#66748C]">{subtitle}</p>
                         )}
                       </td>
                       <td className="px-5 py-4">
@@ -206,34 +259,33 @@ export function PayrollPaymentHistory() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-sm text-[#0C1424]">
-                        {isOneTime ? "1" : "—"}
+                        {row.peopleCount}
                       </td>
                       <td className="px-5 py-4 text-sm text-[#0C1424]">
-                        {transaction.date}
+                        {formatDisplayDate(row.date)}
                       </td>
                       <td className="px-5 py-4">
-                        <span
-                          className={
-                            transaction.status === "Paid"
-                              ? "inline-flex rounded-full bg-[#ECFDF3] px-2.5 py-1 text-xs font-medium text-[#027A48]"
-                              : transaction.status === "Failed"
-                                ? "inline-flex rounded-full bg-[#FEF3F2] px-2.5 py-1 text-xs font-medium text-[#B42318]"
-                                : "inline-flex rounded-full bg-[#FFFAEB] px-2.5 py-1 text-xs font-medium text-[#B54708]"
-                          }
-                        >
-                          {transaction.status}
+                        <span className="inline-flex rounded-full bg-[#ECFDF3] px-2.5 py-1 text-xs font-medium text-[#027A48]">
+                          Paid
                         </span>
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center justify-between gap-3">
-                          <span className="text-sm font-semibold text-[#0C1424]">
-                            {formatMoney(transaction.amount)}
-                          </span>
+                          <div>
+                            <span className="text-sm font-semibold text-[#0C1424]">
+                              {formatMoney(row.amount)}
+                            </span>
+                            {row.localAmount && row.localCurrency && (
+                              <p className="text-xs text-[#66748C]">
+                                {row.localAmount} {row.localCurrency}
+                              </p>
+                            )}
+                          </div>
                           <button
                             type="button"
                             aria-label="Download receipt"
                             className="rounded-lg border border-[#E2E7F0] p-1 text-[#66748C] hover:text-[#0C1424]"
-                            onClick={() => downloadReceipt(transaction)}
+                            onClick={() => downloadReceipt(row)}
                           >
                             <Download className="h-4 w-4" />
                           </button>
@@ -248,13 +300,13 @@ export function PayrollPaymentHistory() {
 
           <div className="flex flex-col gap-3 border-t border-[#EAECF0] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-[#66748C]">
-              Showing {pageStart}-{pageEnd} of {visible.length} payments
+              Showing {pageStart}-{pageEnd} of {pagination.total} payments
             </p>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 aria-label="Previous page"
-                disabled={currentPage <= 1}
+                disabled={!pagination.hasPrevious && currentPage <= 1}
                 onClick={() => setPage((value) => Math.max(1, value - 1))}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E4E7EC] text-[#66748C] disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -287,7 +339,7 @@ export function PayrollPaymentHistory() {
               <button
                 type="button"
                 aria-label="Next page"
-                disabled={currentPage >= totalPages}
+                disabled={!pagination.hasNext && currentPage >= totalPages}
                 onClick={() =>
                   setPage((value) => Math.min(totalPages, value + 1))
                 }

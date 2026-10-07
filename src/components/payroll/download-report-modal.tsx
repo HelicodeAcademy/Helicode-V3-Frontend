@@ -55,7 +55,7 @@ interface DownloadReportModalProps {
 }
 
 type ReportType = "summary" | "payslips" | "receipts" | "costByPerson";
-type PeriodMode = "month" | "quarter" | "year" | "custom";
+type PeriodMode = "month" | "quarter" | "year";
 type IncludeOption = "all" | "schedules" | "oneTime";
 type CurrencyOption = "usdLocal" | "usdOnly";
 type FormatOption = "pdf" | "csv" | "both";
@@ -96,16 +96,6 @@ const REPORT_TYPES: {
     title: "Payslips",
     description: "One PDF per person, zipped",
   },
-  {
-    value: "receipts",
-    title: "Payment receipts",
-    description: "Bank refs and on-chain tx hashes",
-  },
-  {
-    value: "costByPerson",
-    title: "Cost by person",
-    description: "What each person was paid in the period",
-  },
 ];
 
 function formatMoney(amount: number) {
@@ -129,7 +119,7 @@ function buildPeriodOptions(mode: PeriodMode): PeriodOption[] {
       const date = subMonths(now, index);
       return {
         id: `month-${format(date, "yyyy-MM")}`,
-        label: `${format(date, "MMM yyyy")} · ${format(startOfMonth(date), "MMM d")} – ${format(endOfMonth(date), "MMM d")}`,
+        label: format(date, "MMM yyyy"),
         start: startOfMonth(date),
         end: endOfMonth(date),
       };
@@ -141,25 +131,22 @@ function buildPeriodOptions(mode: PeriodMode): PeriodOption[] {
       const date = subYears(now, index);
       return {
         id: `year-${getYear(date)}`,
-        label: `${getYear(date)} · ${format(startOfYear(date), "MMM d")} – ${format(endOfYear(date), "MMM d, yyyy")}`,
+        label: String(getYear(date)),
         start: startOfYear(date),
         end: endOfYear(date),
       };
     });
   }
 
-  // quarter + custom use quarter options
   return Array.from({ length: 6 }, (_, index) => {
     const date = subQuarters(now, index);
     const quarter = getQuarter(date);
     const year = getYear(date);
-    const start = startOfQuarter(date);
-    const end = endOfQuarter(date);
     return {
       id: `q${quarter}-${year}`,
-      label: `Q${quarter} ${year} · ${format(start, "MMM d")} – ${format(end, "MMM d")}`,
-      start,
-      end,
+      label: `Q${quarter} ${year}`,
+      start: startOfQuarter(date),
+      end: endOfQuarter(date),
     };
   });
 }
@@ -280,7 +267,7 @@ export function DownloadReportModal({
 
   const [step, setStep] = useState<FlowStep>("configure");
   const [reportType, setReportType] = useState<ReportType>("summary");
-  const [periodMode, setPeriodMode] = useState<PeriodMode>("quarter");
+  const [periodMode, setPeriodMode] = useState<PeriodMode>("month");
   const [periodId, setPeriodId] = useState("");
   const [include, setInclude] = useState<IncludeOption>("all");
   const [currency, setCurrency] = useState<CurrencyOption>("usdLocal");
@@ -303,7 +290,7 @@ export function DownloadReportModal({
   const resetState = useCallback(() => {
     setStep("configure");
     setReportType("summary");
-    setPeriodMode("quarter");
+    setPeriodMode("month");
     setInclude("all");
     setCurrency("usdLocal");
     setFormatOption("pdf");
@@ -311,8 +298,8 @@ export function DownloadReportModal({
     setPeriodOpen(false);
     setIsGenerating(false);
     setGenerated(null);
-    const quarters = buildPeriodOptions("quarter");
-    setPeriodId(quarters[0]?.id ?? "");
+    const months = buildPeriodOptions("month");
+    setPeriodId(months[0]?.id ?? "");
   }, []);
 
   useEffect(() => {
@@ -341,7 +328,11 @@ export function DownloadReportModal({
     if (!selectedPeriod) return;
     setIsGenerating(true);
     try {
-      const transactions = await getCompanyTransactions();
+      const transactions = await getCompanyTransactions({
+        from: format(selectedPeriod.start, "yyyy-MM-dd"),
+        to: format(selectedPeriod.end, "yyyy-MM-dd"),
+        limit: 200,
+      });
       const filtered = filterTransactions(
         transactions,
         selectedPeriod,
@@ -534,7 +525,6 @@ export function DownloadReportModal({
                         ["month", "Month"],
                         ["quarter", "Quarter"],
                         ["year", "Year"],
-                        ["custom", "Custom"],
                       ] as const
                     ).map(([value, label]) => (
                       <button

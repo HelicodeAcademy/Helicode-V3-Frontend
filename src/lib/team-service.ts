@@ -47,12 +47,17 @@ interface UpdateTeamMemberResponse {
 }
 
 export interface PaySingleMemberResponse {
-  payrollGroupId: string;
+  payrollGroupId?: string;
   ledgerEntryId: string;
-  runId: string;
+  runId?: string;
   teamId: string;
   amount: number;
   date: string;
+  reference?: string;
+  fee?: number;
+  totalDebited?: number;
+  paymentType?: string | null;
+  note?: string | null;
   localAmount?: number;
   localCurrency?: string;
 }
@@ -173,17 +178,29 @@ export async function paySingleTeamMember(
   verificationCode: string,
   amount: number,
   currency?: string,
+  options?: {
+    paymentType?: string;
+    note?: string;
+  },
 ): Promise<PaySingleMemberResponse> {
   const body: {
     verificationCode: string;
     amount: number;
     currency?: string;
+    paymentType?: string;
+    note?: string;
   } = {
     verificationCode,
     amount,
   };
   if (currency) {
     body.currency = currency;
+  }
+  if (options?.paymentType) {
+    body.paymentType = options.paymentType;
+  }
+  if (options?.note?.trim()) {
+    body.note = options.note.trim().slice(0, 140);
   }
 
   const response = await post<PaySingleMemberResponse>(

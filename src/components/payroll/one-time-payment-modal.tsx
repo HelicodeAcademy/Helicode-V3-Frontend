@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { format } from "date-fns";
 import { jsPDF } from "jspdf";
-import { paySingleTeamMember, getTeamMembers } from "@/lib/team-service";
+import { paySingleTeamMember, getTeamMembers, quotePayrollSalary } from "@/lib/team-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
 import { useWalletStore } from "@/store/wallet-store";
@@ -30,8 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { quotePayrollSalary } from "@/lib/team-service";
 import { useDebounce } from "@/hooks/use-debounce";
+import { getCompanyDetails } from "@/lib/company-details";
+import { previewPayrollFee } from "@/lib/transaction-service";
 
 interface OneTimePaymentModalProps {
   open: boolean;
@@ -41,21 +42,21 @@ interface OneTimePaymentModalProps {
 type FlowStep = "recipient" | "amount" | "review" | "verification" | "success";
 type MemberFilter = "everyone" | "employees" | "contractors";
 type PaymentType =
-  | "Salary"
+  | "Bonus"
   | "Reimbursement"
   | "Commission"
+  | "Salary"
   | "Advance"
   | "Other";
 
 const PAYMENT_TYPES: PaymentType[] = [
-  "Salary",
+  "Bonus",
   "Reimbursement",
   "Commission",
+  "Salary",
   "Advance",
   "Other",
 ];
-
-const NETWORK_FEE = 1;
 
 const AVATAR_COLORS = [
   "bg-[#F79009] text-white",
@@ -65,6 +66,10 @@ const AVATAR_COLORS = [
   "bg-[#0E9384] text-white",
   "bg-[#0052FF] text-white",
 ];
+
+function paymentTypeApiValue(type: PaymentType) {
+  return type.toUpperCase();
+}
 
 function formatMoney(amount: number, currency?: string) {
   return formatPayrollMoney(amount, currency);
@@ -179,7 +184,7 @@ export function OneTimePaymentModal({
   const [filter, setFilter] = useState<MemberFilter>("everyone");
   const [searchInput, setSearchInput] = useState("");
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-  const [paymentType, setPaymentType] = useState<PaymentType>("Salary");
+  const [paymentType, setPaymentType] = useState<PaymentType>("Bonus");
   const [amount, setAmount] = useState("");
   const [payCurrency, setPayCurrency] = useState("USD");
   const [note, setNote] = useState("");
@@ -187,6 +192,7 @@ export function OneTimePaymentModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+  const [payrollFeePercent, setPayrollFeePercent] = useState(0);
   const [payrollQuote, setPayrollQuote] = useState<PayrollQuoteResponse | null>(
     null,
   );
@@ -200,7 +206,7 @@ export function OneTimePaymentModal({
     setFilter("everyone");
     setSearchInput("");
     setSelectedMember(null);
-    setPaymentType("Salary");
+    setPaymentType("Bonus");
     setAmount("");
     setPayCurrency("USD");
     setNote("");
@@ -228,6 +234,15 @@ export function OneTimePaymentModal({
     if (!open) return;
     resetState();
     void loadMembers();
+    const loadFee = async () => {
+      try {
+        const details = await getCompanyDetails();
+        setPayrollFeePercent(details.payrollFeePercent ?? 0);
+      } catch {
+        setPayrollFeePercent(0);
+      }
+    };
+    void loadFee();
   }, [open, loadMembers, resetState]);
 
   const visibleMembers = useMemo(() => {
@@ -255,9 +270,15 @@ export function OneTimePaymentModal({
     isLocalPayrollCurrency(payCurrency) && payrollQuote
       ? payrollQuote.settlementAmount
       : amountValue;
-  const totalDebited = settlementAmount + NETWORK_FEE;
+  const feePreview = previewPayrollFee(settlementAmount, payrollFeePercent);
+  const feeAmount =
+    paymentResult?.fee != null ? paymentResult.fee : feePreview;
+  const totalDebited =
+    paymentResult?.totalDebited != null
+      ? paymentResult.totalDebited
+      : settlementAmount + feePreview;
   const balance = walletData?.balance ?? 0;
-  const balanceAfter = Math.max(balance - totalDebited, 0);
+  const balanceAfter = Math.max(balance - (settlementAmount + feePreview), 0);
   const selectedCurrency = payCurrency;
   const amountPrefix = currencySymbol(payCurrency);
 
@@ -346,6 +367,10 @@ export function OneTimePaymentModal({
         code,
         amountValue,
         isLocalPayrollCurrency(payCurrency) ? payCurrency : undefined,
+        {
+          paymentType: paymentTypeApiValue(paymentType),
+          note,
+        },
       );
       setPaymentResult(result);
       setPaidAt(new Date());
@@ -374,10 +399,20 @@ export function OneTimePaymentModal({
     if (note) pdf.text(`Note: ${note}`, 20, 80);
     if (paymentResult) {
       pdf.text(
-        `Reference: ${paymentResult.ledgerEntryId || paymentResult.runId}`,
+        `Reference: ${paymentResult.reference || paymentResult.ledgerEntryId || paymentResult.runId || "—"}`,
         20,
         90,
       );
+      if (paymentResult.fee != null) {
+        pdf.text(`Fee: ${formatMoney(paymentResult.fee)}`, 20, 100);
+      }
+      if (paymentResult.totalDebited != null) {
+        pdf.text(
+          `Total debited: ${formatMoney(paymentResult.totalDebited)}`,
+          20,
+          110,
+        );
+      }
     }
     pdf.save(`receipt-${selectedMember.fullName.replace(/\s+/g, "-")}.pdf`);
   };
@@ -693,7 +728,7 @@ export function OneTimePaymentModal({
                 <div className="flex justify-between text-[#66748C] border-b pb-2">
                   <span>Fee</span>
                   <span className="text-[#0C1424] font-semibold">
-                    {formatMoney(NETWORK_FEE)}
+                    {formatMoney(feePreview)}
                   </span>
                 </div>
 
@@ -708,7 +743,7 @@ export function OneTimePaymentModal({
                 <div className="flex justify-between text-[#66748C]">
                   <span>Total debited from USD account</span>
                   <span className="text-[#0C1424] font-semibold">
-                    {formatMoney(totalDebited)}
+                    {formatMoney(settlementAmount + feePreview)}
                   </span>
                 </div>
               </div>
@@ -750,8 +785,8 @@ export function OneTimePaymentModal({
                   ["Pay from", "USD account"],
                   ["Arrives", "Instantly"],
                   ["Note", note || "—"],
-                  ["Network fee", formatMoney(NETWORK_FEE)],
-                  ["Total debited", formatMoney(totalDebited)],
+                  ["Fee", formatMoney(feePreview)],
+                  ["Total debited", formatMoney(settlementAmount + feePreview)],
                   ["USD account after", formatMoney(balanceAfter)],
                 ].map(([label, value], index) => (
                   <div
@@ -842,9 +877,24 @@ export function OneTimePaymentModal({
                 <div className="flex justify-between">
                   <span className="text-[#66748C]">Reference</span>
                   <span className="font-medium text-[#0C1424]">
-                    {paymentResult?.ledgerEntryId ||
+                    {paymentResult?.reference ||
+                      paymentResult?.ledgerEntryId ||
                       paymentResult?.runId ||
                       "—"}
+                  </span>
+                </div>
+                {feeAmount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-[#66748C]">Fee</span>
+                    <span className="font-medium text-[#0C1424]">
+                      {formatMoney(feeAmount)}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-[#66748C]">Total debited</span>
+                  <span className="font-medium text-[#0C1424]">
+                    {formatMoney(totalDebited)}
                   </span>
                 </div>
               </div>

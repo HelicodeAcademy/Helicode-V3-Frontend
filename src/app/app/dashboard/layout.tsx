@@ -81,6 +81,11 @@ const primaryNav: NavItem[] = [
     label: "Transactions",
     href: "/dashboard/transactions",
   },
+  {
+    icon: SidebarWalletIcon,
+    label: "Accounts",
+    href: "/dashboard/accounts",
+  },
 ];
 
 const companyNav: NavItem[] = [
@@ -88,11 +93,6 @@ const companyNav: NavItem[] = [
 ];
 
 const treasuryNav: NavItem[] = [
-  {
-    icon: SidebarWalletIcon,
-    label: "Accounts",
-    href: "/dashboard/accounts",
-  },
   {
     icon: SidebarAccountingIcon,
     label: "Accounting",

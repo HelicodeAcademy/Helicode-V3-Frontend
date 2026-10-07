@@ -31,7 +31,9 @@ export interface CompanyDetailsResponse {
   invoiceCurrency: string;
   createdAt?: string;
   companyFiatOfframpEnabled?: boolean;
+  localCurrencyPayEnabled?: boolean;
   offrampFeePercent?: number;
+  payrollFeePercent?: number;
   offrampKycStatus?: boolean;
   bankPayoutStatus?: boolean;
   employer: {
