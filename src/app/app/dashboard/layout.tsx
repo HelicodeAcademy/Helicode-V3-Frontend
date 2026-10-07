@@ -45,7 +45,7 @@ import {
   SidebarPayrollIcon,
   SidebarSettingsIcon,
   SidebarTeamIcon,
-  SidebarWalletIcon,
+  // SidebarWalletIcon,
 } from "@/components/icons/sidebar-icons";
 import { LOCAL_ACCOUNTS } from "@/lib/local-accounts";
 import { useLocalAccountsStore } from "@/store/local-accounts-store";
@@ -81,11 +81,11 @@ const primaryNav: NavItem[] = [
     label: "Transactions",
     href: "/dashboard/transactions",
   },
-  {
-    icon: SidebarWalletIcon,
-    label: "Accounts",
-    href: "/dashboard/accounts",
-  },
+  // {
+  //   icon: SidebarWalletIcon,
+  //   label: "Accounts",
+  //   href: "/dashboard/accounts",
+  // },
 ];
 
 const companyNav: NavItem[] = [
