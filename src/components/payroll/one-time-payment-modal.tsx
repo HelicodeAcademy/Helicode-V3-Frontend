@@ -11,7 +11,11 @@ import { toast } from "react-hot-toast";
 import Image from "next/image";
 import { format } from "date-fns";
 import { jsPDF } from "jspdf";
-import { paySingleTeamMember, getTeamMembers, quotePayrollSalary } from "@/lib/team-service";
+import {
+  paySingleTeamMember,
+  getTeamMembers,
+  quotePayrollSalary,
+} from "@/lib/team-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
 import { useWalletStore } from "@/store/wallet-store";
@@ -271,8 +275,7 @@ export function OneTimePaymentModal({
       ? payrollQuote.settlementAmount
       : amountValue;
   const feePreview = previewPayrollFee(settlementAmount, payrollFeePercent);
-  const feeAmount =
-    paymentResult?.fee != null ? paymentResult.fee : feePreview;
+  const feeAmount = paymentResult?.fee != null ? paymentResult.fee : feePreview;
   const totalDebited =
     paymentResult?.totalDebited != null
       ? paymentResult.totalDebited

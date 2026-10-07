@@ -21,6 +21,7 @@ import {
 } from "@/lib/payroll-service";
 import { useTeamStore } from "@/store/team-store";
 import { EditPayrollModal } from "./edit-payroll-modal";
+import { PayrollDeleteModal } from "./payroll-delete-modal";
 import { PayrollStatusModal } from "./payroll-status-modal";
 
 const AVATAR_COLORS = [
@@ -87,6 +88,10 @@ export function ScheduledPayrolls({
   const [showEditModal, setShowEditModal] = useState(false);
   const [statusPayroll, setStatusPayroll] = useState<PayrollGroup | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [deletingPayroll, setDeletingPayroll] = useState<PayrollGroup | null>(
+    null,
+  );
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [generatingPayslipId, setGeneratingPayslipId] = useState<string | null>(
     null,
   );
@@ -356,6 +361,15 @@ export function ScheduledPayrolls({
                                   Deactivate
                                 </DropdownMenuItem>
                               )}
+                              <DropdownMenuItem
+                                className="text-[#f04438] focus:text-[#f04438]"
+                                onClick={() => {
+                                  setDeletingPayroll(payroll);
+                                  setShowDeleteModal(true);
+                                }}
+                              >
+                                Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
@@ -411,6 +425,20 @@ export function ScheduledPayrolls({
           onSuccess={() => {
             setShowStatusModal(false);
             setStatusPayroll(null);
+            void fetchPayrollGroups();
+          }}
+        />
+      )}
+
+      {deletingPayroll && (
+        <PayrollDeleteModal
+          payrollId={deletingPayroll.id}
+          payrollName={deletingPayroll.name}
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          onSuccess={() => {
+            setShowDeleteModal(false);
+            setDeletingPayroll(null);
             void fetchPayrollGroups();
           }}
         />

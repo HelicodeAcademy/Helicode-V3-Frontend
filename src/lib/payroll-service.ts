@@ -1,4 +1,4 @@
-import { post, patch, get } from "./api-client";
+import { post, patch, get, del } from "./api-client";
 
 export interface CreatePayrollGroupRequest {
   name: string;
@@ -147,6 +147,10 @@ export async function updatePayrollGroupStatus(
     isActive,
   });
   return response.data;
+}
+
+export async function deletePayrollGroup(id: string): Promise<void> {
+  await del(`/payroll-groups/${id}`);
 }
 
 export async function payAllPayrollGroups(
