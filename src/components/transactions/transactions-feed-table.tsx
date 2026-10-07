@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { TransactionDetailSheet } from "@/components/transactions/transaction-detail-sheet";
 import type {
   CompanyFeedTransaction,
   PeopleFeedTransaction,
@@ -182,10 +184,19 @@ export function TransactionsFeedTable({
   isLoading,
   onPageChange,
 }: TransactionsFeedTableProps) {
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<CompanyFeedTransaction | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
   const currentPage = pagination?.page ?? 1;
   const totalPages = pagination?.totalPages ?? 1;
   const hasPrevious = pagination?.hasPrevious ?? currentPage > 1;
   const hasNext = pagination?.hasNext ?? currentPage < totalPages;
+
+  const openCompanyDetail = (transaction: CompanyFeedTransaction) => {
+    setSelectedTransaction(transaction);
+    setDetailOpen(true);
+  };
 
   return (
     <div className="space-y-4">
@@ -256,7 +267,16 @@ export function TransactionsFeedTable({
                 companyTransactions.map((transaction) => (
                   <TableRow
                     key={transaction.id}
-                    className="border-b border-[#E4E7EC] hover:bg-[#F9FAFB]"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openCompanyDetail(transaction)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        openCompanyDetail(transaction);
+                      }
+                    }}
+                    className="cursor-pointer border-b border-[#E4E7EC] hover:bg-[#F9FAFB]"
                   >
                     <TableCell className="px-6 py-5">
                       <TypeCell type={transaction.type} />
@@ -364,6 +384,12 @@ export function TransactionsFeedTable({
           </Button>
         </div>
       </div>
+
+      <TransactionDetailSheet
+        transaction={selectedTransaction}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </div>
   );
 }
