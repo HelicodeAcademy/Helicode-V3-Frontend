@@ -117,7 +117,7 @@ export function PayrollPageContent() {
 
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[#EAECF0] bg-[#EAECF0] md:grid-cols-4">
         {stats.map((stat) => (
-          <div key={stat.label} className="border-r bg-white px-5 py-5">
+          <div key={stat.label} className="bg-white px-5 py-5">
             <p className="text-sm text-[#66748C]">{stat.label}</p>
             <p
               className={`mt-2 text-2xl font-semibold tracking-tight ${
