@@ -55,7 +55,7 @@ export default function PaymentHistory({ payments = [] }: PaymentHistoryProps) {
   return (
     <div className="rounded-2xl border border-[#F2F2F2] bg-white p-4 sm:p-6">
       <h2 className="p-2 text-[14px] font-semibold text-[#101928] sm:p-4">
-        Payment historys
+        Payment history
       </h2>
 
       <div className="space-y-3 md:hidden">
