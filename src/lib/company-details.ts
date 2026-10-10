@@ -34,6 +34,7 @@ export interface CompanyDetailsResponse {
   localCurrencyPayEnabled?: boolean;
   offrampFeePercent?: number;
   payrollFeePercent?: number;
+  currencyAccountsEnabled?: boolean;
   offrampKycStatus?: boolean;
   bankPayoutStatus?: boolean;
   employer: {

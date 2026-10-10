@@ -47,9 +47,13 @@ import {
   SidebarTeamIcon,
   SidebarWalletIcon,
 } from "@/components/icons/sidebar-icons";
-import { LOCAL_ACCOUNTS } from "@/lib/local-accounts";
-import { useLocalAccountsStore } from "@/store/local-accounts-store";
 import { CurrencyMark } from "@/components/accounts/currency-mark";
+import {
+  ACCOUNTS_CHANGED_EVENT,
+  getAccountsOverview,
+  type OverviewAccount,
+} from "@/lib/accounts-service";
+import { compactAccountAmount, statusLabel } from "@/lib/account-format";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import { useKYCStore } from "@/store/kyc-store";
@@ -250,20 +254,42 @@ function NavSection({
 }
 
 function AccountSidebarLinks({ pathname }: { pathname: string }) {
-  const opened = useLocalAccountsStore((state) => state.opened);
-  const accounts = LOCAL_ACCOUNTS.filter((account) =>
-    opened.includes(account.code),
-  );
+  const [accounts, setAccounts] = useState<OverviewAccount[]>([]);
+  const [totalBalance, setTotalBalance] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const overview = await getAccountsOverview();
+        if (cancelled) return;
+        setAccounts(overview.accounts);
+        setTotalBalance(overview.totalBalance);
+      } catch {
+        if (!cancelled) setAccounts([]);
+      }
+    };
+    void load();
+    window.addEventListener(ACCOUNTS_CHANGED_EVENT, load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(ACCOUNTS_CHANGED_EVENT, load);
+    };
+  }, []);
 
   if (accounts.length === 0) return null;
 
   return (
     <ul className="mt-1 space-y-0.5 pl-8">
       {accounts.map((account) => {
-        const href = `/dashboard/accounts/${account.code.toLowerCase()}`;
+        const href = `/dashboard/accounts/${account.currency.toLowerCase()}`;
         const isActive = pathname === href;
+        const amount =
+          account.currency === "USD" && totalBalance
+            ? compactAccountAmount(totalBalance, "USD")
+            : compactAccountAmount(account.period.moneyIn, "USD");
         return (
-          <li key={account.code}>
+          <li key={account.currency}>
             <Link
               href={href}
               className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm ${
@@ -272,18 +298,14 @@ function AccountSidebarLinks({ pathname }: { pathname: string }) {
                   : "text-[#475467] hover:bg-[#F9FAFB]"
               }`}
             >
-              <CurrencyMark mark={account.mark} size={16} />
-              <span className="min-w-0 flex-1 truncate">
-                {account.name.replace("Nigerian ", "")}
-              </span>
-              {account.lifecycle === "review" && (
+              <CurrencyMark currency={account.currency} size={16} />
+              <span className="min-w-0 flex-1 truncate">{account.name}</span>
+              {account.status !== "ACTIVE" && (
                 <span className="rounded-full bg-[#FFFAEB] px-1.5 py-0.5 text-[10px] font-medium text-[#B54708]">
-                  Review
+                  {statusLabel(account.status)}
                 </span>
               )}
-              <span className="text-xs text-[#98A2B3]">
-                {account.sidebarAmount}
-              </span>
+              <span className="text-xs text-[#98A2B3]">{amount}</span>
             </Link>
           </li>
         );
@@ -297,7 +319,10 @@ function DashboardSidebar() {
   const { user, logout } = useAuth();
   const { walletData, setWalletData } = useWalletStore();
   const [companyName, setCompanyName] = useState<string>("");
-  const [accountsExpanded, setAccountsExpanded] = useState(false);
+  const [accountsEnabled, setAccountsEnabled] = useState(true);
+  const [accountsExpanded, setAccountsExpanded] = useState(
+    pathname.startsWith("/dashboard/accounts"),
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -307,6 +332,7 @@ function DashboardSidebar() {
           getWalletAddress(),
         ]);
         setCompanyName(company.name);
+        setAccountsEnabled(company.currencyAccountsEnabled !== false);
         setWalletData(wallet);
       } catch (error) {
         console.error("Failed to load sidebar company data", error);
@@ -338,7 +364,11 @@ function DashboardSidebar() {
 
       <SidebarContent className="px-4 pb-4">
         <NavSection
-          items={primaryNav}
+          items={
+            accountsEnabled
+              ? primaryNav
+              : primaryNav.filter((item) => item.href !== "/dashboard/accounts")
+          }
           pathname={pathname}
           accountsExpanded={accountsExpanded}
           onAccountsExpandedChange={setAccountsExpanded}
