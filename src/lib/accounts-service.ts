@@ -1,4 +1,4 @@
-import { get, getFile, post, postFormData } from "./api-client";
+import { get, getFile, post } from "./api-client";
 import type {
   CompanyFeedTransaction,
   TransactionsFeedPagination,
@@ -18,8 +18,8 @@ export type AccountStatus =
   | "INACTIVE";
 
 export interface AccountPeriod {
-  from?: string;
-  to?: string;
+  from: string | null;
+  to: string | null;
   moneyIn: string;
   moneyOut: string;
 }
@@ -172,29 +172,12 @@ export async function joinAccountWaitlist(currency: string) {
   return response.data;
 }
 
-export async function requestCurrencyAccount(input: {
-  currency: string;
-  mainUse: string;
-  expectedMonthlyVolume: string;
-  countries: string[];
-  proofOfAddress?: File | null;
-  confirmed: boolean;
-}): Promise<AccountRequestResult> {
-  const body = new FormData();
-  body.set("currency", input.currency);
-  body.set("mainUse", input.mainUse);
-  body.set("expectedMonthlyVolume", input.expectedMonthlyVolume);
-  for (const country of input.countries) {
-    body.append("countries", country);
-  }
-  if (input.proofOfAddress) {
-    body.set("proofOfAddress", input.proofOfAddress);
-  }
-  body.set("confirmed", input.confirmed ? "true" : "false");
-  const response = await postFormData<AccountRequestResult>(
-    "/accounts/requests",
-    body,
-  );
+export async function requestCurrencyAccount(
+  currency: string,
+): Promise<AccountRequestResult> {
+  const response = await post<AccountRequestResult>("/accounts/requests", {
+    currency,
+  });
   return response.data;
 }
 
