@@ -188,7 +188,9 @@ export function VerifyResetCodeForm() {
 
     try {
       setIsResending(true);
-      const response = await resendPasswordResetCode(recoveryData.authFlowToken);
+      const response = await resendPasswordResetCode(
+        recoveryData.authFlowToken,
+      );
       setRecoveryData({
         authFlowToken: response.authFlowToken,
         expiresInMinutes: response.expiresInMinutes ?? 10,
@@ -261,7 +263,7 @@ export function VerifyResetCodeForm() {
               <Button
                 type="submit"
                 disabled={!isOtpComplete || isSubmitting || isResending}
-                variant={"surface"}
+                variant={"primary"}
                 className="w-29"
               >
                 {isSubmitting ? (
@@ -275,8 +277,8 @@ export function VerifyResetCodeForm() {
               <Button
                 onClick={handleResend}
                 type="button"
-                variant={"primary"}
-                className="w-27 text-white rounded-lg transition-colors"
+                variant={"surface"}
+                className="w-27"
                 disabled={resendTimer > 0 || isResending || isSubmitting}
               >
                 {/* Resend email */}

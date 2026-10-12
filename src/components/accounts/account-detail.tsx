@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format, subDays } from "date-fns";
 import {
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { PageTitleContext } from "@/app/app/dashboard/layout";
+// import { PageTitleContext } from "@/app/app/dashboard/layout";
 import {
   downloadAccountLetter,
   downloadStatementPdf,
@@ -135,7 +135,7 @@ function detailFields(details: AccountDetails, revealed: boolean) {
 }
 
 export function AccountDetail({ currency }: { currency: string }) {
-  const { setTitle } = useContext(PageTitleContext);
+  // const { setTitle } = useContext(PageTitleContext);
   const [account, setAccount] = useState<CurrencyAccount | null>(null);
   const [transactions, setTransactions] = useState<CompanyFeedTransaction[]>(
     [],
@@ -165,7 +165,7 @@ export function AccountDetail({ currency }: { currency: string }) {
         if (cancelled) return;
         setAccount(details);
         setPeriods(statementPeriods);
-        setTitle(`${details.name} account`);
+        // setTitle(`${details.name} account`);
         if (
           details.status === "PENDING_REVIEW" ||
           details.status === "REJECTED"
@@ -176,7 +176,7 @@ export function AccountDetail({ currency }: { currency: string }) {
       } catch (error) {
         if (!cancelled) {
           setMissing(true);
-          setTitle("Accounts");
+          // setTitle("Accounts");
           toast.error(
             error instanceof Error ? error.message : "Account not found",
           );
@@ -189,7 +189,7 @@ export function AccountDetail({ currency }: { currency: string }) {
     return () => {
       cancelled = true;
     };
-  }, [currency, setTitle]);
+  }, [currency]);
 
   useEffect(() => {
     if (!account) return;
@@ -277,13 +277,13 @@ export function AccountDetail({ currency }: { currency: string }) {
 
   return (
     <div className="px-6 pb-10">
-      <p className="text-sm text-[#667085]">
+      {/* <p className="text-sm text-[#667085]">
         <Link href="/dashboard/accounts" className="hover:text-[#101828]">
           Accounts
         </Link>
         <span className="mx-1.5 text-[#D0D5DD]">›</span>
         <span className="text-[#101828]">{account.name}</span>
-      </p>
+      </p> */}
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -302,10 +302,7 @@ export function AccountDetail({ currency }: { currency: string }) {
                 )}
               >
                 <span
-                  className={cn(
-                    "h-1.5 w-1.5 rounded-full",
-                    active ? "bg-[#12B76A]" : "bg-[#F79009]",
-                  )}
+                  className={cn(active ? "bg-[#12B76A]" : "bg-[#F79009]")}
                 />
                 {statusLabel(account.status)}
               </span>
@@ -489,7 +486,7 @@ export function AccountDetail({ currency }: { currency: string }) {
                           <p className="truncate text-sm font-semibold text-[#101828]">
                             {partyName(transaction)}
                           </p>
-                          <p className="truncate text-xs text-[#667085]">
+                          <p className="truncate text-xs text-[#667085] uppercase">
                             {partySubtitle(transaction)}
                           </p>
                         </div>

@@ -106,12 +106,22 @@ function formatPeopleAmount(
 
 function CurrencyCell({ currency }: { currency: string }) {
   const showUsdFlag = currency === "USD" || currency === "USDC";
+  const showNgnFlag = currency === "NGN";
 
   return (
     <div className="flex items-center gap-2">
       {showUsdFlag && (
         <Image
           src="/home/usa.svg"
+          alt=""
+          width={16}
+          height={16}
+          className="h-4 w-4"
+        />
+      )}
+      {showNgnFlag && (
+        <Image
+          src="/account/Nigeria.svg"
           alt=""
           width={16}
           height={16}
