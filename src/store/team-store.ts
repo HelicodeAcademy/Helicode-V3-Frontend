@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export type WorkerType = "CONTRACTOR" | "EMPLOYEE";
-export type TeamStatus = "Active" | "Inactive" | "Pending";
+export type TeamStatus = "Active" | "Inactive" | "Pending" | "Invite Accepted";
 export type PaymentFrequency = "MONTHLY" | "WEEKLY" | "DAILY" | "HOURLY";
 /** Stored / selectable payroll currencies. Local codes are accepted when country matches. */
 export type Currency = "USD" | "EUR" | "USDC" | "USDT" | string;
