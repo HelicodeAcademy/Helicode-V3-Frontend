@@ -778,7 +778,7 @@ export function OneTimePaymentModal({
               <div className="text-center">
                 <p className="text-sm text-[#66748C]">You&apos;re sending</p>
                 <p className="mt-1 text-4xl font-semibold tracking-tight text-[#0C1424]">
-                  {formatMoney(amountValue)}
+                  {formatMoney(amountValue, payCurrency)}
                 </p>
               </div>
 
@@ -826,7 +826,7 @@ export function OneTimePaymentModal({
                 onClick={() => void requestCode()}
               >
                 <Send className="h-4 w-4" />
-                Send {formatMoney(amountValue)}
+                Send {formatMoney(amountValue, payCurrency)}
               </Button>
             </div>
           </>
@@ -857,11 +857,12 @@ export function OneTimePaymentModal({
             />
             <div className="px-6 pt-5 pb-6 text-center">
               <h2 className="text-2xl font-semibold text-[#0C1424] text-center">
-                {formatMoney(amountValue)} sent
+                {formatMoney(amountValue, payCurrency)} sent
               </h2>
               <p className="mt-2 text-sm text-[#66748C]">
-                {selectedMember.fullName} received ${amountValue.toFixed(0)} in
-                their Helicode wallet.
+                {selectedMember.fullName} received{" "}
+                {formatMoney(amountValue, payCurrency)} in their Helicode
+                wallet.
               </p>
 
               <div className="mt-5 space-y-3 rounded-xl bg-[#F9FAFB] px-4 py-3 text-sm">
