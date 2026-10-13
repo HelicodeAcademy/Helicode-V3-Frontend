@@ -45,7 +45,7 @@ import {
   SidebarPayrollIcon,
   SidebarSettingsIcon,
   SidebarTeamIcon,
-  // SidebarWalletIcon,
+  SidebarWalletIcon,
 } from "@/components/icons/sidebar-icons";
 import { CurrencyMark } from "@/components/accounts/currency-mark";
 import {
@@ -85,11 +85,11 @@ const primaryNav: NavItem[] = [
     label: "Transactions",
     href: "/dashboard/transactions",
   },
-  // {
-  //   icon: SidebarWalletIcon,
-  //   label: "Accounts",
-  //   href: "/dashboard/accounts",
-  // },
+  {
+    icon: SidebarWalletIcon,
+    label: "Accounts",
+    href: "/dashboard/accounts",
+  },
 ];
 
 const companyNav: NavItem[] = [
