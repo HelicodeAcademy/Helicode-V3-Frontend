@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   endOfMonth,
   endOfQuarter,
@@ -48,6 +48,11 @@ import {
   type TransactionData,
 } from "@/lib/transaction-service";
 import { useWalletStore } from "@/store/wallet-store";
+import {
+  openStatementDownload,
+  prepareStatement,
+  type StatementSummary,
+} from "@/lib/statements-service";
 
 interface DownloadReportModalProps {
   open: boolean;
@@ -74,11 +79,27 @@ interface GeneratedReport {
   sizeLabel: string;
   generatedAt: Date;
   total: number;
+  feesLabel: string | null;
+  totalCostLabel: string | null;
   periodLabel: string;
   reportTypeLabel: string;
   pdfBlob: Blob | null;
   csvBlob: Blob | null;
+  statementId: string | null;
   format: FormatOption;
+}
+
+function payrollMoneyLabel(
+  summary: StatementSummary | null,
+  field: "fees" | "totalCost",
+) {
+  if (!summary) return null;
+  if ((summary.paymentsWithoutFee ?? 0) > 0) return "—";
+  const amount = summary[field];
+  if (amount == null || amount === "") return "—";
+  const value = Number.parseFloat(amount);
+  if (Number.isNaN(value)) return "—";
+  return formatMoney(value);
 }
 
 const REPORT_TYPES: {
@@ -278,6 +299,8 @@ export function DownloadReportModal({
   const [companyName, setCompanyName] = useState("Helicode");
   const [companyEmail, setCompanyEmail] = useState("");
   const [generated, setGenerated] = useState<GeneratedReport | null>(null);
+  const openRef = useRef(open);
+  openRef.current = open;
 
   const periodOptions = useMemo(
     () => buildPeriodOptions(periodMode),
@@ -328,17 +351,26 @@ export function DownloadReportModal({
     if (!selectedPeriod) return;
     setIsGenerating(true);
     try {
-      const transactions = await getCompanyTransactions({
-        from: format(selectedPeriod.start, "yyyy-MM-dd"),
-        to: format(selectedPeriod.end, "yyyy-MM-dd"),
-        limit: 200,
-      });
+      const usesPayrollStatement =
+        reportType === "summary" &&
+        (formatOption === "pdf" || formatOption === "both");
+      const needsClientRows = !(
+        reportType === "summary" && formatOption === "pdf"
+      );
+
+      const transactions = needsClientRows
+        ? await getCompanyTransactions({
+            from: format(selectedPeriod.start, "yyyy-MM-dd"),
+            to: format(selectedPeriod.end, "yyyy-MM-dd"),
+            limit: 200,
+          })
+        : [];
       const filtered = filterTransactions(
         transactions,
         selectedPeriod,
         include,
       );
-      const total =
+      let total =
         filtered.reduce((sum, item) => sum + item.amount, 0) ||
         walletData?.totalPayoutAmount ||
         0;
@@ -350,10 +382,47 @@ export function DownloadReportModal({
 
       let pdfBlob: Blob | null = null;
       let csvBlob: Blob | null = null;
+      let statementId: string | null = null;
       let pages = 1;
       let size = 0;
+      let readyAt = new Date();
+      let feesLabel: string | null = null;
+      let totalCostLabel: string | null = null;
+      let fileName = `${baseName}.${formatOption === "csv" ? "csv" : "pdf"}`;
 
-      if (formatOption === "pdf" || formatOption === "both") {
+      if (usesPayrollStatement) {
+        const record = await prepareStatement(
+          {
+            type: "PAYROLL",
+            from: format(selectedPeriod.start, "yyyy-MM-dd"),
+            to: format(selectedPeriod.end, "yyyy-MM-dd"),
+            include:
+              include === "schedules"
+                ? "SCHEDULES"
+                : include === "oneTime"
+                  ? "ONE_TIME"
+                  : "ALL",
+            localAmounts: currency === "usdLocal",
+            sendEmail: emailCopy,
+          },
+          { shouldStop: () => !openRef.current },
+        );
+        if (record.status === "FAILED") {
+          throw new Error(
+            record.error ||
+              "We couldn't prepare this statement. Please try again.",
+          );
+        }
+        statementId = record.id;
+        pages = record.pages ?? 1;
+        size = record.sizeBytes ?? 0;
+        if (record.fileName) fileName = record.fileName;
+        readyAt = record.readyAt ? new Date(record.readyAt) : new Date();
+        feesLabel = payrollMoneyLabel(record.summary, "fees");
+        totalCostLabel = payrollMoneyLabel(record.summary, "totalCost");
+        const paid = Number.parseFloat(record.summary?.totalPaid ?? "");
+        if (!Number.isNaN(paid)) total = paid;
+      } else if (formatOption === "pdf" || formatOption === "both") {
         const pdf = buildPdf(
           companyName,
           typeLabel,
@@ -372,31 +441,28 @@ export function DownloadReportModal({
         size += csvBlob.size;
       }
 
-      const extension =
-        formatOption === "csv"
-          ? "csv"
-          : formatOption === "both"
-            ? "pdf"
-            : "pdf";
-
       setGenerated({
-        fileName: `${baseName}.${extension}`,
+        fileName,
         pages,
-        sizeLabel: formatBytes(size || 1024),
-        generatedAt: new Date(),
+        sizeLabel: size > 0 ? formatBytes(size) : "—",
+        generatedAt: readyAt,
         total,
+        feesLabel,
+        totalCostLabel,
         periodLabel: periodShort,
         reportTypeLabel: typeLabel,
         pdfBlob,
         csvBlob,
+        statementId,
         format: formatOption,
       });
       setStep("ready");
 
-      if (emailCopy && companyEmail) {
+      if (emailCopy && companyEmail && !usesPayrollStatement) {
         toast.success(`A copy will be emailed to ${companyEmail}`);
       }
     } catch (error) {
+      if (error instanceof Error && error.message === "Cancelled") return;
       toast.error(
         error instanceof Error ? error.message : "Failed to generate report",
       );
@@ -405,23 +471,31 @@ export function DownloadReportModal({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!generated) return;
-    if (generated.pdfBlob) {
-      const name =
-        generated.format === "both"
-          ? generated.fileName
-          : generated.fileName.replace(/\.csv$/, ".pdf");
-      downloadBlob(
-        generated.pdfBlob,
-        name.endsWith(".pdf") ? name : `${name}.pdf`,
-      );
-    }
-    if (generated.csvBlob) {
-      const csvName = generated.fileName.replace(/\.pdf$/, ".csv");
-      downloadBlob(
-        generated.csvBlob,
-        csvName.endsWith(".csv") ? csvName : `${csvName}.csv`,
+    try {
+      if (generated.statementId) {
+        await openStatementDownload(generated.statementId);
+      } else if (generated.pdfBlob) {
+        const name =
+          generated.format === "both"
+            ? generated.fileName
+            : generated.fileName.replace(/\.csv$/, ".pdf");
+        downloadBlob(
+          generated.pdfBlob,
+          name.endsWith(".pdf") ? name : `${name}.pdf`,
+        );
+      }
+      if (generated.csvBlob) {
+        const csvName = generated.fileName.replace(/\.pdf$/, ".csv");
+        downloadBlob(
+          generated.csvBlob,
+          csvName.endsWith(".csv") ? csvName : `${csvName}.csv`,
+        );
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to download report",
       );
     }
   };
@@ -719,6 +793,11 @@ export function DownloadReportModal({
               {generated.reportTypeLabel} for {generated.periodLabel},{" "}
               {formatMoney(generated.total)} total.
             </p>
+            {generated.feesLabel != null && generated.totalCostLabel != null && (
+              <p className="mt-1 text-center text-sm text-[#66748C]">
+                Fees {generated.feesLabel} · Total cost {generated.totalCostLabel}
+              </p>
+            )}
 
             <div className="mt-6 flex items-start gap-3 rounded-xl border border-[#EAECF0] px-4 py-3">
               <span className="flex h-10 w-8 shrink-0 items-center justify-center rounded bg-[#D92D20] text-[10px] font-bold text-white">

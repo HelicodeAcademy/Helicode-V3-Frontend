@@ -18,10 +18,11 @@ import {
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 // import { PageTitleContext } from "@/app/app/dashboard/layout";
+import { downloadAccountLetter } from "@/lib/account-documents";
 import {
-  downloadAccountLetter,
-  downloadStatementPdf,
-} from "@/lib/account-documents";
+  openStatementDownload,
+  prepareStatement,
+} from "@/lib/statements-service";
 import {
   displayCurrency,
   formatAccountMoney,
@@ -36,7 +37,6 @@ import {
 } from "@/lib/account-format";
 import {
   getAccountRequest,
-  getAccountStatement,
   getAccountTransactions,
   getCurrencyAccount,
   getStatementPeriods,
@@ -233,12 +233,19 @@ export function AccountDetail({ currency }: { currency: string }) {
   const downloadMonth = async (period: StatementPeriod) => {
     try {
       setDownloadingMonth(period.month);
-      const statement = await getAccountStatement({
+      const record = await prepareStatement({
+        type: "ACCOUNT",
         currency,
         from: period.from.slice(0, 10),
         to: period.to.slice(0, 10),
       });
-      downloadStatementPdf(statement);
+      if (record.status === "FAILED") {
+        throw new Error(
+          record.error ||
+            "We couldn't prepare this statement. Please try again.",
+        );
+      }
+      await openStatementDownload(record.id);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to download statement",

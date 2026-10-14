@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   endOfMonth,
   format,
@@ -19,7 +19,11 @@ import {
   getAccountStatement,
   type AccountStatement,
 } from "@/lib/accounts-service";
-import { downloadBlob, downloadStatementPdf } from "@/lib/account-documents";
+import { downloadBlob } from "@/lib/account-documents";
+import {
+  openStatementDownload,
+  prepareStatement,
+} from "@/lib/statements-service";
 import { formatAccountMoney, formatSignedMoney } from "@/lib/account-format";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +66,8 @@ export function DownloadStatementModal({
   const [statement, setStatement] = useState<AccountStatement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const openRef = useRef(open);
+  openRef.current = open;
 
   const range = useMemo(
     () => ({
@@ -129,18 +135,27 @@ export function DownloadStatementModal({
         });
         downloadBlob(blob, `statement-${currency}-${range.from}.csv`);
       } else {
-        const data =
-          statement ??
-          (await getAccountStatement({
+        const record = await prepareStatement(
+          {
+            type: "ACCOUNT",
             currency,
             from: range.from,
             to: range.to,
             includePending,
-          }));
-        downloadStatementPdf(data);
+          },
+          { shouldStop: () => !openRef.current },
+        );
+        if (record.status === "FAILED") {
+          throw new Error(
+            record.error ||
+              "We couldn't prepare this statement. Please try again.",
+          );
+        }
+        await openStatementDownload(record.id);
       }
       onOpenChange(false);
     } catch (error) {
+      if (error instanceof Error && error.message === "Cancelled") return;
       toast.error(
         error instanceof Error ? error.message : "Failed to download statement",
       );
