@@ -56,8 +56,8 @@ export default function SupporterLogos() {
         {/* Animated logos */}
         <div className="relative flex-1 min-w-0 overflow-hidden py-4 lg:py-0">
           {/* Fade edges */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 bg-linear-to-r from-white to-transparent dark:from-black" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-linear-to-l from-white to-transparent dark:from-black" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 bg-linear-to-r from-white to-transparent dark:from-[#0e1218]" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 bg-linear-to-l from-white to-transparent dark:from-[#0e1218]" />
 
           {/* Marquee track — duplicate logos for seamless loop */}
           <div className="flex w-max animate-marquee hover:paused lg:mt-4">
@@ -72,7 +72,7 @@ export default function SupporterLogos() {
                     alt={logo.alt}
                     width={logo.width}
                     height={logo.height}
-                    className="absolute inset-0 h-full w-full object-contain select-none"
+                    className="absolute inset-0 h-full w-full object-contain select-none dark:brightness-0 dark:invert dark:opacity-90"
                   />
                 </div>
               </div>

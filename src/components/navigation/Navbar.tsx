@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
 // import { WaitlistButton } from "../waitlist/WaitlistModal";
 import { HireTalentButton } from "../Landing-page/HireTalentModal";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -61,6 +62,7 @@ export default function Navbar() {
               <div className="hidden lg:block h-6 w-px bg-[#e5e7eb]" />
 
               <div className="hidden lg:flex items-center h-full gap-4">
+                <ThemeToggle />
                 <Button
                   asChild
                   variant="ghost"
@@ -84,7 +86,8 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="lg:hidden">
+            <div className="flex items-center gap-2 lg:hidden">
+              <ThemeToggle />
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="p-2 rounded-md text-gray-700 hover:text-black focus:outline-none"

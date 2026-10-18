@@ -55,6 +55,7 @@ import {
 } from "@/lib/accounts-service";
 import { compactAccountAmount, statusLabel } from "@/lib/account-format";
 import { Toaster } from "react-hot-toast";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import toast from "react-hot-toast";
 import { useKYCStore } from "@/store/kyc-store";
 import { getKYCStatus } from "@/lib/kyc-service";
@@ -475,7 +476,8 @@ export default function DashboardLayout({
               <h1 className="text-2xl font-bold text-[#444444]">
                 {pageTitle || "Dashboard"}
               </h1>
-              <div className="flex items-center border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+              <div className="flex items-center gap-2 border border-[#D2D2D2] rounded-[40px] px-3 py-1">
+                <ThemeToggle className="border-0 bg-transparent shadow-none hover:bg-[#F2F4F7]" />
                 {/* <NotificationPopover /> */}
 
                 <a

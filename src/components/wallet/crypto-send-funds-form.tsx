@@ -119,9 +119,6 @@ export function CryptoSendFundsForm({
               type="button"
               onClick={() => void handlePaste()}
               className="shrink-0 rounded-md bg-[#EEF3FF] px-2 py-0.5 text-xs font-semibold text-[#0052FF]"
-              style={{
-                backgroundColor: "#EEF3FF",
-              }}
             >
               Paste
             </button>
@@ -170,9 +167,6 @@ export function CryptoSendFundsForm({
                 type="button"
                 onClick={handleMax}
                 className="rounded-md bg-[#EEF3FF] px-2 py-0.5 text-xs font-semibold text-[#0052FF]"
-                style={{
-                  backgroundColor: "#EEF3FF",
-                }}
               >
                 Max
               </button>

@@ -131,6 +131,20 @@ function detailFields(details: AccountDetails, revealed: boolean) {
   if (details.bic) {
     fields.push({ key: "bic", label: "BIC", value: details.bic });
   }
+  if (details.bankAddress) {
+    fields.push({
+      key: "address",
+      label: "Bank address",
+      value: details.bankAddress,
+    });
+  }
+  if (details.beneficiaryAddress) {
+    fields.push({
+      key: "beneficiary",
+      label: "Beneficiary address",
+      value: details.beneficiaryAddress,
+    });
+  }
   return fields;
 }
 
