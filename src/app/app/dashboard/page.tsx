@@ -403,7 +403,7 @@ export default function DashboardHomePage() {
             variant="primary"
             className="text-white hover:bg-[#101828]/90"
           >
-            <Link href={"/dashboard/hiring"}>Get started</Link>
+            <Link href={"/dashboard/team"}>Get started</Link>
           </Button>
         </div>
 
