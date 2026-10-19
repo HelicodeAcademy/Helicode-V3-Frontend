@@ -208,23 +208,7 @@ export function HireWizard({ kind }: { kind: Kind }) {
     kind === "employee" ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-white">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#EAECF0] px-6">
-        <div className="flex items-center gap-2 text-sm">
-          <button type="button" onClick={close} className="text-[#667085]">
-            Team
-          </button>
-          <ChevronRight className="h-4 w-4 text-[#98A2B3]" />
-          <span className="font-medium text-[#101828]">{title}</span>
-        </div>
-        <div className="flex items-center gap-4 text-sm text-[#667085]">
-          <span>Step {step} of 3</span>
-          <button type="button" aria-label="Close" onClick={close}>
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      </header>
-
+    <div className="bg-white">
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-230 gap-6 px-8 py-10">
           <aside className="w-64 shrink-0">

@@ -312,7 +312,6 @@ export default function TeamPage() {
     <div className="px-8 py-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-[#101828]">Team</h1>
           <p className="mt-1 text-sm text-[#667085]">
             Everyone you pay through Helicode. Employees, contractors and
             pending invites.
@@ -321,7 +320,7 @@ export default function TeamPage() {
         <Button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="h-10 gap-2 rounded-lg bg-[#101828] px-4 text-white hover:bg-[#101828]/90"
+          className="h-10 gap-2 rounded-lg px-4 text-white "
         >
           <Image
             src="/team/user-plus.svg"
@@ -444,10 +443,7 @@ export default function TeamPage() {
             setPage(1);
           }}
         />
-        <span className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#E4E7EC] bg-white px-3 text-xs font-medium text-[#344054]">
-          <CirclePlus className="h-4 w-4 text-[#3F3F46]" />
-          Pay schedule
-        </span>
+
         <div className="lg:ml-auto">
           <Button
             type="button"
