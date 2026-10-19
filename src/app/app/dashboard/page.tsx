@@ -389,27 +389,6 @@ export default function DashboardHomePage() {
       {/* Verification status — only when not fully approved */}
       <KycVerificationBanner />
 
-      {/* {localPayoutSetupIncomplete && (
-        <div className="bg-[#DBEAFE] border border-[#0084FD] rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-[#0084FD] shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-[#003DA5]">
-              Local payout setup required
-            </p>
-            <p className="text-sm text-[#0084FD] mt-1">
-              Complete payout KYC and bank details in Settings to withdraw to a
-              local bank account.
-            </p>
-          </div>
-          <Button
-            asChild
-            className="bg-[#0084FD] text-white hover:bg-[#0084FD]/90 h-9 text-sm shrink-0"
-          >
-            <Link href="/dashboard/settings">Go to Settings</Link>
-          </Button>
-        </div>
-      )} */}
-
       {/* Promotional Section */}
       <div className="flex items-stretch gap-6 rounded-2xl border border-[#F2F2F2] bg-white overflow-hidden">
         <div className="flex-1 p-6">

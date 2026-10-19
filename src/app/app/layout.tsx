@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+// import { AppThemeToggle } from "@/components/theme/theme-toggle";
 
 export const metadata: Metadata = {
   robots: {
@@ -16,5 +17,10 @@ export default function AppRootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      {/* <AppThemeToggle /> */}
+      {children}
+    </>
+  );
 }

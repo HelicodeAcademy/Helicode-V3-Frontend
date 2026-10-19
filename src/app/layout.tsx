@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { JsonLd } from "@/components/seo/json-ld";
+// import { ThemeSync } from "@/components/theme/theme-toggle";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_OG_IMAGE,
@@ -129,10 +130,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Dark mode is off until it is ready for production.
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k="helicode-theme";var s=localStorage.getItem(k);var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",d);r.style.colorScheme=d?"dark":"light";}catch(e){}})();`,
+          }}
+        />
+        */}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${helveticaNeue.variable} font-sans antialiased`}
       >
+        {/* <ThemeSync /> */}
         <JsonLd />
 
         <Script

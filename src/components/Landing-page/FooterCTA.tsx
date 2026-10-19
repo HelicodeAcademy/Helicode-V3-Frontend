@@ -30,7 +30,7 @@ export default function FooterCTA() {
                   "--background-border": "#ffffff",
                   borderStyle: "dashed",
                   borderImageSource:
-                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, var(--background) 56%, transparent) 4px, color-mix(in srgb, var(--background) 56%, transparent) 12px)",
+                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, #ffffff 56%, transparent) 4px, color-mix(in srgb, #ffffff 56%, transparent) 12px)",
                   borderImageSlice: 1,
                 } as React.CSSProperties
               }
@@ -51,7 +51,7 @@ export default function FooterCTA() {
                 "--background-border": "#ffffff",
                 borderStyle: "dashed",
                 borderImageSource:
-                  "repeating-linear-gradient(to bottom, transparent 0px, transparent 4px, color-mix(in srgb, var(--background) 56%, transparent) 4px, color-mix(in srgb, var(--background) 56%, transparent) 12px)",
+                  "repeating-linear-gradient(to bottom, transparent 0px, transparent 4px, color-mix(in srgb, #ffffff 56%, transparent) 4px, color-mix(in srgb, #ffffff 56%, transparent) 12px)",
                 borderImageSlice: 1,
               } as React.CSSProperties
             }
@@ -65,7 +65,7 @@ export default function FooterCTA() {
                   "--background-border": "#ffffff",
                   borderStyle: "dashed",
                   borderImageSource:
-                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, var(--background) 56%, transparent) 4px, color-mix(in srgb, var(--background) 56%, transparent) 12px)",
+                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, #ffffff 56%, transparent) 4px, color-mix(in srgb, #ffffff 56%, transparent) 12px)",
                   borderImageSlice: 1,
                 } as React.CSSProperties
               }
@@ -123,7 +123,7 @@ export default function FooterCTA() {
                   "--background-border": "#ffffff",
                   borderStyle: "dashed",
                   borderImageSource:
-                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, var(--background) 56%, transparent) 4px, color-mix(in srgb, var(--background) 56%, transparent) 12px)",
+                    "repeating-linear-gradient(to right, transparent 0px, transparent 4px, color-mix(in srgb, #ffffff 56%, transparent) 4px, color-mix(in srgb, #ffffff 56%, transparent) 12px)",
                   borderImageSlice: 1,
                 } as React.CSSProperties
               }

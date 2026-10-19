@@ -248,7 +248,7 @@ export async function downloadSampleCSV(): Promise<void> {
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "sample-team-members.csv";
+  link.download = "helicode-team-template.csv";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

@@ -1,34 +1,14 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PageTitleContext } from "../../layout";
-import { WorkerTypeSelection } from "@/components/team/worker-type-selection";
 
 export default function AddTeamMemberPage() {
-  const { setTitle } = useContext(PageTitleContext);
   const router = useRouter();
-  const [workerType, setWorkerType] = useState<
-    "employee" | "contractor" | "csv" | null
-  >(null);
 
   useEffect(() => {
-    setTitle("Team");
-  }, [setTitle]);
+    router.replace("/dashboard/team");
+  }, [router]);
 
-  const handleProceed = () => {
-    if (workerType === "contractor") {
-      router.push("/dashboard/team/add/contractor");
-    } else if (workerType === "employee") {
-      router.push("/dashboard/team/add/employee");
-    }
-  };
-
-  return (
-    <WorkerTypeSelection
-      selectedType={workerType}
-      onSelect={setWorkerType}
-      onProceed={handleProceed}
-    />
-  );
+  return null;
 }

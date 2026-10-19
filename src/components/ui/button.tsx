@@ -24,7 +24,8 @@ const buttonVariants = cva(
           "text-foreground font-medium border border-border \
    bg-[linear-gradient(181.43deg,rgba(54,54,54,0.1)_1.21%,rgba(28,28,28,0.1)_58.57%)] \
    hover:opacity-90 \
-   focus-visible:ring-2 focus-visible:ring-ring/20",
+   focus-visible:ring-2 focus-visible:ring-ring/20 \
+   dark:border-[#3a4458] dark:bg-[#1c2330] dark:text-[#f4f6f8] dark:hover:bg-[#283142]",
 
         primary:
           "bg-[#363636] font-medium text-primary-foreground hover:bg-[#151515] transition-colors duration-200 cursor-pointer",

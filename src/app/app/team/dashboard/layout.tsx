@@ -25,6 +25,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ChevronDown, LogOut, MoreVertical } from "lucide-react";
+// import { ThemeToggle } from "@/components/theme/theme-toggle";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -275,7 +276,8 @@ export default function TeamDashboardLayout({
                   ) : null}
                 </div>
               </div>
-              <div className="flex items-center rounded-[40px] border border-[#D2D2D2] px-2 py-1 sm:px-3">
+              <div className="flex items-center gap-1 rounded-[40px] border border-[#D2D2D2] px-2 py-1 sm:px-3">
+                {/* <ThemeToggle className="border-0 bg-transparent shadow-none hover:bg-[#F2F4F7]" /> */}
                 {/* <Button variant="ghost" size="icon">
                   <Image
                     src="/header/notification.svg"

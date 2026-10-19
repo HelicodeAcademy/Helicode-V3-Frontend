@@ -84,12 +84,7 @@ export default function Testimonial() {
 
   return (
     <section
-      className="w-full border-b border-[#ECECEC] bg-white py-8.5md:py-17 py-12 md:py-16 lg:py-24"
-      style={{
-        backgroundImage:
-          "radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 1.5px)",
-        backgroundSize: "16px 16px",
-      }}
+      className="hero-dots w-full border-b border-[#ECECEC] bg-white py-8.5md:py-17 py-12 md:py-16 lg:py-24"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col gap-12">
@@ -140,11 +135,11 @@ export default function Testimonial() {
                       className={`shrink-0 snap-start basis-[90%] sm:basis-[70%] md:basis-[48%] lg:basis-[32%]   hfull self-stretch flex ${isBlurred ? "blur-sm opacity70" : ""}`}
                     >
                       <div
-                        className="relative flex h-104lg:h-112 w-full   h-full overflowclip overflow-hidden rounded-tr-4xl pb-3 pl-3"
+                        className="relative flex h-104lg:h-112 w-full h-full overflow-hidden rounded-tr-4xl bg-(--card-tint) pb-3 pl-3 dark:bg-[#161b24]"
                         style={
                           {
                             "--border-bg": testimonial.accent,
-                            backgroundColor: testimonial.bg,
+                            "--card-tint": testimonial.bg,
                           } as React.CSSProperties
                         }
                       >
@@ -160,6 +155,7 @@ export default function Testimonial() {
                               alt={testimonial.name}
                               width={testimonial.logoWidth}
                               height={testimonial.logoHeight}
+                              className="dark:brightness-0 dark:invert"
                             />
                           </div>
                           <div>

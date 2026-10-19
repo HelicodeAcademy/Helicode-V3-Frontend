@@ -7,12 +7,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="w-full border-b bg-white py-24 md:py-34     flexitems-centerjustify-center"
-      style={{
-        backgroundImage:
-          "radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 1.5px)",
-        backgroundSize: "16px 16px",
-      }}
+      className="hero-dots w-full border-b bg-white py-24 md:py-34     flexitems-centerjustify-center"
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col gap-10 justify-center items-center text-center max-w-4xl mx-auto">
