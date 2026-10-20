@@ -7,13 +7,12 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { useRouter } from "next/navigation";
 import { format, lastDayOfMonth, parseISO } from "date-fns";
 import {
+  // ArrowLeft,
   Calendar as CalendarIcon,
   Check,
   ChevronDown,
-  ChevronRight,
   Info,
   Search,
   Upload,
@@ -75,8 +74,19 @@ function displayDate(value: string) {
   return format(date, "MMM d, yyyy");
 }
 
-export function HireWizard({ kind }: { kind: Kind }) {
-  const router = useRouter();
+export function HireWizard({
+  kind,
+  open,
+  onOpenChange,
+  onAdded,
+  // onBack,
+}: {
+  kind: Kind;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAdded?: () => void;
+  onBack?: () => void;
+}) {
   const user = useAuthStore((state) => state.user);
   const managerName = [user?.firstName, user?.lastName]
     .filter(Boolean)
@@ -113,11 +123,19 @@ export function HireWizard({ kind }: { kind: Kind }) {
   const [countrySearch, setCountrySearch] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const title = kind === "employee" ? "Add an employee" : "Add a contractor";
-  const steps =
-    kind === "employee"
-      ? ["Personal info", "Role & pay", "Review"]
-      : ["Contractor info", "Contract & rate", "Review"];
+  // const title = kind === "employee" ? "Add an employee" : "Add a contractor";
+  // const stepTitle =
+  //   kind === "employee"
+  //     ? step === 1
+  //       ? "Personal info"
+  //       : step === 2
+  //         ? "Role & pay"
+  //         : "Review & invite"
+  //     : step === 1
+  //       ? "Contractor info"
+  //       : step === 2
+  //         ? "Contract & rate"
+  //         : "Review & send";
 
   const filteredCountries = useMemo(() => {
     const query = countrySearch.trim().toLowerCase();
@@ -125,7 +143,20 @@ export function HireWizard({ kind }: { kind: Kind }) {
     return COUNTRIES.filter((item) => item.name.toLowerCase().includes(query));
   }, [countrySearch]);
 
-  const close = () => router.push("/dashboard/team");
+  const close = () => {
+    resetForm();
+    onOpenChange(false);
+  };
+
+  // const handleBack = () => {
+  //   if (step > 1) {
+  //     setStep(step - 1);
+  //     return;
+  //   }
+  //   resetForm();
+  //   onOpenChange(false);
+  //   onBack?.();
+  // };
 
   const frequencyLabel =
     FREQUENCIES.find((item) => item.value === frequency)?.label ?? "Monthly";
@@ -172,6 +203,7 @@ export function HireWizard({ kind }: { kind: Kind }) {
         contract: contract ?? undefined,
       });
       setSuccessOpen(true);
+      onAdded?.();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to add team member",
@@ -208,38 +240,155 @@ export function HireWizard({ kind }: { kind: Kind }) {
     kind === "employee" ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
 
   return (
-    <div className="bg-white">
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex w-full max-w-230 gap-6 px-8 py-10">
-          <aside className="w-64 shrink-0">
-            <ol className="space-y-1">
-              {steps.map((label, index) => {
-                const number = index + 1;
-                const done = step > number;
-                const active = step === number;
-                return (
-                  <li key={label}>
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm",
-                        active
-                          ? "bg-[#F4F4F5] font-medium text-[#101828]"
-                          : done
-                            ? "text-[#344054]"
-                            : "text-[#71717A]",
-                      )}
-                    >
-                      <StepMark done={done} active={active} />
-                      {label}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-          </aside>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) resetForm();
+        onOpenChange(next);
+      }}
+    >
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          "gap-0 overflow-hidden p-0",
+          successOpen ? "sm:max-w-110" : "max-h-[90vh] sm:max-w-xl",
+        )}
+      >
+        {successOpen ? (
+          <div className="p-6">
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={close}
+              className="absolute top-4 right-4 text-[#98A2B3]"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#ECFDF3]">
+              <Check className="h-6 w-6 text-[#12B76A]" />
+            </div>
+            <DialogTitle className="mt-4 text-center text-xl font-semibold text-[#101828]">
+              {firstName} {lastName} has been added
+            </DialogTitle>
+            <p className="mt-2 text-center text-sm text-[#667085]">
+              {kind === "employee"
+                ? `We've sent an invite to ${email}. They'll show as Invited on your Team page until they accept.`
+                : generateAgreement
+                  ? `The contractor agreement and invite are on their way to ${email}.`
+                  : `An invite is on its way to ${email}.`}
+            </p>
+            <div className="mt-4 flex items-center gap-3 rounded-xl border border-[#EAECF0] px-3 py-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F2F4F7] text-xs font-semibold text-[#344054]">
+                {initials(firstName, lastName)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-[#101828]">
+                  {firstName} {lastName}
+                </span>
+                <span className="block text-xs text-[#667085]">
+                  {kind === "employee"
+                    ? `${jobTitle} · ${employment} · $${money(amount)}${
+                        frequency === "WEEKLY"
+                          ? "/wk"
+                          : frequency === "DAILY"
+                            ? "/day"
+                            : frequency === "HOURLY"
+                              ? "/hr"
+                              : "/mo"
+                      }`
+                    : paymentType === "hourly"
+                      ? `${jobTitle} · $${money(amount)}/hr`
+                      : paymentType === "milestone"
+                        ? `${jobTitle} · $${money(amount)} / milestone`
+                        : `${jobTitle} · $${money(amount)}/mo fixed`}
+                </span>
+              </span>
+              <span className="rounded-full bg-[#FFF6ED] px-2 py-0.5 text-xs font-medium text-[#F79009]">
+                Invited
+              </span>
+            </div>
+            <div className="mt-4 rounded-xl bg-[#F9FAFB] px-4 py-3">
+              <p className="text-sm font-medium text-[#101828]">
+                What happens next
+              </p>
+              <ol className="mt-3 space-y-2 text-sm text-[#344054]">
+                {kind === "employee" ? (
+                  <>
+                    <li>
+                      1. {firstName} accepts the invite and verifies their ID
+                    </li>
+                    <li>
+                      2. {firstName} adds their bank or mobile money details for
+                      payouts
+                    </li>
+                    <li>
+                      3. {firstName} is included in your next payroll run
+                      {payrollDate ? ` on ${payrollDate}` : ""}
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      1. {firstName} signs the agreement and verifies their ID
+                    </li>
+                    <li>
+                      2. {firstName} adds their payout details — bank, mobile
+                      money or USD
+                    </li>
+                    <li>
+                      3. {firstName} submits their first invoice for you to
+                      approve
+                    </li>
+                  </>
+                )}
+              </ol>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                className="h-11 rounded-lg border-[#D0D5DD]"
+              >
+                Add another
+              </Button>
+              <Button
+                type="button"
+                onClick={close}
+                className="h-11 rounded-lg bg-[#101828] text-white hover:bg-[#101828]/90"
+              >
+                Go to Team
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* <div className="flex items-start gap-3 px-5 pt-5">
+              <button
+                type="button"
+                aria-label="Back"
+                onClick={handleBack}
+                className="mt-1 rounded-sm border p-1 text-[#3F3F46]"
+              >
+                <ArrowLeft className="h-4 w-4" />ss
+              </button>
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-base font-semibold text-[#101828]">
+                  {title}
+                </DialogTitle>
+                <p className="mt-1 text-sm text-[#667085]">{stepTitle}</p>
+              </div>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={close}
+                className="text-[#98A2B3]"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div> */}
 
-          <main className="min-w-0 flex-1">
-            <div className="w-full max-w-xl">
+            <div className="max-h-[calc(90vh-4.5rem)] overflow-y-auto px-5 py-5">
               {step === 1 && kind === "employee" && (
                 <>
                   <h1 className="text-3xl font-semibold text-[#101828]">
@@ -753,161 +902,10 @@ export function HireWizard({ kind }: { kind: Kind }) {
                 </>
               )}
             </div>
-          </main>
-        </div>
-      </div>
-
-      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-        <DialogContent showCloseButton={false} className="sm:max-w-110">
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={close}
-            className="absolute top-4 right-4 text-[#98A2B3]"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#ECFDF3]">
-            <Check className="h-6 w-6 text-[#12B76A]" />
-          </div>
-          <DialogTitle className="text-center text-xl font-semibold text-[#101828]">
-            {firstName} {lastName} has been added
-          </DialogTitle>
-          <p className="text-center text-sm text-[#667085]">
-            {kind === "employee"
-              ? `We've sent an invite to ${email}. They'll show as Invited on your Team page until they accept.`
-              : generateAgreement
-                ? `The contractor agreement and invite are on their way to ${email}.`
-                : `An invite is on its way to ${email}.`}
-          </p>
-          <div className="flex items-center gap-3 rounded-xl border border-[#EAECF0] px-3 py-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F2F4F7] text-xs font-semibold text-[#344054]">
-              {initials(firstName, lastName)}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold text-[#101828]">
-                {firstName} {lastName}
-              </span>
-              <span className="block text-xs text-[#667085]">
-                {kind === "employee"
-                  ? `${jobTitle} · ${employment} · $${money(amount)}${
-                      frequency === "WEEKLY"
-                        ? "/wk"
-                        : frequency === "DAILY"
-                          ? "/day"
-                          : frequency === "HOURLY"
-                            ? "/hr"
-                            : "/mo"
-                    }`
-                  : paymentType === "hourly"
-                    ? `${jobTitle} · $${money(amount)}/hr`
-                    : paymentType === "milestone"
-                      ? `${jobTitle} · $${money(amount)} / milestone`
-                      : `${jobTitle} · $${money(amount)}/mo fixed`}
-              </span>
-            </span>
-            <span className="rounded-full bg-[#FFF6ED] px-2 py-0.5 text-xs font-medium text-[#F79009]">
-              Invited
-            </span>
-          </div>
-          <div className="rounded-xl bg-[#F9FAFB] px-4 py-3">
-            <p className="text-sm font-medium text-[#101828]">
-              What happens next
-            </p>
-            <ol className="mt-3 space-y-2 text-sm text-[#344054]">
-              {kind === "employee" ? (
-                <>
-                  <li>
-                    1. {firstName} accepts the invite and verifies their ID
-                  </li>
-                  <li>
-                    2. {firstName} adds their bank or mobile money details for
-                    payouts
-                  </li>
-                  <li>
-                    3. {firstName} is included in your next payroll run
-                    {payrollDate ? ` on ${payrollDate}` : ""}
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    1. {firstName} signs the agreement and verifies their ID
-                  </li>
-                  <li>
-                    2. {firstName} adds their payout details — bank, mobile
-                    money or USD
-                  </li>
-                  <li>
-                    3. {firstName} submits their first invoice for you to
-                    approve
-                  </li>
-                </>
-              )}
-            </ol>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={resetForm}
-              className="h-11 rounded-lg border-[#D0D5DD]"
-            >
-              Add another
-            </Button>
-            <Button
-              type="button"
-              onClick={close}
-              className="h-11 rounded-lg bg-[#101828] text-white hover:bg-[#101828]/90"
-            >
-              Go to Team
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
-
-function StepMark({ done, active }: { done: boolean; active: boolean }) {
-  if (done) {
-    return (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        aria-hidden
-        className="shrink-0"
-      >
-        <path
-          d="M14.667 7.387v.613a6.667 6.667 0 1 1-3.954-6.093"
-          stroke="#12B76A"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M14.667 2.667 8 9.34 6 7.34"
-          stroke="#12B76A"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  if (active) {
-    return (
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#101828]">
-        <span className="h-2 w-2 rounded-full bg-[#101828]" />
-      </span>
-    );
-  }
-
-  return (
-    <span className="h-4 w-4 shrink-0 rounded-full border border-[#D0D5DD]" />
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -1193,7 +1191,7 @@ function WizardNav({
         type="button"
         disabled={continueDisabled}
         onClick={onContinue}
-        className="h-10 rounded-lg bg-[#101828] px-4 text-white hover:bg-[#101828]/90"
+        className="h-10 rounded-lg px-4 text-white"
       >
         {continueLabel}
       </Button>

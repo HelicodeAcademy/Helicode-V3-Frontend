@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   addMonths,
   addWeeks,
@@ -22,6 +21,7 @@ import {
 import { toast } from "react-hot-toast";
 import { PageTitleContext } from "../layout";
 import { AddPeopleModal } from "@/components/team/add-people-modal";
+import { HireWizard } from "@/components/team/hire-wizard";
 import { ImportCsvModal } from "@/components/team/import-csv-modal";
 import { TeamTable, type TeamSortKey } from "@/components/team/team-table";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,6 @@ function csvCell(value: string) {
 }
 
 export default function TeamPage() {
-  const router = useRouter();
   const { setTitle } = useContext(PageTitleContext);
   const { members, isLoading, setMembers, setIsLoading, setError } =
     useTeamStore();
@@ -125,6 +124,9 @@ export default function TeamPage() {
   const [groups, setGroups] = useState<PayrollGroup[]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [hireKind, setHireKind] = useState<"employee" | "contractor" | null>(
+    null,
+  );
 
   useEffect(() => {
     setTitle("Team");
@@ -486,16 +488,25 @@ export default function TeamPage() {
         companyName={companyName}
         onEmployee={() => {
           setAddOpen(false);
-          router.push("/dashboard/team/add/employee");
+          setHireKind("employee");
         }}
         onContractor={() => {
           setAddOpen(false);
-          router.push("/dashboard/team/add/contractor");
+          setHireKind("contractor");
         }}
         onImport={() => {
           setAddOpen(false);
           setImportOpen(true);
         }}
+      />
+      <HireWizard
+        kind={hireKind ?? "employee"}
+        open={hireKind !== null}
+        onOpenChange={(open) => {
+          if (!open) setHireKind(null);
+        }}
+        onAdded={() => void fetchMembers()}
+        onBack={() => setAddOpen(true)}
       />
       <ImportCsvModal
         open={importOpen}

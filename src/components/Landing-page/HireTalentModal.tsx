@@ -80,8 +80,6 @@ const hireTalentSchema = z.object({
 
 type HireTalentFormData = z.infer<typeof hireTalentSchema>;
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
@@ -116,8 +114,6 @@ function FormField({
     </div>
   );
 }
-
-// ─── Success State ─────────────────────────────────────────────────────────────
 
 function SuccessView({
   alreadyExists,
@@ -183,8 +179,6 @@ function SuccessView({
     </div>
   );
 }
-
-// ─── Main Modal ────────────────────────────────────────────────────────────────
 
 interface HireTalentModalProps {
   open: boolean;

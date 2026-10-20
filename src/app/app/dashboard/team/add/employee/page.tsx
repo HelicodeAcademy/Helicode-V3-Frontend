@@ -1,7 +1,14 @@
 "use client";
 
-import { HireWizard } from "@/components/team/hire-wizard";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AddEmployeePage() {
-  return <HireWizard kind="employee" />;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/dashboard/team");
+  }, [router]);
+
+  return null;
 }
