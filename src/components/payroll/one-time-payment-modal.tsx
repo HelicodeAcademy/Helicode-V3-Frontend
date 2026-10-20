@@ -53,6 +53,8 @@ type PaymentType =
   | "Advance"
   | "Other";
 
+const SUCCESS_ILLUSTRATION_SRC = "/payroll/modal-illu.svg";
+
 const PAYMENT_TYPES: PaymentType[] = [
   "Bonus",
   "Reimbursement",
@@ -247,6 +249,8 @@ export function OneTimePaymentModal({
       }
     };
     void loadFee();
+    const preload = new window.Image();
+    preload.src = SUCCESS_ILLUSTRATION_SRC;
   }, [open, loadMembers, resetState]);
 
   const visibleMembers = useMemo(() => {
@@ -848,7 +852,7 @@ export function OneTimePaymentModal({
         {step === "success" && selectedMember && (
           <div className="flex flex-col p-4">
             <Image
-              src="/payroll/modal-illu.svg"
+              src={SUCCESS_ILLUSTRATION_SRC}
               alt="Success"
               width={480}
               height={220}
