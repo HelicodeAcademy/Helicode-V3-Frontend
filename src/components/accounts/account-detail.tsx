@@ -451,8 +451,8 @@ export function AccountDetail({ currency }: { currency: string }) {
                     }
                     className="h-9 appearance-none rounded-lg border border-[#E4E7EC] bg-white pr-8 pl-3 text-sm font-medium text-[#101828]"
                   >
-                    <option value="30d">Last 30 days</option>
                     <option value="month">This month</option>
+                    <option value="30d">Last 30 days</option>
                     <option value="all">All</option>
                   </select>
                   <ChevronDown className="pointer-events-none absolute top-2.5 right-2 h-4 w-4 text-[#667085]" />

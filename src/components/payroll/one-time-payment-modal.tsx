@@ -847,7 +847,7 @@ export function OneTimePaymentModal({
         )}
 
         {step === "success" && selectedMember && (
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col">
             <Image
               src="/payroll/modal-illu.svg"
               alt="Success"

@@ -13,12 +13,14 @@ export default function CompanyAdminSetupConfirmPage() {
       <div className="w-full lg:basis-2/5 flex flex-col justify-start items-center">
         <div className="relative w-full h-full overflow-hidden min-h-48 lg:min-h-screen">
           <div className="absolute left-6 top-9 z-10">
-            <Image
-              src="/signup/logo.svg"
-              alt="Helicode Logo"
-              width={110}
-              height={24}
-            />
+            <Link href="/login">
+              <Image
+                src="/signup/logo.svg"
+                alt="Helicode Logo"
+                width={110}
+                height={24}
+              />
+            </Link>
           </div>
           <Image
             src={onboardingIllustration}

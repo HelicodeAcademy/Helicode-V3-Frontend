@@ -243,6 +243,14 @@ export default function TeamPage() {
   const countryOptions = [
     ...new Set(tabMembers.map((member) => member.country).filter(Boolean)),
   ];
+  const filtersApplied = Boolean(search.trim() || type || country);
+
+  const resetFilters = () => {
+    setSearch("");
+    setType("");
+    setCountry("");
+    setPage(1);
+  };
 
   const monthlyPayroll = activeMembers.reduce(
     (sum, member) => sum + (Number(member.amount) || 0),
@@ -415,6 +423,8 @@ export default function TeamPage() {
         </div>
         <FilterChip
           label="Type"
+          emptyLabel="No type"
+          isLoading={isLoading}
           value={
             type === "EMPLOYEE"
               ? "Employee"
@@ -433,6 +443,8 @@ export default function TeamPage() {
         />
         <FilterChip
           label="Country"
+          emptyLabel="No country"
+          isLoading={isLoading}
           value={country}
           options={countryOptions.map((option) => ({
             value: option,
@@ -443,6 +455,15 @@ export default function TeamPage() {
             setPage(1);
           }}
         />
+        {filtersApplied ? (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="inline-flex h-9 items-center rounded-full border border-[#E4E7EC] bg-white px-3 text-xs font-medium text-[#344054] hover:bg-[#F9FAFB]"
+          >
+            Reset filters
+          </button>
+        ) : null}
 
         <div className="lg:ml-auto">
           <Button
@@ -536,42 +557,52 @@ function StatCard({
 
 function FilterChip({
   label,
+  emptyLabel,
   value,
   options,
   onSelect,
+  isLoading = false,
 }: {
   label: string;
+  emptyLabel: string;
   value: string;
   options: { value: string; label: string }[];
   onSelect: (value: string) => void;
+  isLoading?: boolean;
 }) {
+  if (!isLoading && options.length === 0) {
+    return (
+      <span className="inline-flex h-9 items-center rounded-full border border-[#E4E7EC] bg-[#F9FAFB] px-3 text-xs font-medium text-[#98A2B3]">
+        {emptyLabel}
+      </span>
+    );
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#E4E7EC] bg-white px-3 text-[#344054] font-medium text-xs"
+          className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[#E4E7EC] bg-white px-3 text-xs font-medium text-[#344054]"
         >
           <CirclePlus className="h-4 w-4 text-[#3F3F46]" />
           {value || label}
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-48 p-1">
-        {options.length === 0
-          ? null
-          : options.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onSelect(option.value)}
-                className={cn(
-                  "flex w-full rounded-md px-2 py-2 text-left text-sm hover:bg-[#F9FAFB]",
-                  value === option.label && "font-medium text-[#101828]",
-                )}
-              >
-                {option.label}
-              </button>
-            ))}
+        {options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onSelect(option.value)}
+            className={cn(
+              "flex w-full rounded-md px-2 py-2 text-left text-sm hover:bg-[#F9FAFB]",
+              value === option.label && "font-medium text-[#101828]",
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
       </PopoverContent>
     </Popover>
   );
