@@ -16,6 +16,7 @@ import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { BankDetailsModal } from "@/components/settings/bank-details-modal";
 import { Edit2 } from "lucide-react";
 import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
+import { TwoFaSettings } from "@/components/settings/two-fa-settings";
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -164,6 +165,8 @@ export default function TeamSettingsPage() {
                 Change
               </Button>
             </div>
+
+            <TwoFaSettings forTeam />
 
             {/* KYC */}
             <div className="bg-white border border-[#eaeaea] rounded-lg p-6">

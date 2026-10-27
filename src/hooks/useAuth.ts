@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { useTeamStore } from "@/store/team-store";
+import { useTwoFaStore } from "@/store/two-fa-store";
 import { isTokenExpired, getTokenTimeRemaining } from "@/lib/auth-utils";
 import toast from "react-hot-toast";
 import {
@@ -82,6 +83,7 @@ export function useAuth() {
     clearLastActivity(EMPLOYER_LAST_ACTIVITY_KEY);
     clearLoginData();
     useTeamStore.getState().clearMembers();
+    useTwoFaStore.getState().clearStatus();
     router.push(loginPath);
     // toast.success("Logout successful!");
   }, [authType, clearLoginData, router]);

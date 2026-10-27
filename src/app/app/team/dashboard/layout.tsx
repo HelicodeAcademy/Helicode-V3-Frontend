@@ -29,10 +29,12 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, createContext, useCallback } from "react";
+import { useState, createContext, useCallback, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { TeamProtectedRoute } from "@/components/team-dashboard/access/protected-route";
 import { useTeamAuth } from "@/hooks/useTeamAuth";
+import { useTwoFaStore } from "@/store/two-fa-store";
+import { TwoFaEnrollmentBanner } from "@/components/two-fa/two-fa-enrollment-banner";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
 import { TEAM_LAST_ACTIVITY_KEY } from "@/lib/inactivity-session";
@@ -242,6 +244,11 @@ export default function TeamDashboardLayout({
 }) {
   const [pageTitle, setPageTitle] = useState<string | null>(null);
   const { logout, isAuthenticated, user } = useTeamAuth();
+  const fetchTwoFaStatus = useTwoFaStore((state) => state.fetchStatus);
+
+  useEffect(() => {
+    void fetchTwoFaStatus(true);
+  }, [fetchTwoFaStatus]);
 
   const handleInactivityLogout = useCallback(() => {
     toast.error("Session expired due to inactivity. Logging out...");
@@ -297,7 +304,10 @@ export default function TeamDashboardLayout({
                 </Button>
               </div>
             </header>
-            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+            <main className="flex-1 bg-[#F9FAFB]">
+              <TwoFaEnrollmentBanner forTeam />
+              {children}
+            </main>
           </SidebarInset>
         </SidebarProvider>
         <Toaster position="top-right" />

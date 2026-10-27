@@ -181,6 +181,7 @@ export async function paySingleTeamMember(
   options?: {
     paymentType?: string;
     note?: string;
+    code2fa?: string;
   },
 ): Promise<PaySingleMemberResponse> {
   const body: {
@@ -189,6 +190,7 @@ export async function paySingleTeamMember(
     currency?: string;
     paymentType?: string;
     note?: string;
+    code2fa?: string;
   } = {
     verificationCode,
     amount,
@@ -201,6 +203,9 @@ export async function paySingleTeamMember(
   }
   if (options?.note?.trim()) {
     body.note = options.note.trim().slice(0, 140);
+  }
+  if (options?.code2fa) {
+    body.code2fa = options.code2fa;
   }
 
   const response = await post<PaySingleMemberResponse>(

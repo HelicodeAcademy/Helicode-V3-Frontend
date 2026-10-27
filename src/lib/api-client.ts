@@ -2,6 +2,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { executeTokenRefresh } from "./token-refresh";
 import { executeTeamTokenRefresh } from "./token-refresh-team";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
+import { throwFromApiBody } from "./api-error";
 
 const PUBLIC_ENDPOINTS = [
   "/auth/signin",
@@ -30,7 +31,7 @@ export interface ApiResponse<T> {
   statusCode: number;
   message: string;
   data: T;
-  error?: string;
+  error?: string | { code?: string };
 }
 
 // Track in-flight refresh to prevent multiple simultaneous refresh calls
@@ -83,14 +84,12 @@ export async function apiCall<T>(
       }
     }
     // For public endpoints, throw the backend's actual error message
-    throw new Error(data.message || data.error || "Unauthorized");
+    throwFromApiBody(data, response.status);
   }
 
   // Handles succesful and error responses uniformly
   if (!response.ok) {
-    throw new Error(
-      data.message || data.error || `API Error: ${response.status}`,
-    );
+    throwFromApiBody(data, response.status);
   }
   return data as ApiResponse<T>;
 }
@@ -174,7 +173,7 @@ export async function postFormData<T>(
 
   // Handle both successful and error responses
   if (!response.ok) {
-    throw new Error(data.message || `API Error: ${response.status}`);
+    throwFromApiBody(data, response.status);
   }
 
   return data as ApiResponse<T>;
@@ -256,12 +255,12 @@ export async function teamApiCall<T>(
       }
     }
     // For public endpoints, throw the backend's actual error message
-    throw new Error(data.message || "Unauthorized");
+    throwFromApiBody(data, response.status);
   }
 
   // Handles succesful and error responses uniformly
   if (!response.ok) {
-    throw new Error(data.message || `API Error: ${response.status}`);
+    throwFromApiBody(data, response.status);
   }
   return data as ApiResponse<T>;
 }
@@ -323,7 +322,7 @@ export async function teamPostFormData<T>(
 
   // Handle both successful and error responses
   if (!response.ok) {
-    throw new Error(data.message || `API Error: ${response.status}`);
+    throwFromApiBody(data, response.status);
   }
 
   return data as ApiResponse<T>;

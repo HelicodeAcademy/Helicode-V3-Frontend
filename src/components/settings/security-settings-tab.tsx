@@ -12,6 +12,7 @@ import {
   clearLastActivity,
   EMPLOYER_LAST_ACTIVITY_KEY,
 } from "@/lib/inactivity-session";
+import { TwoFaSettings } from "@/components/settings/two-fa-settings";
 
 export function SecuritySettingsTab() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export function SecuritySettingsTab() {
         <h3 className="text-xs font-medium uppercase tracking-wide text-[#737373] mt-10 mb-4">
           Security
         </h3>
+        <TwoFaSettings />
+
         <div className="rounded-2xl border border-[#E4E7EC] bg-white p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>

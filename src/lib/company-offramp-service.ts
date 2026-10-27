@@ -54,6 +54,7 @@ export interface CompanyFiatWithdrawalData {
   amount: number;
   verificationCode: string;
   reason: string;
+  code2fa?: string;
 }
 
 export function isCompanyFiatOfframpEnabled(

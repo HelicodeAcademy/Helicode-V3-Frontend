@@ -10,6 +10,7 @@ import {
   clearLastActivity,
   TEAM_LAST_ACTIVITY_KEY,
 } from "@/lib/inactivity-session";
+import { useTwoFaStore } from "@/store/two-fa-store";
 
 // Custom hook for team authentication and token management
 // Check if team user is authenticated and then token refreshes before expiration
@@ -92,6 +93,7 @@ export function useTeamAuth() {
     localStorage.removeItem("team-auth-storage");
     clearLastActivity(TEAM_LAST_ACTIVITY_KEY);
     clearTeamLoginData();
+    useTwoFaStore.getState().clearStatus();
     router.push("/team/login");
     // toast.success("Team logout successful!");
   };

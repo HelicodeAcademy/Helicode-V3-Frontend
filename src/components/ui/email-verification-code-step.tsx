@@ -15,11 +15,12 @@ import { Lock, Loader2 } from "lucide-react";
 
 interface EmailVerificationCodeStepProps {
   onBack: () => void;
-  onConfirm: (code: string) => void;
+  onConfirm: (verificationCode: string, code2fa?: string) => void;
   isSubmitting?: boolean;
   error?: string;
   onResendCode: () => Promise<void>;
   isResending?: boolean;
+  requireAuthenticator?: boolean;
 }
 
 const CODE_LENGTH = 6;
@@ -31,8 +32,10 @@ export function EmailVerificationCodeStep({
   error = "",
   onResendCode,
   isResending = false,
+  requireAuthenticator = false,
 }: EmailVerificationCodeStepProps) {
   const [code, setCode] = useState<string[]>(Array(CODE_LENGTH).fill(""));
+  const [code2fa, setCode2fa] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
   const codeRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -86,11 +89,15 @@ export function EmailVerificationCodeStep({
   };
 
   const codeComplete = code.every((d) => d !== "");
+  const authenticatorReady = !requireAuthenticator || code2fa.trim().length >= 6;
+  const canConfirm = codeComplete && authenticatorReady;
 
   const handleConfirm = () => {
-    if (codeComplete) {
-      onConfirm(code.join(""));
-    }
+    if (!canConfirm) return;
+    onConfirm(
+      code.join(""),
+      requireAuthenticator ? code2fa.trim() : undefined,
+    );
   };
 
   const handleResend = async () => {
@@ -115,7 +122,9 @@ export function EmailVerificationCodeStep({
           Verify with email code
         </DialogTitle>
         <DialogDescription className="mt-2 text-sm text-[#475367]">
-          Enter the 6-digit code sent to your email
+          {requireAuthenticator
+            ? "Enter the 6-digit code sent to your email and your authenticator or backup code"
+            : "Enter the 6-digit code sent to your email"}
         </DialogDescription>
       </div>
 
@@ -140,6 +149,21 @@ export function EmailVerificationCodeStep({
           ))}
         </div>
         {error && <p className="text-center text-xs text-red-500">{error}</p>}
+        {requireAuthenticator && (
+          <div className="mx-auto max-w-xs pt-2 text-left">
+            <label className="mb-1.5 block text-sm font-medium text-[#344054]">
+              Authenticator or backup code
+            </label>
+            <Input
+              value={code2fa}
+              onChange={(event) => setCode2fa(event.target.value)}
+              placeholder="123456 or 7KQ2M-XW4PA"
+              autoComplete="one-time-code"
+              className="h-11"
+              disabled={isSubmitting || isResending}
+            />
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
@@ -156,7 +180,7 @@ export function EmailVerificationCodeStep({
           <Button
             className="bg-[#000000] px-6 font-medium text-white"
             onClick={handleConfirm}
-            disabled={!codeComplete || isSubmitting || isResending}
+            disabled={!canConfirm || isSubmitting || isResending}
           >
             {isSubmitting ? "Processing..." : "Confirm"}
           </Button>

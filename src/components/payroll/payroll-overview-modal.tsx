@@ -12,6 +12,7 @@ import Image from "next/image";
 import { payAllPayrollGroups } from "@/lib/payroll-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface PayrollOverviewModalProps {
   open: boolean;
@@ -57,6 +58,7 @@ export function PayrollOverviewModal({
   const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa();
 
   // Only active members
   const activeMembers = members.filter((m) => m.status === "Active");
@@ -101,17 +103,14 @@ export function PayrollOverviewModal({
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     setIsSubmitting(true);
     setVerificationError("");
     try {
-      await payAllPayrollGroups(code);
+      await payAllPayrollGroups(code, code2fa);
       setStep("success");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Payment failed. Please try again.";
+      const message = await handleSubmitError(err, handleRequestCode);
       setVerificationError(message);
     } finally {
       setIsSubmitting(false);
@@ -231,6 +230,7 @@ export function PayrollOverviewModal({
                 error={verificationError}
                 onResendCode={handleRequestCode}
                 isResending={isResending}
+                requireAuthenticator={requireAuthenticator}
               />
             </div>
           </>
