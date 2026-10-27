@@ -134,7 +134,10 @@ export function TwoFaSettings({ forTeam = false }: { forTeam?: boolean }) {
       : "Off";
 
   return (
-    <div id="two-fa" className="rounded-2xl border border-[#E4E7EC] bg-white p-4 sm:p-5">
+    <div
+      id="two-fa"
+      className="rounded-2xl border border-[#E4E7EC] bg-white p-4 sm:p-5 mb-2"
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-[#101828]">
