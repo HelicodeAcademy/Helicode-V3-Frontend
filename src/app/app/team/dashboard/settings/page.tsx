@@ -17,6 +17,7 @@ import { BankDetailsModal } from "@/components/settings/bank-details-modal";
 import { Edit2 } from "lucide-react";
 import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 import { TwoFaSettings } from "@/components/settings/two-fa-settings";
+import { BridgePayoutAccountsSection } from "@/components/wallet/bridge-payout-accounts-section";
 
 export default function TeamSettingsPage() {
   const { setTitle } = useContext(TeamPageTitleContext);
@@ -167,6 +168,11 @@ export default function TeamSettingsPage() {
             </div>
 
             <TwoFaSettings forTeam />
+
+            <BridgePayoutAccountsSection
+              forTeam
+              enabled={Boolean(teamMember?.bridgeFiatPayoutEnabled)}
+            />
 
             {/* KYC */}
             <div className="bg-white border border-[#eaeaea] rounded-lg p-6">

@@ -33,6 +33,7 @@ import {
 import { TeamKYCModal } from "@/components/team-dashboard/kyc/team-kyc-modal";
 import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-details-modal";
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
+import { BridgePayoutWithdrawalModal } from "@/components/wallet/bridge-payout-withdrawal-modal";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { useTeamWalletStore } from "@/store/team/team-wallet-store";
 export default function TalentDashboardHomePage() {
@@ -58,6 +59,7 @@ export default function TalentDashboardHomePage() {
   const [kycModalOpen, setKycModalOpen] = useState(false);
   const [bankModalOpen, setBankModalOpen] = useState(false);
   const [withdrawalModalOpen, setWithdrawalModalOpen] = useState(false);
+  const [bridgeWithdrawOpen, setBridgeWithdrawOpen] = useState(false);
 
   const handleSelectCrypto = () => {
     setWithdrawFundsModalOpen(false);
@@ -67,6 +69,11 @@ export default function TalentDashboardHomePage() {
   const handleSelectCard = () => {
     setWithdrawFundsModalOpen(false);
     setWithdrawalModalOpen(true);
+  };
+
+  const handleSelectBridge = () => {
+    setWithdrawFundsModalOpen(false);
+    setBridgeWithdrawOpen(true);
   };
 
   const handleFundSelectCrypto = () => {
@@ -407,7 +414,9 @@ export default function TalentDashboardHomePage() {
         onOpenChange={setWithdrawFundsModalOpen}
         onSelectCrypto={handleSelectCrypto}
         onSelectCard={handleSelectCard}
+        onSelectBridge={handleSelectBridge}
         showLocalOption={!bankDetailsNotAdded}
+        showBridgeOption={Boolean(teamData?.bridgeFiatPayoutEnabled)}
       />
 
       {/* Fund Wallet Modals */}
@@ -450,6 +459,16 @@ export default function TalentDashboardHomePage() {
       <TeamWithdrawalModal
         open={withdrawalModalOpen}
         onOpenChange={setWithdrawalModalOpen}
+        onSuccess={() => {
+          fetchTeamData();
+        }}
+      />
+
+      <BridgePayoutWithdrawalModal
+        open={bridgeWithdrawOpen}
+        onOpenChange={setBridgeWithdrawOpen}
+        forTeam
+        walletBalance={teamData?.wallet?.balance ?? 0}
         onSuccess={() => {
           fetchTeamData();
         }}

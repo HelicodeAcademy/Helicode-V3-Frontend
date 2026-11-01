@@ -14,6 +14,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { CompanyOfframpSettingsSection } from "./company-offramp-settings-section";
+import { BridgePayoutAccountsSection } from "@/components/wallet/bridge-payout-accounts-section";
+import { isBridgeFiatPayoutEnabled } from "@/lib/bridge-payout-service";
+import { hasCompanyAdminPermission } from "@/lib/permissions";
 
 interface GeneralSettingsTabProps {
   companyDetails: CompanyDetailsResponse | null;
@@ -157,6 +160,14 @@ export function GeneralSettingsTab({
       <CompanyOfframpSettingsSection
         companyDetails={companyDetails}
         onRefresh={onRefreshCompanyDetails}
+      />
+
+      <BridgePayoutAccountsSection
+        enabled={
+          isBridgeFiatPayoutEnabled(companyDetails) &&
+          hasCompanyAdminPermission("COMPANY_WITHDRAWAL", "READ")
+        }
+        canWrite={hasCompanyAdminPermission("COMPANY_WITHDRAWAL", "WRITE")}
       />
     </div>
   );

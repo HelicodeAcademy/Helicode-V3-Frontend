@@ -49,10 +49,12 @@ export function OfframpFiatQuoteSummary({ quote }: { quote: OfframpFiatQuote }) 
             value={`${formatLocalAmount(quote.inputAmount)} ${quote.inputCurrency}`}
           />
         )}
-        <QuoteRow
-          label="Exchange Rate"
-          value={`1 USDC = ${quote.rate.toFixed(4)} ${quote.currency}`}
-        />
+        {!(quote.currency === "USD" && quote.rate === 1) ? (
+          <QuoteRow
+            label="Exchange Rate"
+            value={`1 USDC = ${quote.rate.toFixed(4)} ${quote.currency}`}
+          />
+        ) : null}
         <QuoteRow label="You send" value={`${formatUsdc(amountUsdc)} USDC`} />
         <QuoteRow
           label="Helicode fee"
@@ -63,6 +65,12 @@ export function OfframpFiatQuoteSummary({ quote }: { quote: OfframpFiatQuote }) 
           value={`${formatLocalAmount(quote.amountReceived)} ${quote.currency}`}
           emphasize
         />
+        {quote.indicative ? (
+          <p className="text-[#667085]">
+            The amount in {quote.currency} is estimated until the payment
+            settles.
+          </p>
+        ) : null}
       </div>
     </div>
   );

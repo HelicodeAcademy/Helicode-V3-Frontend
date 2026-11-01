@@ -46,6 +46,7 @@ export interface TeamMeResponse {
   status: "VERIFIED" | "UNVERIFIED" | "PENDING";
   kycStatus?: boolean;
   bankPayoutStatus?: boolean;
+  bridgeFiatPayoutEnabled?: boolean;
   hasTransactionPin: boolean;
   bridgeKycStatus?: "not_started" | "incomplete" | "pending" | "approved";
   bridgeTosStatus?: "not_started" | "incomplete" | "pending" | "approved";
