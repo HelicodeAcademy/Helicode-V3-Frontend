@@ -28,7 +28,6 @@ import { getWalletAddress } from "@/lib/wallet-service";
 import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 import { CompanyWithdrawFundsModal } from "@/components/wallet/company-withdraw-funds-modal";
 import { CompanyFiatWithdrawalModal } from "@/components/wallet/company-fiat-withdrawal-modal";
-import { BridgePayoutWithdrawalModal } from "@/components/wallet/bridge-payout-withdrawal-modal";
 import { SendTransferModal } from "@/components/send/send-transfer-modal";
 import {
   CompanyDetailsResponse,
@@ -88,7 +87,6 @@ export default function DashboardHomePage() {
   const [withdrawFundsOpen, setWithdrawFundsOpen] = useState(false);
   const [withdrawChooserOpen, setWithdrawChooserOpen] = useState(false);
   const [fiatWithdrawOpen, setFiatWithdrawOpen] = useState(false);
-  const [bridgeWithdrawOpen, setBridgeWithdrawOpen] = useState(false);
   const [sendOpen, setSendOpen] = useState(false);
   const [companyDetails, setCompanyDetails] =
     useState<CompanyDetailsResponse | null>(null);
@@ -194,7 +192,7 @@ export default function DashboardHomePage() {
       return;
     }
 
-    if (fiatOfframpEnabled || bridgePayoutEnabled) {
+    if (fiatOfframpEnabled) {
       setWithdrawChooserOpen(true);
       return;
     }
@@ -225,17 +223,6 @@ export default function DashboardHomePage() {
     }
 
     setFiatWithdrawOpen(true);
-  };
-
-  const handleSelectBridgeWithdraw = () => {
-    setWithdrawChooserOpen(false);
-
-    if (!canWriteWithdrawal) {
-      toast.error("You do not have permission to withdraw to a US or EU bank.");
-      return;
-    }
-
-    setBridgeWithdrawOpen(true);
   };
 
   const handleSend = () => {
@@ -591,9 +578,7 @@ export default function DashboardHomePage() {
           setWithdrawFundsOpen(true);
         }}
         onSelectLocal={handleSelectLocalWithdraw}
-        onSelectBridge={handleSelectBridgeWithdraw}
         showLocalOption={fiatOfframpEnabled && canWriteWithdrawal}
-        showBridgeOption={bridgePayoutEnabled && canWriteWithdrawal}
       />
       <CompanyFiatWithdrawalModal
         open={fiatWithdrawOpen}
@@ -602,15 +587,6 @@ export default function DashboardHomePage() {
           fetchWalletBalance();
           fetchRecentTransactions();
           fetchCompanyDetails();
-        }}
-      />
-      <BridgePayoutWithdrawalModal
-        open={bridgeWithdrawOpen}
-        onOpenChange={setBridgeWithdrawOpen}
-        walletBalance={walletData?.balance ?? 0}
-        onSuccess={() => {
-          fetchWalletBalance();
-          fetchRecentTransactions();
         }}
       />
       <SendTransferModal

@@ -21,12 +21,16 @@ export interface BridgePayoutAddress {
   country: string;
 }
 
-export interface BridgePayoutAccount {
+export interface BridgePayoutRecipient {
+  id: string;
   currency: BridgePayoutCurrency;
   rail: BridgePayoutRail;
   supportedRails: BridgePayoutRail[];
+  ready: boolean;
+  needsWireDetails: boolean;
   accountOwnerType: BridgeAccountOwnerType;
   accountOwnerName: string;
+  email: string | null;
   bankName: string | null;
   last4: string;
   routingNumber: string | null;
@@ -41,9 +45,13 @@ export interface BridgePayoutAccount {
   updatedAt: string;
 }
 
+/** @deprecated Prefer BridgePayoutRecipient — kept for older call sites. */
+export type BridgePayoutAccount = BridgePayoutRecipient;
+
 export interface BridgePayoutList {
   feePercent: number;
-  payouts: BridgePayoutAccount[];
+  recipients: BridgePayoutRecipient[];
+  payouts: BridgePayoutRecipient[];
 }
 
 export interface BridgePayoutQuote extends OfframpFiatQuote {
@@ -51,15 +59,17 @@ export interface BridgePayoutQuote extends OfframpFiatQuote {
   indicative: boolean;
 }
 
-export interface SaveBridgePayoutPayload {
+export interface CreateBridgePayoutRecipientPayload {
   currency: BridgePayoutCurrency;
   rail: BridgePayoutRail;
   accountOwnerType: BridgeAccountOwnerType;
   firstName?: string;
   lastName?: string;
   businessName?: string;
+  email?: string;
   bankName?: string;
   accountNumber?: string;
+  accountNumberConfirmation?: string;
   routingNumber?: string;
   accountKind?: BridgeAccountKind;
   iban?: string;
@@ -67,10 +77,20 @@ export interface SaveBridgePayoutPayload {
   address: BridgePayoutAddress;
 }
 
+/** @deprecated Prefer CreateBridgePayoutRecipientPayload. */
+export type SaveBridgePayoutPayload = CreateBridgePayoutRecipientPayload;
+
+export interface AddWireDetailsPayload {
+  routingNumber: string;
+  bankName: string;
+}
+
 export interface BridgePayoutWithdrawPayload {
   currency: BridgePayoutCurrency;
   amount: number;
   verificationCode: string;
+  recipientId?: string;
+  rail?: BridgePayoutRail;
   code2fa?: string;
   reference?: string;
 }
@@ -91,6 +111,12 @@ export interface BridgePayoutWithdrawResult {
 
 function client(forTeam: boolean) {
   return forTeam ? { get: teamGet, post: teamPost } : { get, post };
+}
+
+function recipientsBase(forTeam: boolean) {
+  return forTeam
+    ? "/team/wallet/bridge-payout/recipients"
+    : "/wallet/bridge-payout/recipients";
 }
 
 export function isBridgeFiatPayoutEnabled(
@@ -115,23 +141,72 @@ export function referenceLimit(rail: BridgePayoutRail): number {
   return rail === "ach" || rail === "ach_same_day" ? 10 : 140;
 }
 
+export async function listBridgePayoutRecipients(
+  forTeam = false,
+  options?: { q?: string; rail?: BridgePayoutRail },
+): Promise<BridgePayoutList> {
+  const api = client(forTeam);
+  const params = new URLSearchParams();
+  if (options?.q?.trim()) params.set("q", options.q.trim());
+  if (options?.rail) params.set("rail", options.rail);
+  const query = params.toString();
+  const path = `${recipientsBase(forTeam)}${query ? `?${query}` : ""}`;
+  const response = await api.get<BridgePayoutList>(path);
+  const data = response.data;
+  const list = data.recipients?.length ? data.recipients : (data.payouts ?? []);
+  return {
+    feePercent: data.feePercent,
+    recipients: list,
+    payouts: list,
+  };
+}
+
+/** @deprecated Prefer listBridgePayoutRecipients. */
 export async function listBridgePayouts(
   forTeam = false,
 ): Promise<BridgePayoutList> {
+  return listBridgePayoutRecipients(forTeam);
+}
+
+export async function getBridgePayoutRecipient(
+  forTeam: boolean,
+  recipientId: string,
+): Promise<BridgePayoutRecipient> {
   const api = client(forTeam);
-  const response = await api.get<BridgePayoutList>(
-    forTeam ? "/team/wallet/bridge-payout" : "/wallet/bridge-payout",
+  const response = await api.get<BridgePayoutRecipient>(
+    `${recipientsBase(forTeam)}/${recipientId}`,
   );
   return response.data;
 }
 
+export async function createBridgePayoutRecipient(
+  forTeam: boolean,
+  payload: CreateBridgePayoutRecipientPayload,
+): Promise<BridgePayoutRecipient> {
+  const api = client(forTeam);
+  const response = await api.post<BridgePayoutRecipient>(
+    recipientsBase(forTeam),
+    payload,
+  );
+  return response.data;
+}
+
+/** @deprecated Prefer createBridgePayoutRecipient. */
 export async function saveBridgePayoutAccount(
   forTeam: boolean,
-  payload: SaveBridgePayoutPayload,
-): Promise<BridgePayoutAccount> {
+  payload: CreateBridgePayoutRecipientPayload,
+): Promise<BridgePayoutRecipient> {
+  return createBridgePayoutRecipient(forTeam, payload);
+}
+
+export async function addBridgePayoutWireDetails(
+  forTeam: boolean,
+  recipientId: string,
+  payload: AddWireDetailsPayload,
+): Promise<BridgePayoutRecipient> {
   const api = client(forTeam);
-  const response = await api.post<BridgePayoutAccount>(
-    forTeam ? "/team/wallet/bridge-payout" : "/wallet/bridge-payout",
+  const response = await api.post<BridgePayoutRecipient>(
+    `${recipientsBase(forTeam)}/${recipientId}/wire`,
     payload,
   );
   return response.data;
@@ -141,13 +216,19 @@ export async function quoteBridgePayout(
   forTeam: boolean,
   currency: BridgePayoutCurrency,
   amount: number,
+  options?: { recipientId?: string; rail?: BridgePayoutRail },
 ): Promise<BridgePayoutQuote> {
   const api = client(forTeam);
   const response = await api.post<BridgePayoutQuote>(
     forTeam
       ? "/team/wallet/bridge-payout/quote"
       : "/wallet/bridge-payout/quote",
-    { currency, amount },
+    {
+      currency,
+      amount,
+      ...(options?.recipientId ? { recipientId: options.recipientId } : {}),
+      ...(options?.rail ? { rail: options.rail } : {}),
+    },
   );
   return response.data;
 }

@@ -13,9 +13,7 @@ interface CompanyWithdrawFundsModalProps {
   onOpenChange: (open: boolean) => void;
   onSelectCrypto: () => void;
   onSelectLocal: () => void;
-  onSelectBridge?: () => void;
   showLocalOption?: boolean;
-  showBridgeOption?: boolean;
 }
 
 export function CompanyWithdrawFundsModal({
@@ -23,9 +21,7 @@ export function CompanyWithdrawFundsModal({
   onOpenChange,
   onSelectCrypto,
   onSelectLocal,
-  onSelectBridge,
   showLocalOption = true,
-  showBridgeOption = false,
 }: CompanyWithdrawFundsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,18 +61,6 @@ export function CompanyWithdrawFundsModal({
               <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
               <span className="text-[#000000] font-normal">
                 Withdraw to local account
-              </span>
-            </button>
-          )}
-
-          {showBridgeOption && (
-            <button
-              onClick={onSelectBridge}
-              className="w-full flex cursor-pointer items-center gap-2 p-4 border border-[#E4E7EC] rounded-[6px] hover:bg-gray-50 transition-colors text-left bg-[#F9FAFB]"
-            >
-              <Image src="/wallet/bank.svg" alt="bank" width={24} height={24} />
-              <span className="text-[#000000] font-normal">
-                Withdraw to US or EU bank
               </span>
             </button>
           )}

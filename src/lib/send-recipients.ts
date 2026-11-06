@@ -1,3 +1,8 @@
+import type {
+  BridgePayoutRail,
+  BridgePayoutRecipient,
+} from "./bridge-payout-service";
+
 export type SendRail = "ach" | "wire" | "swift";
 export type SendRecipientType = "business" | "individual";
 export type SendAccountKind = "checking" | "savings";
@@ -18,21 +23,69 @@ export interface SendRecipient {
   bankName: string;
   last4: string;
   routingNumber?: string;
-  accountNumber?: string;
   accountKind?: SendAccountKind;
-  iban?: string;
-  bic?: string;
-  swiftCode?: string;
+  ready: boolean;
+  needsWireDetails: boolean;
   createdAt: string;
 }
 
-const STORAGE_KEY = "helicode-send-recipients";
+function toSendRails(supported: BridgePayoutRail[]): SendRail[] {
+  const rails: SendRail[] = [];
+  if (supported.some((rail) => rail === "ach" || rail === "ach_same_day")) {
+    rails.push("ach");
+  }
+  if (supported.includes("wire")) {
+    rails.push("wire");
+  }
+  return rails;
+}
+
+export function bridgeRecipientToSend(
+  recipient: BridgePayoutRecipient,
+): SendRecipient {
+  const name = recipient.accountOwnerName?.trim() || "Recipient";
+  const parts = name.split(/\s+/).filter(Boolean);
+  const isBusiness = recipient.accountOwnerType === "business";
+
+  return {
+    id: recipient.id,
+    type: recipient.accountOwnerType,
+    businessName: isBusiness ? name : undefined,
+    firstName: isBusiness ? undefined : parts[0],
+    lastName: isBusiness ? undefined : parts.slice(1).join(" ") || undefined,
+    email: recipient.email ?? undefined,
+    addressLine1: recipient.addressLine1 ?? "",
+    city: recipient.city ?? "",
+    state: recipient.state ?? "",
+    postalCode: recipient.postalCode ?? "",
+    country: recipient.countryCode ?? "US",
+    rails: toSendRails(recipient.supportedRails ?? [recipient.rail]),
+    bankName: recipient.bankName?.trim() || "Bank",
+    last4: recipient.last4,
+    routingNumber: recipient.routingNumber ?? undefined,
+    accountKind: recipient.accountKind ?? undefined,
+    ready: Boolean(recipient.ready),
+    needsWireDetails: Boolean(recipient.needsWireDetails),
+    createdAt: recipient.updatedAt,
+  };
+}
+
+export function sendRailToBridge(
+  rail: SendRail,
+): Extract<BridgePayoutRail, "ach" | "wire"> | null {
+  if (rail === "ach") return "ach";
+  if (rail === "wire") return "wire";
+  return null;
+}
 
 export function recipientDisplayName(recipient: SendRecipient): string {
   if (recipient.type === "business") {
     return recipient.businessName?.trim() || "Business";
   }
-  return `${recipient.firstName ?? ""} ${recipient.lastName ?? ""}`.trim() || "Recipient";
+  return (
+    `${recipient.firstName ?? ""} ${recipient.lastName ?? ""}`.trim() ||
+    "Recipient"
+  );
 }
 
 export function recipientInitials(recipient: SendRecipient): string {
@@ -42,34 +95,6 @@ export function recipientInitials(recipient: SendRecipient): string {
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   }
   return name.slice(0, 2).toUpperCase() || "R";
-}
-
-export function loadSendRecipients(): SendRecipient[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as SendRecipient[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveSendRecipients(recipients: SendRecipient[]): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(recipients));
-}
-
-export function upsertSendRecipient(recipient: SendRecipient): SendRecipient[] {
-  const current = loadSendRecipients();
-  const index = current.findIndex((item) => item.id === recipient.id);
-  const next =
-    index >= 0
-      ? current.map((item, i) => (i === index ? recipient : item))
-      : [recipient, ...current];
-  saveSendRecipients(next);
-  return next;
 }
 
 /** Known ABA routing numbers shown in the designs for live bank lookup UX. */

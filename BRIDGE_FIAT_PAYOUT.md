@@ -33,31 +33,47 @@ company id.
   **`COMPANY_WITHDRAWAL` READ**, can list saved accounts. Saving, quoting,
   and withdrawing need **`COMPANY_WITHDRAWAL` WRITE**.
 - **Who can call team routes.** The signed-in team member.
-- **Fee.** Company **0.4%** (`COMPANY_OFFRAMP_DEVELOPER_FEE_PERCENT`). Team
+- **Fee.** Company **0.8%** (`COMPANY_OFFRAMP_DEVELOPER_FEE_PERCENT`). Team
   **0.2%** (`OFFRAMP_DEVELOPER_FEE_PERCENT`). The wallet is debited the
   amount the user entered. The bank receives the remainder. The amount has
   at most two decimal places. These fees are included in
   `GET /admin-dashboard/offramp-revenue` as source `BRIDGE_FIAT`.
   See [Offramp revenue](../admin/OFFRAMP_REVENUE.md).
-- **One account per currency.** Saving again replaces the account used for
-  the next withdrawal. A withdrawal already submitted keeps the account it
+- **Recipients.** A company or team member can save more than one USD or
+  EUR recipient. Search them by name, email, or account number. Sending
+  uses `recipientId`. A withdrawal already submitted keeps the account it
   was sent to.
 - **Responses never include** the full account number, the full IBAN, or the
   external-account id. They include `last4`.
 
 | Screen | Company | Team |
 | --- | --- | --- |
-| Saved accounts | `GET /wallet/bridge-payout` | `GET /team/wallet/bridge-payout` |
-| Save US or EUR account | `POST /wallet/bridge-payout` | `POST /team/wallet/bridge-payout` |
+| Saved recipients | `GET /wallet/bridge-payout/recipients` | `GET /team/wallet/bridge-payout/recipients` |
+| One recipient | `GET /wallet/bridge-payout/recipients/:id` | `GET /team/wallet/bridge-payout/recipients/:id` |
+| Create recipient | `POST /wallet/bridge-payout/recipients` | `POST /team/wallet/bridge-payout/recipients` |
+| Add wire details | `POST /wallet/bridge-payout/recipients/:id/wire` | `POST /team/wallet/bridge-payout/recipients/:id/wire` |
 | Quote | `POST /wallet/bridge-payout/quote` | `POST /team/wallet/bridge-payout/quote` |
 | Withdraw | `POST /wallet/bridge-payout/withdraw` | `POST /team/wallet/bridge-payout/withdraw` |
 | Payout status | `GET /wallet/bridge-payout/withdrawals/:id` | `GET /team/wallet/bridge-payout/withdrawals/:id` |
 
 ---
 
-## 1. Save a payout account
+## 1. Recipients
 
-`POST /wallet/bridge-payout` or `POST /team/wallet/bridge-payout`
+Create with `POST /wallet/bridge-payout/recipients` or
+`POST /team/wallet/bridge-payout/recipients`. The older
+`POST /wallet/bridge-payout` path does the same thing.
+
+List with `GET /wallet/bridge-payout/recipients`. `GET /wallet/bridge-payout`
+returns the same list. Optional query `q` matches the name, email, bank, or
+the end of the account number. Optional query `rail` (`ach`, `ach_same_day`,
+`wire`, `fednow`, `sepa`) sets `ready` on each row. A recipient that cannot
+take that rail stays in the list with `ready: false`. A USD recipient
+without wire has `needsWireDetails: true` — show **Add wire details**.
+
+Fetch one with `GET /wallet/bridge-payout/recipients/:id`.
+
+### USD
 
 ### USD
 
@@ -68,7 +84,9 @@ company id.
   "accountOwnerType": "individual",
   "firstName": "Ada",
   "lastName": "Lovelace",
+  "email": "ada@example.com",
   "bankName": "Example Bank",
+  "accountNumberConfirmation": "123456789",
   "accountNumber": "123456789",
   "routingNumber": "021000021",
   "accountKind": "checking",
@@ -120,11 +138,15 @@ FedNow is only available when the saved account reports `fednow` in
 
 ```json
 {
+  "id": "…",
   "currency": "USD",
   "rail": "ach",
   "supportedRails": ["ach", "wire"],
+  "ready": true,
+  "needsWireDetails": false,
   "accountOwnerType": "individual",
   "accountOwnerName": "Ada Lovelace",
+  "email": "ada@example.com",
   "bankName": "Example Bank",
   "last4": "6789",
   "routingNumber": "021000021",
@@ -153,19 +175,33 @@ deposit IBAN) is rejected before it is saved:
 
 A shared bank routing number on its own is not treated as a deposit account.
 
-### List
+### Add wire details
 
-`GET /wallet/bridge-payout` or `GET /team/wallet/bridge-payout`
+`POST /wallet/bridge-payout/recipients/:id/wire`
+
+```json
+{ "routingNumber": "026009593", "bankName": "Bank of America" }
+```
+
+Use this when `needsWireDetails` is true. The wire routing number is often
+different from the ACH routing number. Saving the same account number with
+a new routing number keeps withdrawals already in progress on the previous
+destination.
+
+### List
 
 ```json
 {
-  "feePercent": 0.4,
+  "feePercent": 0.8,
+  "recipients": [],
   "payouts": []
 }
 ```
 
-`feePercent` is 0.4 for a company and 0.2 for a team. `payouts` has at most
-one USD row and one EUR row.
+`feePercent` is 0.8 for a company and 0.2 for a team. `recipients` and
+`payouts` are the same list. There can be more than one USD recipient and
+more than one EUR recipient. `email` is optional. Responses still include
+`last4` only.
 
 ---
 
@@ -173,10 +209,14 @@ one USD row and one EUR row.
 
 `POST /wallet/bridge-payout/quote` or `POST /team/wallet/bridge-payout/quote`
 
-The payout account for that currency must already be saved.
+Pass `recipientId` for the person or business you are paying. `rail` is
+optional and must be one that recipient can receive (`supportedRails`).
+If `recipientId` is omitted and that currency has exactly one recipient,
+that recipient is used. If there are several, the quote returns **400**
+`"Choose a recipient."`
 
 ```json
-{ "currency": "USD", "amount": 100 }
+{ "currency": "USD", "amount": 100, "recipientId": "…", "rail": "wire" }
 ```
 
 USD is 1:1 after the fee. `indicative` is false.
@@ -186,13 +226,13 @@ USD is 1:1 after the fee. `indicative` is false.
   "currency": "USD",
   "rail": "ach",
   "rate": 1,
-  "amountReceived": 99.6,
+  "amountReceived": 99.2,
   "indicative": false,
   "amountUsdc": 100,
-  "feePercent": 0.4,
-  "feeUsdc": 0.4,
-  "netUsdc": 99.6,
-  "feeLocal": 0.4
+  "feePercent": 0.8,
+  "feeUsdc": 0.8,
+  "netUsdc": 99.2,
+  "feeLocal": 0.8
 }
 ```
 
@@ -237,11 +277,19 @@ Then:
 {
   "currency": "EUR",
   "amount": 100,
+  "recipientId": "…",
+  "rail": "sepa",
   "verificationCode": "123456",
   "code2fa": "123456",
   "reference": "Invoice 1042"
 }
 ```
+
+`recipientId` is the saved recipient. `rail` is the transfer type the user
+picked and must be in that recipient's `supportedRails`. Omit `rail` to use
+the rail stored on the recipient. Omit `recipientId` only when that currency
+has exactly one recipient; otherwise the call returns **400**
+`"Choose a recipient."`
 
 `code2fa` is required only when the user has an authenticator app turned on.
 `reference` is optional. ACH and same-day ACH allow **10** characters. Wire,
@@ -258,9 +306,9 @@ before the transfer is created.
   "currency": "EUR",
   "rail": "sepa",
   "amountUsdc": 100,
-  "feePercent": 0.4,
-  "feeUsdc": 0.4,
-  "netUsdc": 99.6
+  "feePercent": 0.8,
+  "feeUsdc": 0.8,
+  "netUsdc": 99.2
 }
 ```
 
@@ -275,9 +323,9 @@ call still returns **200** and the wallet stays debited:
   "currency": "EUR",
   "rail": "sepa",
   "amountUsdc": 100,
-  "feePercent": 0.4,
-  "feeUsdc": 0.4,
-  "netUsdc": 99.6
+  "feePercent": 0.8,
+  "feeUsdc": 0.8,
+  "netUsdc": 99.2
 }
 ```
 
