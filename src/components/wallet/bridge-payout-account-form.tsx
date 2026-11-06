@@ -19,19 +19,11 @@ import {
   type BridgePayoutCurrency,
   type BridgePayoutRail,
 } from "@/lib/bridge-payout-service";
-
-const US_STATES = [
-  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL",
-  "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT",
-  "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
-  "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC",
-];
-
-const SEPA_COUNTRIES = [
-  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU",
-  "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES",
-  "SE", "IS", "LI", "NO", "CH",
-];
+import {
+  SEPA_COUNTRY_OPTIONS,
+  US_STATE_OPTIONS,
+} from "@/lib/send-recipients";
+import { cn } from "@/lib/utils";
 
 const USD_RAILS: { value: BridgePayoutRail; label: string }[] = [
   { value: "ach", label: "ACH" },
@@ -45,6 +37,7 @@ interface BridgePayoutAccountFormProps {
   existing?: BridgePayoutAccount | null;
   presetCurrency?: BridgePayoutCurrency;
   onSuccess?: (account: BridgePayoutAccount) => void;
+  onCancel?: () => void;
 }
 
 export function BridgePayoutAccountForm({
@@ -52,14 +45,18 @@ export function BridgePayoutAccountForm({
   existing,
   presetCurrency,
   onSuccess,
+  onCancel,
 }: BridgePayoutAccountFormProps) {
   const initialCurrency = existing?.currency ?? presetCurrency ?? "USD";
-  const [currency, setCurrency] = useState<BridgePayoutCurrency>(initialCurrency);
+  const [currency, setCurrency] =
+    useState<BridgePayoutCurrency>(initialCurrency);
   const [rail, setRail] = useState<BridgePayoutRail>(
     existing?.rail ?? (initialCurrency === "EUR" ? "sepa" : "ach"),
   );
   const [accountOwnerType, setAccountOwnerType] =
-    useState<BridgeAccountOwnerType>(existing?.accountOwnerType ?? "individual");
+    useState<BridgeAccountOwnerType>(
+      existing?.accountOwnerType ?? "business",
+    );
   const [firstName, setFirstName] = useState(() => {
     if (existing?.accountOwnerType !== "individual") return "";
     return existing.accountOwnerName.split(" ")[0] ?? "";
@@ -75,6 +72,7 @@ export function BridgePayoutAccountForm({
   );
   const [bankName, setBankName] = useState(existing?.bankName ?? "");
   const [accountNumber, setAccountNumber] = useState("");
+  const [confirmAccountNumber, setConfirmAccountNumber] = useState("");
   const [routingNumber, setRoutingNumber] = useState(
     existing?.routingNumber ?? "",
   );
@@ -107,6 +105,11 @@ export function BridgePayoutAccountForm({
     setCountry(next === "EUR" ? "DE" : "US");
   };
 
+  const railBadge =
+    currency === "EUR"
+      ? "SEPA"
+      : USD_RAILS.find((option) => option.value === rail)?.label ?? "ACH";
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     const ownerName =
@@ -125,6 +128,14 @@ export function BridgePayoutAccountForm({
       }
       if (!accountNumber.trim()) {
         toast.error("Account number is required.");
+        return;
+      }
+      if (accountNumber !== confirmAccountNumber) {
+        toast.error("Account numbers do not match.");
+        return;
+      }
+      if (!state.trim()) {
+        toast.error("Select a state.");
         return;
       }
     } else if (!iban.trim()) {
@@ -177,7 +188,7 @@ export function BridgePayoutAccountForm({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-5">
       {existing?.last4 ? (
         <p className="text-sm text-[#667085]">
           Current account ending in {existing.last4}. Enter the account number
@@ -193,7 +204,7 @@ export function BridgePayoutAccountForm({
               onCurrencyChange(value as BridgePayoutCurrency)
             }
           >
-            <SelectTrigger className="h-9 border-[#E4E7EC]">
+            <SelectTrigger className="h-10 border-[#E4E7EC]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -204,52 +215,40 @@ export function BridgePayoutAccountForm({
         </Field>
       ) : null}
 
-      {currency === "USD" ? (
-        <Field label="Transfer type">
-          <Select
-            value={rail}
-            onValueChange={(value) => setRail(value as BridgePayoutRail)}
-          >
-            <SelectTrigger className="h-9 border-[#E4E7EC]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {usdRails.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
-      ) : (
-        <p className="text-sm text-[#667085]">EUR payouts use SEPA.</p>
-      )}
-
-      <Field label="Account owner">
-        <Select
-          value={accountOwnerType}
-          onValueChange={(value) =>
-            setAccountOwnerType(value as BridgeAccountOwnerType)
-          }
-        >
-          <SelectTrigger className="h-9 border-[#E4E7EC]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="individual">Individual</SelectItem>
-            <SelectItem value="business">Business</SelectItem>
-          </SelectContent>
-        </Select>
-      </Field>
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-medium text-[#344054]">Account details</p>
+        <div className="inline-flex rounded-lg bg-[#F2F4F7] p-1">
+          {(
+            [
+              ["business", "Business"],
+              ["individual", "Individual"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setAccountOwnerType(value)}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm font-medium",
+                accountOwnerType === value
+                  ? "bg-[#101828] text-white"
+                  : "text-[#667085]",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {accountOwnerType === "business" ? (
-        <Field label="Business name">
+        <Field label="Legal business name">
           <Input
             value={businessName}
             onChange={(event) => setBusinessName(event.target.value)}
             required
             maxLength={35}
+            className="h-10"
           />
         </Field>
       ) : (
@@ -259,6 +258,7 @@ export function BridgePayoutAccountForm({
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
               required
+              className="h-10"
             />
           </Field>
           <Field label="Last name">
@@ -266,18 +266,144 @@ export function BridgePayoutAccountForm({
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
               required
+              className="h-10"
             />
           </Field>
         </div>
       )}
 
+      <Field label="Street address">
+        <Input
+          value={line1}
+          onChange={(event) => setLine1(event.target.value)}
+          required
+          className="h-10"
+        />
+      </Field>
+      <Field label="Address line 2 (optional)">
+        <Input
+          value={line2}
+          onChange={(event) => setLine2(event.target.value)}
+          className="h-10"
+        />
+      </Field>
+
+      {currency === "USD" ? (
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="City">
+            <Input
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              required
+              className="h-10"
+            />
+          </Field>
+          <Field label="State">
+            <Select value={state} onValueChange={setState}>
+              <SelectTrigger className="h-10 border-[#E4E7EC]">
+                <SelectValue placeholder="State" />
+              </SelectTrigger>
+              <SelectContent>
+                {US_STATE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="ZIP code">
+            <Input
+              value={postalCode}
+              onChange={(event) => setPostalCode(event.target.value)}
+              required
+              className="h-10"
+            />
+          </Field>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          <Field label="City">
+            <Input
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              required
+              className="h-10"
+            />
+          </Field>
+          <Field label="Country">
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger className="h-10 border-[#E4E7EC]">
+                <SelectValue placeholder="Country" />
+              </SelectTrigger>
+              <SelectContent>
+                {SEPA_COUNTRY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Postal code">
+            <Input
+              value={postalCode}
+              onChange={(event) => setPostalCode(event.target.value)}
+              required
+              className="h-10"
+            />
+          </Field>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between pt-1">
+        <p className="text-sm font-medium text-[#344054]">Bank details</p>
+        <span className="rounded-md bg-[#F2F4F7] px-2 py-0.5 text-xs font-medium text-[#344054]">
+          {railBadge}
+        </span>
+      </div>
+
       {currency === "USD" ? (
         <>
+          <Field label="Transfer type">
+            <Select
+              value={rail}
+              onValueChange={(value) => setRail(value as BridgePayoutRail)}
+            >
+              <SelectTrigger className="h-10 border-[#E4E7EC]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {usdRails.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
           <Field label="Bank name">
             <Input
               value={bankName}
               onChange={(event) => setBankName(event.target.value)}
               required
+              className="h-10"
+            />
+          </Field>
+          <Field
+            label={
+              rail === "wire" || rail === "fednow"
+                ? "Wire routing number (ABA)"
+                : "Routing number (ABA)"
+            }
+          >
+            <Input
+              value={routingNumber}
+              onChange={(event) => setRoutingNumber(event.target.value)}
+              required
+              inputMode="numeric"
+              maxLength={9}
+              className="h-10"
             />
           </Field>
           <Field label="Account number">
@@ -286,33 +412,36 @@ export function BridgePayoutAccountForm({
               onChange={(event) => setAccountNumber(event.target.value)}
               required
               autoComplete="off"
+              className="h-10"
             />
           </Field>
-          <Field label="Routing number">
+          <Field label="Confirm account number">
             <Input
-              value={routingNumber}
-              onChange={(event) => setRoutingNumber(event.target.value)}
+              value={confirmAccountNumber}
+              onChange={(event) => setConfirmAccountNumber(event.target.value)}
               required
-              inputMode="numeric"
-              maxLength={9}
+              autoComplete="off"
+              className="h-10"
             />
           </Field>
-          <Field label="Account type">
-            <Select
-              value={accountKind}
-              onValueChange={(value) =>
-                setAccountKind(value as BridgeAccountKind)
-              }
-            >
-              <SelectTrigger className="h-9 border-[#E4E7EC]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="checking">Checking</SelectItem>
-                <SelectItem value="savings">Savings</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+          {(rail === "ach" || rail === "ach_same_day") && (
+            <Field label="Account type">
+              <Select
+                value={accountKind}
+                onValueChange={(value) =>
+                  setAccountKind(value as BridgeAccountKind)
+                }
+              >
+                <SelectTrigger className="h-10 border-[#E4E7EC]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="checking">Checking</SelectItem>
+                  <SelectItem value="savings">Savings</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
         </>
       ) : (
         <>
@@ -322,81 +451,33 @@ export function BridgePayoutAccountForm({
               onChange={(event) => setIban(event.target.value)}
               required
               autoComplete="off"
+              className="h-10"
             />
           </Field>
           <Field label="BIC (optional)">
             <Input
               value={bic}
               onChange={(event) => setBic(event.target.value)}
+              className="h-10"
             />
           </Field>
         </>
       )}
 
-      <Field label="Address line 1">
-        <Input
-          value={line1}
-          onChange={(event) => setLine1(event.target.value)}
-          required
-        />
-      </Field>
-      <Field label="Address line 2 (optional)">
-        <Input
-          value={line2}
-          onChange={(event) => setLine2(event.target.value)}
-        />
-      </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="City">
-          <Input
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-            required
-          />
-        </Field>
-        {currency === "USD" ? (
-          <Field label="State">
-            <Select value={state} onValueChange={setState}>
-              <SelectTrigger className="h-9 border-[#E4E7EC]">
-                <SelectValue placeholder="State" />
-              </SelectTrigger>
-              <SelectContent>
-                {US_STATES.map((code) => (
-                  <SelectItem key={code} value={code}>
-                    {code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        ) : (
-          <Field label="Country">
-            <Select value={country} onValueChange={setCountry}>
-              <SelectTrigger className="h-9 border-[#E4E7EC]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SEPA_COUNTRIES.map((code) => (
-                  <SelectItem key={code} value={code}>
-                    {code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        )}
+      <div className="flex justify-end gap-2 pt-1">
+        {onCancel ? (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        ) : null}
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-11 rounded-lg bg-[#101828] px-5 text-white hover:bg-[#1D2939]"
+        >
+          {isSubmitting ? "Saving..." : "Save account"}
+        </Button>
       </div>
-      <Field label="Postal code">
-        <Input
-          value={postalCode}
-          onChange={(event) => setPostalCode(event.target.value)}
-          required
-        />
-      </Field>
-
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? "Saving..." : "Save account"}
-      </Button>
     </form>
   );
 }
@@ -409,7 +490,7 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <div>
+    <div className="text-left">
       <label className="mb-1.5 block text-sm font-medium text-[#101828]">
         {label}
       </label>

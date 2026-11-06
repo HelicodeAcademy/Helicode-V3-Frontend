@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
@@ -195,9 +196,27 @@ export function TwoFaSetupModal({
                   <p className="text-sm font-medium text-[#344054]">
                     Can&apos;t scan? Enter this key
                   </p>
-                  <p className="mt-1 break-all rounded-lg bg-[#F9FAFB] px-3 py-2 font-mono text-sm text-[#101828]">
-                    {setup?.secret}
-                  </p>
+                  <div className="mt-1 flex items-start gap-2 rounded-lg bg-[#F9FAFB] px-3 py-2">
+                    <p className="min-w-0 flex-1 break-all font-mono text-sm text-[#101828]">
+                      {setup?.secret}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!setup?.secret) return;
+                        try {
+                          await navigator.clipboard.writeText(setup.secret);
+                          toast.success("Secret key copied");
+                        } catch {
+                          toast.error("Could not copy secret key");
+                        }
+                      }}
+                      className="shrink-0 rounded-md p-1.5 text-[#667085] hover:bg-[#EEF2F6] hover:text-[#101828]"
+                      aria-label="Copy secret key"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
                 <p className="text-xs text-[#667085]">
                   This setup expires in {setup?.expiresInMinutes ?? 10} minutes.

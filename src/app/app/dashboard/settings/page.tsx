@@ -102,7 +102,7 @@ function SettingsPageContent() {
       </div>
 
       {isLoading && activeTab !== "security" ? (
-        <div className="space-y-4 max-w-3xl">
+        <div className="mx-auto max-w-3xl space-y-4">
           <div className="h-24 rounded-2xl bg-[#F2F4F7] animate-pulse" />
           <div className="h-28 rounded-2xl bg-[#F2F4F7] animate-pulse" />
         </div>
@@ -138,7 +138,7 @@ export default function SettingsPage() {
             <div className="h-9 w-24 rounded-full bg-[#F2F4F7] animate-pulse" />
             <div className="h-9 w-24 rounded-full bg-[#F2F4F7] animate-pulse" />
           </div>
-          <div className="space-y-4 max-w-3xl">
+          <div className="mx-auto max-w-3xl space-y-4">
             <div className="h-24 rounded-2xl bg-[#F2F4F7] animate-pulse" />
             <div className="h-28 rounded-2xl bg-[#F2F4F7] animate-pulse" />
           </div>

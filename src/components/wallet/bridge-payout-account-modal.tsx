@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BridgePayoutAccountForm } from "./bridge-payout-account-form";
@@ -40,25 +39,30 @@ export function BridgePayoutAccountModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-2xl text-[#101828]">{title}</DialogTitle>
-          <DialogDescription className="mt-2 text-[#667085]">
-            Money is sent from your USDC wallet. Save one USD account and one
-            EUR account.
+      <DialogContent className="max-h-[90vh] gap-0 overflow-y-auto rounded-2xl border-[#E4E7EC] p-0 sm:max-w-[600px]">
+        <div className="border-b border-[#F2F4F7] px-6 pt-5 pb-4 pr-12">
+          <DialogTitle className="text-xl font-semibold text-[#101828]">
+            {title}
+          </DialogTitle>
+          <DialogDescription className="mt-1 text-sm text-[#667085]">
+            We&apos;ll save these details so you can pay out again in one click.
+            Money is sent from your USDC wallet.
           </DialogDescription>
-        </DialogHeader>
+        </div>
         {open ? (
-          <BridgePayoutAccountForm
-            key={`${existing?.currency ?? presetCurrency ?? "new"}-${existing?.updatedAt ?? "new"}`}
-            forTeam={forTeam}
-            existing={existing}
-            presetCurrency={presetCurrency}
-            onSuccess={(account) => {
-              onSuccess?.(account);
-              onOpenChange(false);
-            }}
-          />
+          <div className="px-6 py-5">
+            <BridgePayoutAccountForm
+              key={`${existing?.currency ?? presetCurrency ?? "new"}-${existing?.updatedAt ?? "new"}`}
+              forTeam={forTeam}
+              existing={existing}
+              presetCurrency={presetCurrency}
+              onCancel={() => onOpenChange(false)}
+              onSuccess={(account) => {
+                onSuccess?.(account);
+                onOpenChange(false);
+              }}
+            />
+          </div>
         ) : null}
       </DialogContent>
     </Dialog>

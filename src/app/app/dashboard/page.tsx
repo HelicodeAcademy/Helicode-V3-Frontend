@@ -29,6 +29,7 @@ import { WithdrawFundsModal } from "@/components/wallet/withdraw-funds-modal";
 import { CompanyWithdrawFundsModal } from "@/components/wallet/company-withdraw-funds-modal";
 import { CompanyFiatWithdrawalModal } from "@/components/wallet/company-fiat-withdrawal-modal";
 import { BridgePayoutWithdrawalModal } from "@/components/wallet/bridge-payout-withdrawal-modal";
+import { SendTransferModal } from "@/components/send/send-transfer-modal";
 import {
   CompanyDetailsResponse,
   getCompanyDetails,
@@ -88,6 +89,7 @@ export default function DashboardHomePage() {
   const [withdrawChooserOpen, setWithdrawChooserOpen] = useState(false);
   const [fiatWithdrawOpen, setFiatWithdrawOpen] = useState(false);
   const [bridgeWithdrawOpen, setBridgeWithdrawOpen] = useState(false);
+  const [sendOpen, setSendOpen] = useState(false);
   const [companyDetails, setCompanyDetails] =
     useState<CompanyDetailsResponse | null>(null);
 
@@ -234,6 +236,22 @@ export default function DashboardHomePage() {
     }
 
     setBridgeWithdrawOpen(true);
+  };
+
+  const handleSend = () => {
+    if (!verificationApproved) {
+      toast.error("Complete account verification before sending funds.");
+      return;
+    }
+    if (!bridgePayoutEnabled) {
+      toast.error("US bank transfers are not enabled for this company.");
+      return;
+    }
+    if (!canWriteWithdrawal) {
+      toast.error("You do not have permission to send bank transfers.");
+      return;
+    }
+    setSendOpen(true);
   };
 
   const handleFundWallet = () => {
@@ -383,6 +401,21 @@ export default function DashboardHomePage() {
               className="rotate-180"
             />
             Fund wallet
+          </Button>
+          <Button
+            onClick={handleSend}
+            disabled={!verificationApproved || !bridgePayoutEnabled}
+            title={
+              !verificationApproved
+                ? "Complete account verification to send"
+                : !bridgePayoutEnabled
+                  ? "US bank transfers are not enabled"
+                  : undefined
+            }
+            className="bg-[#FFFFFF] border border-[#0052FF] rounded-lg text-[#0052FF] font-medium hover:bg-[#ECF2FF]/20 disabled:border-[#D0D5DD] disabled:text-[#98A2B3] disabled:cursor-not-allowed"
+          >
+            <Image src="/home/send.svg" alt="send" width={16} height={16} />
+            Send
           </Button>
           <Button
             onClick={handleWithdraw}
@@ -574,6 +607,15 @@ export default function DashboardHomePage() {
       <BridgePayoutWithdrawalModal
         open={bridgeWithdrawOpen}
         onOpenChange={setBridgeWithdrawOpen}
+        walletBalance={walletData?.balance ?? 0}
+        onSuccess={() => {
+          fetchWalletBalance();
+          fetchRecentTransactions();
+        }}
+      />
+      <SendTransferModal
+        open={sendOpen}
+        onOpenChange={setSendOpen}
         walletBalance={walletData?.balance ?? 0}
         onSuccess={() => {
           fetchWalletBalance();
