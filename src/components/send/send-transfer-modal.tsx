@@ -882,6 +882,8 @@ function NewRecipientStep({
   const [isSaving, setIsSaving] = useState(false);
   const bankLookup = lookupRoutingNumber(routingNumber);
   const bridgeRail = sendRailToBridge(rail);
+  const streetAddress = addressLine1.trim();
+  const stateCode = state.trim().toUpperCase();
 
   const submit = async () => {
     if (rail === "swift" || !bridgeRail) {
@@ -890,16 +892,34 @@ function NewRecipientStep({
       );
       return;
     }
-    if (type === "business" && businessName.trim().length < 3) {
-      toast.error("Enter the legal business name.");
-      return;
+    if (type === "business") {
+      const name = businessName.trim();
+      if (name.length < 3 || name.length > 35) {
+        toast.error("Business name must be 3 to 35 characters.");
+        return;
+      }
     }
-    if (type === "individual" && (!firstName.trim() || !lastName.trim())) {
-      toast.error("Enter first and last name.");
-      return;
+    if (type === "individual") {
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+      if (!firstName.trim() || !lastName.trim()) {
+        toast.error("Enter first and last name.");
+        return;
+      }
+      if (fullName.length < 3 || fullName.length > 35) {
+        toast.error("Full name must be 3 to 35 characters.");
+        return;
+      }
     }
-    if (!addressLine1.trim() || !city.trim() || !postalCode.trim()) {
+    if (!streetAddress || !city.trim() || !postalCode.trim()) {
       toast.error("Complete the address.");
+      return;
+    }
+    if (streetAddress.length > 35) {
+      toast.error("Street address must be 35 characters or fewer.");
+      return;
+    }
+    if (!/^[A-Z]{2}$/.test(stateCode)) {
+      toast.error("Select a valid US state.");
       return;
     }
     if (!/^\d{9}$/.test(routingNumber.trim())) {
@@ -934,9 +954,9 @@ function NewRecipientStep({
         routingNumber: routingNumber.trim(),
         accountKind: rail === "ach" ? accountKind : "checking",
         address: {
-          line1: addressLine1.trim(),
+          line1: streetAddress,
           city: city.trim(),
-          state,
+          state: stateCode,
           postalCode: postalCode.trim(),
           country: "US",
         },
@@ -1012,10 +1032,15 @@ function NewRecipientStep({
         />
       </Field>
 
-      <Field label={type === "individual" ? "Home address" : "Street address"}>
+      <Field
+        label={type === "individual" ? "Home address" : "Street address"}
+        hint={`${streetAddress.length}/35`}
+      >
         <Input
           value={addressLine1}
+          maxLength={35}
           onChange={(event) => setAddressLine1(event.target.value)}
+          placeholder="Street address"
         />
       </Field>
 
@@ -1027,14 +1052,17 @@ function NewRecipientStep({
           />
         </Field>
         <Field label="State">
-          <Select value={state} onValueChange={setState}>
+          <Select
+            value={stateCode}
+            onValueChange={(value) => setState(value.toUpperCase())}
+          >
             <SelectTrigger className="h-9 border-[#E4E7EC] w-full">
-              <SelectValue />
+              <SelectValue placeholder="State" />
             </SelectTrigger>
             <SelectContent>
               {US_STATE_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                  {option.value} — {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -1923,12 +1951,25 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <div className="text-left">
-      <label className="mb-1.5 block text-sm font-medium text-[#0B0F1A]">
-        {label}
-      </label>
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <label className="block text-sm font-medium text-[#0B0F1A]">
+          {label}
+        </label>
+        {hint ? (
+          <span className="text-xs text-[#98A2B3]">{hint}</span>
+        ) : null}
+      </div>
       {children}
     </div>
   );
