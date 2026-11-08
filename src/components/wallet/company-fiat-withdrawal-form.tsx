@@ -16,6 +16,7 @@ import { useWalletStore } from "@/store/wallet-store";
 import { Loader2 } from "lucide-react";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { OfframpFiatQuoteSummary } from "@/components/wallet/offramp-quote-summary";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface CompanyFiatWithdrawalFormProps {
   onSuccess?: () => void;
@@ -41,6 +42,7 @@ export function CompanyFiatWithdrawalForm({
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
   const { walletData } = useWalletStore();
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa();
   const {
     register,
     handleSubmit,
@@ -150,7 +152,7 @@ export function CompanyFiatWithdrawalForm({
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     if (!withdrawalData) return;
     setIsSubmitting(true);
     setVerificationError("");
@@ -160,6 +162,7 @@ export function CompanyFiatWithdrawalForm({
         amount: withdrawalData.amount,
         verificationCode: code,
         reason: withdrawalData.reason,
+        ...(code2fa ? { code2fa } : {}),
       });
 
       toast.success("Withdrawal initiated successfully!");
@@ -168,10 +171,7 @@ export function CompanyFiatWithdrawalForm({
       setWithdrawalData(null);
       onSuccess?.();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to initiate withdrawal";
+      const errorMessage = await handleSubmitError(error, handleRequestCode);
       setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -201,6 +201,7 @@ export function CompanyFiatWithdrawalForm({
           error={verificationError}
           onResendCode={handleRequestCode}
           isResending={isResending}
+          requireAuthenticator={requireAuthenticator}
         />
       </div>
     );

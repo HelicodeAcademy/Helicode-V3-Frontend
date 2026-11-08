@@ -6,7 +6,11 @@ export type TransactionVerificationSubject =
   | "COMPANY_PAY_NOW_MEMBER"
   | "COMPANY_PAY_NOW_ALL"
   | "TEAM_WITHDRAWAL_CRYPTO"
-  | "TEAM_WITHDRAWAL_FIAT";
+  | "TEAM_WITHDRAWAL_FIAT"
+  | "SETUP_2FA"
+  | "DISABLE_2FA"
+  | "ENABLE_2FA"
+  | "BACKUP_CODES_2FA";
 
 export interface TransactionVerificationResponse {
   message: string;

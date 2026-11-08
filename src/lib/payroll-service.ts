@@ -155,10 +155,11 @@ export async function deletePayrollGroup(id: string): Promise<void> {
 
 export async function payAllPayrollGroups(
   verificationCode: string,
+  code2fa?: string,
 ): Promise<PayAllPayrollResponse> {
   const response = await post<PayAllPayrollResponse>(
     "/payroll-groups/pay-now/all",
-    { verificationCode },
+    { verificationCode, ...(code2fa ? { code2fa } : {}) },
   );
 
   return response.data;

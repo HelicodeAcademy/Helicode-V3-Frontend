@@ -54,6 +54,7 @@ export interface WithdrawalData {
   reason: string;
   /** Omit for dollar withdrawals. Send saved bank currency for local input. */
   currency?: string;
+  code2fa?: string;
 }
 
 export interface WithdrawalResponse extends Partial<OfframpFeeFields> {

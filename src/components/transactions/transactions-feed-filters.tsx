@@ -89,7 +89,7 @@ export function TransactionsFeedFilters({
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Status</SelectItem>
+          <SelectItem value="all">All</SelectItem>
           {view === "company" ? (
             <>
               <SelectItem value="success">Success</SelectItem>

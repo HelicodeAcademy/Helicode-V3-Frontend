@@ -13,6 +13,7 @@ import Image from "next/image";
 import { paySingleTeamMember } from "@/lib/team-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 import {
   currencySymbol,
   isLocalPayrollCurrency,
@@ -47,6 +48,7 @@ export function PayTeamMemberModal({
   const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa();
 
   const currencyOptions = payrollCurrencyOptionsForCountry(
     member?.country ?? "",
@@ -114,7 +116,7 @@ export function PayTeamMemberModal({
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     if (!member) return;
     setIsSubmitting(true);
     setVerificationError("");
@@ -124,13 +126,11 @@ export function PayTeamMemberModal({
         code,
         Number(amount),
         isLocalPayrollCurrency(payCurrency) ? payCurrency : undefined,
+        { code2fa },
       );
       setStep("success");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Payment failed. Please try again.";
+      const message = await handleSubmitError(err, handleRequestCode);
       setVerificationError(message);
     } finally {
       setIsSubmitting(false);
@@ -262,6 +262,7 @@ export function PayTeamMemberModal({
                 error={verificationError}
                 onResendCode={handleRequestCode}
                 isResending={isResending}
+                requireAuthenticator={requireAuthenticator}
               />
             </div>
           </>

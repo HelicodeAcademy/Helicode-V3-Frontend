@@ -16,6 +16,7 @@ import { initiateCryptoWithdrawal } from "@/lib/wallet-service";
 import { EmailVerificationCodeStep } from "@/components/ui/email-verification-code-step";
 import { requestTransactionVerificationCode } from "@/lib/transaction-verification-service";
 import { CryptoSendFundsForm } from "@/components/wallet/crypto-send-funds-form";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface WithdrawFundsModal {
   open: boolean;
@@ -37,6 +38,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending] = useState(false);
   const [verificationError, setVerificationError] = useState("");
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa();
 
   const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
     defaultValues: {
@@ -138,7 +140,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     setIsSubmitting(true);
     setVerificationError("");
 
@@ -152,6 +154,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
         amount: amount.toString(),
         verificationCode: code,
         toAddress: walletAddress,
+        ...(code2fa ? { code2fa } : {}),
       });
 
       if (walletData) {
@@ -167,10 +170,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
       toast.success("Withdrawal initiated successfully!");
       setStep("success");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Withdrawal failed. Please try again.";
+      const errorMessage = await handleSubmitError(error, handleRequestCode);
       setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -221,6 +221,7 @@ export function WithdrawFundsModal({ open, onOpenChange }: WithdrawFundsModal) {
             error={verificationError}
             onResendCode={handleRequestCode}
             isResending={isResending}
+            requireAuthenticator={requireAuthenticator}
           />
         ) : (
           <div className="space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">

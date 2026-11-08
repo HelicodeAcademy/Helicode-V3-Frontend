@@ -6,6 +6,7 @@ export interface CryptoWithdrawalData {
   amount: string;
   verificationCode: string;
   toAddress: string;
+  code2fa?: string;
 }
 
 export interface CryptoWithdrawalResponse {

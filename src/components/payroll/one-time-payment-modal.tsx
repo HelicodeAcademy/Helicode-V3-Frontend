@@ -37,6 +37,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { getCompanyDetails } from "@/lib/company-details";
 import { previewPayrollFee } from "@/lib/transaction-service";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface OneTimePaymentModalProps {
   open: boolean;
@@ -206,6 +207,7 @@ export function OneTimePaymentModal({
     ReturnType<typeof paySingleTeamMember>
   > | null>(null);
   const [paidAt, setPaidAt] = useState<Date | null>(null);
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa();
 
   const resetState = useCallback(() => {
     setStep("recipient");
@@ -364,7 +366,7 @@ export function OneTimePaymentModal({
     toast.success("Verification code sent to your email!");
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     if (!selectedMember) return;
     setIsSubmitting(true);
     setVerificationError("");
@@ -377,17 +379,15 @@ export function OneTimePaymentModal({
         {
           paymentType: paymentTypeApiValue(paymentType),
           note,
+          code2fa,
         },
       );
       setPaymentResult(result);
       setPaidAt(new Date());
       setStep("success");
     } catch (err: unknown) {
-      setVerificationError(
-        err instanceof Error
-          ? err.message
-          : "Payment failed. Please try again.",
-      );
+      const message = await handleSubmitError(err, handleRequestCode);
+      setVerificationError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -845,12 +845,13 @@ export function OneTimePaymentModal({
               error={verificationError}
               onResendCode={handleRequestCode}
               isResending={isResending}
+              requireAuthenticator={requireAuthenticator}
             />
           </div>
         )}
 
         {step === "success" && selectedMember && (
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col">
             <Image
               src={SUCCESS_ILLUSTRATION_SRC}
               alt="Success"

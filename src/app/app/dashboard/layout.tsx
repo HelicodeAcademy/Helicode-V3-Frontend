@@ -12,6 +12,8 @@ import {
 import { ProtectedRoute } from "@/components/auth/access/protected-route";
 import { useAuth } from "@/hooks/useAuth";
 import { useInactivityLogout } from "@/hooks/use-inactivity-logout";
+import { useTwoFaStore } from "@/store/two-fa-store";
+import { TwoFaEnrollmentBanner } from "@/components/two-fa/two-fa-enrollment-banner";
 import { EMPLOYER_LAST_ACTIVITY_KEY } from "@/lib/inactivity-session";
 
 import {
@@ -438,6 +440,7 @@ export default function DashboardLayout({
   const [pageTitle, setPageTitle] = useState<string | null>(null);
   const { logout, isAuthenticated } = useAuth();
   const { setKYCStatus } = useKYCStore();
+  const fetchTwoFaStatus = useTwoFaStore((state) => state.fetchStatus);
 
   const handleInactivityLogout = useCallback(() => {
     toast.error("Session expired due to inactivity. Logging out...");
@@ -462,7 +465,8 @@ export default function DashboardLayout({
     };
 
     fetchKycStatus();
-  }, [setKYCStatus]);
+    void fetchTwoFaStatus(false);
+  }, [setKYCStatus, fetchTwoFaStatus]);
 
   return (
     <ProtectedRoute>
@@ -502,7 +506,10 @@ export default function DashboardLayout({
                 </a>
               </div>
             </header>
-            <main className="flex-1 bg-[#F9FAFB]">{children}</main>
+            <main className="flex-1 bg-[#F9FAFB]">
+              <TwoFaEnrollmentBanner />
+              {children}
+            </main>
           </SidebarInset>
         </SidebarProvider>
       </PageTitleContext.Provider>

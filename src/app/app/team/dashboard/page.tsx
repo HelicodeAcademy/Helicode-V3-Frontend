@@ -35,6 +35,7 @@ import { TeamBankDetailsModal } from "@/components/team-dashboard/kyc/team-bank-
 import { TeamWithdrawalModal } from "@/components/team-dashboard/home/team-withdrawal-modal";
 import { useTeamAuthStore } from "@/store/team/team-auth-store";
 import { useTeamWalletStore } from "@/store/team/team-wallet-store";
+
 export default function TalentDashboardHomePage() {
   const { setTitle } = useContext(TeamPageTitleContext);
   const { setTeamMember } = useTeamKYCStore();
@@ -454,6 +455,7 @@ export default function TalentDashboardHomePage() {
           fetchTeamData();
         }}
       />
+
     </div>
   );
 }

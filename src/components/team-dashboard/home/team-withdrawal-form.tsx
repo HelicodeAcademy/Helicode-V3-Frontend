@@ -30,6 +30,7 @@ import {
   isDollarCurrency,
   isLocalPayrollCurrency,
 } from "@/lib/local-currency-payroll";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface TeamWithdrawalFormProps {
   onSuccess?: () => void;
@@ -55,6 +56,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
   const [inputCurrency, setInputCurrency] = useState("USD");
   const [bankCurrency, setBankCurrency] = useState<string | null>(null);
   const { teamMember } = useTeamKYCStore();
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa(true);
   const {
     register,
     handleSubmit,
@@ -192,7 +194,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     if (!withdrawalData) return;
     setIsSubmitting(true);
     setVerificationError("");
@@ -205,6 +207,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
         ...(isLocalPayrollCurrency(inputCurrency)
           ? { currency: inputCurrency }
           : {}),
+        ...(code2fa ? { code2fa } : {}),
       });
 
       toast.success("Withdrawal initiated successfully!");
@@ -214,10 +217,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
       setWithdrawalData(null);
       onSuccess?.();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to initiate withdrawal";
+      const errorMessage = await handleSubmitError(error, handleRequestCode);
       setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -248,6 +248,7 @@ export function TeamWithdrawalForm({ onSuccess }: TeamWithdrawalFormProps) {
           error={verificationError}
           onResendCode={handleRequestCode}
           isResending={isResending}
+          requireAuthenticator={requireAuthenticator}
         />
       </div>
     );

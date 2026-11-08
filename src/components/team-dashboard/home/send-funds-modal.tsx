@@ -22,6 +22,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { useTeamKYCStore } from "@/store/team/team-kyc-store";
 import { CryptoSendFundsForm } from "@/components/wallet/crypto-send-funds-form";
+import { useMoneyTwoFa } from "@/hooks/use-money-two-fa";
 
 interface SendFundsModalProps {
   open: boolean;
@@ -52,6 +53,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
   const [isQuoteLoading, setIsQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState("");
   const { teamMember } = useTeamKYCStore();
+  const { requireAuthenticator, handleSubmitError } = useMoneyTwoFa(true);
   const walletBalance = teamMember?.wallet?.balance || 0;
 
   const { watch, reset, setValue } = useForm<CryptoWithdrawalFormData>({
@@ -206,7 +208,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
     }
   };
 
-  const handleConfirmCode = async (code: string) => {
+  const handleConfirmCode = async (code: string, code2fa?: string) => {
     if (!sendData) return;
     setIsSubmitting(true);
     setVerificationError("");
@@ -216,14 +218,14 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
         amount: sendData.amount.toString(),
         verificationCode: code,
         toAddress: sendData.walletAddress,
+        ...(code2fa ? { code2fa } : {}),
       });
 
       toast.success("Funds sent successfully!");
       getTeamTransactions();
       setStep("success");
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to send funds";
+      const errorMessage = await handleSubmitError(error, handleRequestCode);
       setVerificationError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -288,6 +290,7 @@ export function SendFundsModal({ open, onOpenChange }: SendFundsModalProps) {
             error={verificationError}
             onResendCode={handleRequestCode}
             isResending={isResending}
+            requireAuthenticator={requireAuthenticator}
           />
         ) : (
           <div className="space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">
